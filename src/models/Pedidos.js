@@ -22,11 +22,11 @@ const Pedidos = sequelize.define('Pedidos', {
     unique: true,
   },
   fecha_pedido: {
-    type: DataTypes.TIMESTAMPS,
+    type: DataTypes.DATE,
     allowNull: false,
   },
   fecha_entrega: {
-    type: DataTypes.TIMESTAMPS,
+    type: DataTypes.DATE,
     allowNull: true,
   },
   tipo_pago: {
@@ -42,7 +42,7 @@ const Pedidos = sequelize.define('Pedidos', {
   },
 }, {
   tableName: 'pedidos',
-  timestamps: false // Deshabilita las columnas de control de tiempo
+  timestamps: false
 });
 
 module.exports = Pedidos;

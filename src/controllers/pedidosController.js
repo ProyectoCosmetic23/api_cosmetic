@@ -1,6 +1,6 @@
 // pedidosController.js
 const  Pedidos  = require('../models/Pedidos');  
-const  PedidosDetail = require('../models/PedidosDetail');
+// const  PedidosDetail = require('../models/PedidosDetail');
 
 const getAllOrders = async (req, res) => {
   try {
@@ -34,16 +34,15 @@ async function createOrder(req, res) {
   const { id_cliente, id_empleado, numero_pedido, fecha_pedido, fecha_entrega, tipo_pago, estado_pedido, total_pedido } = req.body;
 
   try {
-   
     const pedido = await Pedidos.create({ id_cliente, id_empleado, numero_pedido, fecha_pedido, fecha_entrega, tipo_pago, estado_pedido, total_pedido   });
-    res.status(201).json(product);
+    res.status(201).json(pedido);
   } catch (error) {
-    res.status(400).json({ error: 'Error al crear el producto.' });
+    res.status(400).json({ error: 'Error al crear el pedido.' });
     console.log(error.message);
   }
 }
 
-async function updateProduct(req, res) {
+async function updateOrder(req, res) {
   const { id } = req.params;
   const {  nombre, idcategoria, stock_minimo, cantidad, precio_venta, estado } = req.body;
 
@@ -52,14 +51,13 @@ async function updateProduct(req, res) {
   }
 
   try {
-    const product = await Product.findByPk(id);
+    const pedido = await Pedidos.findByPk(id);
 
-    if (!product) {
+    if (!pedido) {
       return res.status(404).json({ error: 'Producto no encontrado.' });
     }
 
-    // Actualiza los campos del producto
-    await product.update({
+    await pedido.update({
       nombre,
       idcategoria,
       stock_minimo,
@@ -68,35 +66,35 @@ async function updateProduct(req, res) {
       estado
     });
 
-    res.json(product);
+    res.json(pedido);
   } catch (error) {
-    res.status(500).json({ error: 'Error al actualizar el producto.' });
+    res.status(500).json({ error: 'Error al actualizar el pedido.' });
   }
 }
 
-async function deleteProduct(req, res) {
+async function deleteOrder(req, res) {
   const { id } = req.params;
 
   try{
-    const product= await Product.findByPk(id);
+    const pedido= await Pedidos.findByPk(id);
 
-    if(!product){
-      return res.status(404).json({error: "Producto no encontrado"})
+    if(!pedido){
+      return res.status(404).json({error: "Pedido no encontrado"})
     }
 
-    await product.destroy();
+    await pedido.destroy();
 
 
-    res.status(204).send(product);
+    res.status(204).send(pedido);
   }catch(error){
-    res.status(500).json({error : "Error al eliminar el producto."})
+    res.status(500).json({error : "Error al eliminar el pedido."})
   }
 }
 
 module.exports = {
-    getAllProducts,
-    getProductById,
-    createProduct,
-    updateProduct,
-    deleteProduct
+    getAllOrders,
+    getOrderById,
+    createOrder,
+    updateOrder,
+    deleteOrder
 };
