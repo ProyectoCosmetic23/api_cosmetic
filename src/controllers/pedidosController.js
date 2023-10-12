@@ -1,6 +1,5 @@
 // pedidosController.js
 const  Pedidos  = require('../models/Pedidos');  
-// const  PedidosDetail = require('../models/PedidosDetail');
 
 const getAllOrders = async (req, res) => {
   try {
