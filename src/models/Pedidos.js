@@ -1,48 +1,66 @@
-const { DataTypes } = require('sequelize');
-const sequelize = require('../config/sequelize');
-
-const Pedidos = sequelize.define('Pedidos', {
-  id_pedido: {
-    type: DataTypes.INTEGER,
-    primaryKey: true,
-    autoIncrement: true,
-    allowNull: false
-  },
-  id_cliente: {
-    type: DataTypes.INTEGER,
-    allowNull: false
-  },
-  id_empleado: {
-    type: DataTypes.INTEGER,
-    allowNull: false
-  },
-  numero_pedido: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    unique: true,
-  },
-  fecha_pedido: {
-    type: DataTypes.DATE,
-    allowNull: false,
-  },
-  fecha_entrega: {
-    type: DataTypes.DATE,
-    allowNull: true,
-  },
-  tipo_pago: {
-    type: DataTypes.STRING(100),
-    allowNull: false,
-  },
-  estado_pedido: {
-    type: DataTypes.STRING(15),
-  },
-  total_pedido: {
-    type: DataTypes.NUMERIC,
-    allowNull: false,
-  },
-}, {
-  tableName: 'pedidos',
-  timestamps: false
-});
-
-module.exports = Pedidos;
+const Sequelize = require('sequelize');
+module.exports = function(sequelize, DataTypes) {
+  return sequelize.define('pedidos', {
+    id_pedido: {
+      autoIncrement: true,
+      autoIncrementIdentity: true,
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      primaryKey: true
+    },
+    id_cliente: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'clientes',
+        key: 'id_cliente'
+      }
+    },
+    id_empleado: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'empleados',
+        key: 'id_empleado'
+      }
+    },
+    numero_pedido: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
+    fecha_pedido: {
+      type: DataTypes.DATE,
+      allowNull: false
+    },
+    fecha_entrega: {
+      type: DataTypes.DATE,
+      allowNull: false
+    },
+    tipo_pago: {
+      type: DataTypes.STRING(100),
+      allowNull: false
+    },
+    estado_pedido: {
+      type: DataTypes.STRING(15),
+      allowNull: true
+    },
+    total_pedido: {
+      type: DataTypes.DECIMAL,
+      allowNull: false
+    }
+  }, {
+    sequelize,
+    tableName: 'pedidos',
+    schema: 'public',
+    timestamps: false,
+    indexes: [
+      {
+        name: "pedidos_pkey",
+        unique: true,
+        fields: [
+          { name: "id_pedido" },
+        ]
+      },
+    ]
+  });
+};
