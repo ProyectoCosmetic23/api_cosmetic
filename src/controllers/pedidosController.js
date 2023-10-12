@@ -1,5 +1,5 @@
 // pedidosController.js
-const  Pedidos  = require('../models/Pedidos');  
+const  Pedidos  = require('../models/pedidos');  
 
 const getAllOrders = async (req, res) => {
   try {
