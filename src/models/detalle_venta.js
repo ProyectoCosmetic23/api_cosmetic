@@ -17,38 +17,6 @@ const Detalle_Venta = sequelize.define('detalle_venta', {
       key: 'id_venta'
     }
   },
-  id_cliente: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    references: {
-      model: 'clientes',
-      key: 'id_cliente'
-    }
-  },
-  id_empleado: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    references: {
-      model: 'empleados',
-      key: 'id_empleado'
-    }
-  },
-  numero_factura: {
-    type: DataTypes.INTEGER,
-    allowNull: false
-  },
-  fecha_venta: {
-    type: DataTypes.DATE,
-    allowNull: false
-  },
-  tipo_pago: {
-    type: DataTypes.STRING,
-    allowNull: false
-  },
-  total_venta: {
-    type: DataTypes.DECIMAL,
-    allowNull: false
-  },
   id_producto: {
     type: DataTypes.INTEGER,
     allowNull: false,

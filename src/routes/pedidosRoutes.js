@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const pedidosController = require ('../controllers/pedidosController');
+const pedidosController = require ('../controllers/Pedidos/pedidosController');
 
 // Ruta para obtener todos los usuarios
 router.get('/orders', pedidosController.getAllOrders);

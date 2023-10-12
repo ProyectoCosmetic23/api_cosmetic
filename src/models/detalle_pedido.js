@@ -17,38 +17,6 @@ const Detalle_Pedido = sequelize.define('detalle_pedido', {
       key: 'id_pedido'
     }
   },
-  id_cliente: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    references: {
-      model: 'clientes',
-      key: 'id_cliente'
-    }
-  },
-  id_empleado: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    references: {
-      model: 'empleados',
-      key: 'id_empleado'
-    }
-  },
-  fecha_pedido: {
-    type: DataTypes.DATE,
-    allowNull: false
-  },
-  fecha_entrega: {
-    type: DataTypes.DATE,
-    allowNull: false
-  },
-  numero_pedido: {
-    type: DataTypes.INTEGER,
-    allowNull: false
-  },
-  tipo_pago: {
-    type: DataTypes.STRING,
-    allowNull: false
-  },
   id_producto: {
     type: DataTypes.INTEGER,
     allowNull: false,

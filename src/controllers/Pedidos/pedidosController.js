@@ -1,6 +1,8 @@
 // pedidosController.js
-const  Pedidos  = require('../models/pedidos');  
+const Pedidos  = require('../../models/pedidos');  
+const Detalle_Pedido = require('../../models/detalle_pedido');  
 
+// Obtener todos los pedidos
 const getAllOrders = async (req, res) => {
   try {
     const pedidos = await Pedidos.findAll();  
@@ -15,7 +17,7 @@ const getAllOrders = async (req, res) => {
   }
 };
 
-// Obtener un producto por ID
+// Obtener un pedido por ID
 async function getOrderById(req, res) {
   const { id } = req.params;
   try {
@@ -29,18 +31,25 @@ async function getOrderById(req, res) {
   }
 }
 
+// Crear un pedido
 async function createOrder(req, res) {
   const { id_cliente, id_empleado, numero_pedido, fecha_pedido, fecha_entrega, tipo_pago, estado_pedido, total_pedido } = req.body;
 
   try {
-    const pedido = await Pedidos.create({ id_cliente, id_empleado, numero_pedido, fecha_pedido, fecha_entrega, tipo_pago, estado_pedido, total_pedido   });
+    const pedido = await Pedidos.create({ id_cliente, id_empleado, numero_pedido, fecha_pedido, fecha_entrega, tipo_pago, estado_pedido, total_pedido });
     res.status(201).json(pedido);
+    var id_pedido = pedido.id_pedido
+    const detalle_pedido = Detalle_Pedido.create({
+      id_pedido, id_cliente, id_empleado, fecha_pedido, fecha_entrega, numero_pedido, tipo_pago, id_producto, cantidad_producto, precio_producto
+    });
+    res.status(201).json(detalle_pedido);
   } catch (error) {
     res.status(400).json({ error: 'Error al crear el pedido.' });
     console.log(error.message);
   }
 }
 
+// Editar un pedido
 async function updateOrder(req, res) {
   const { id } = req.params;
   const {  nombre, idcategoria, stock_minimo, cantidad, precio_venta, estado } = req.body;
@@ -71,6 +80,7 @@ async function updateOrder(req, res) {
   }
 }
 
+// Eliminar un pedido
 async function deleteOrder(req, res) {
   const { id } = req.params;
 
