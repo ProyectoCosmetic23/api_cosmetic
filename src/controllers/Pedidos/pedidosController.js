@@ -1,14 +1,14 @@
 // pedidosController.js
-const Pedidos  = require('../../models/pedidos');  
-const Detalle_Pedido = require('../../models/detalle_pedido');  
+const Pedidos = require('../../models/pedidos');
+const Detalle_Pedido = require('../../models/detalle_pedido');
 
 // Obtener todos los pedidos
 const getAllOrders = async (req, res) => {
   try {
-    const pedidos = await Pedidos.findAll();  
+    const pedidos = await Pedidos.findAll();
 
-    if (pedidos.length === 0 ){
-      return res.status(404).json({message: "No hay pedidos registrados"})
+    if (pedidos.length === 0) {
+      return res.status(404).json({ message: "No hay pedidos registrados" })
     }
     res.json(pedidos);
   } catch (error) {
@@ -33,16 +33,34 @@ async function getOrderById(req, res) {
 
 // Crear un pedido
 async function createOrder(req, res) {
-  const { id_cliente, id_empleado, numero_pedido, fecha_pedido, fecha_entrega, tipo_pago, estado_pedido, total_pedido } = req.body;
+  const { id_cliente, id_empleado, numero_pedido, fecha_pedido, fecha_entrega, tipo_pago, estado_pedido, productos, total_pedido } = req.body;
 
   try {
-    const pedido = await Pedidos.create({ id_cliente, id_empleado, numero_pedido, fecha_pedido, fecha_entrega, tipo_pago, estado_pedido, total_pedido });
-    res.status(201).json(pedido);
-    var id_pedido = pedido.id_pedido
-    const detalle_pedido = Detalle_Pedido.create({
-      id_pedido, id_cliente, id_empleado, fecha_pedido, fecha_entrega, numero_pedido, tipo_pago, id_producto, cantidad_producto, precio_producto
+    const pedido = await Pedidos.create({
+      id_cliente,
+      id_empleado,
+      numero_pedido,
+      fecha_pedido,
+      fecha_entrega,
+      tipo_pago,
+      estado_pedido,
+      total_pedido
     });
-    res.status(201).json(detalle_pedido);
+    var id_pedido = pedido.id_pedido;
+    var detalle_pedido = [];
+    for (const producto of productos) {
+      var id_producto = producto.id_producto;
+      var cantidad_producto = producto.cantidad_producto;
+      var precio_producto = producto.precio_producto;
+      const detalle_pedido_prod = await Detalle_Pedido.create({
+        id_pedido,
+        id_producto,
+        cantidad_producto,
+        precio_producto
+      });
+      detalle_pedido.push(detalle_pedido_prod);
+    }
+    res.status(201).json({ pedido, detalle_pedido });
   } catch (error) {
     res.status(400).json({ error: 'Error al crear el pedido.' });
     console.log(error.message);
@@ -52,10 +70,10 @@ async function createOrder(req, res) {
 // Editar un pedido
 async function updateOrder(req, res) {
   const { id } = req.params;
-  const {  nombre, idcategoria, stock_minimo, cantidad, precio_venta, estado } = req.body;
+  const { nombre, idcategoria, stock_minimo, cantidad, precio_venta, estado } = req.body;
 
-  if( nombre.length > 100 ){
-    return res.status(400).json({error: "El nombre excede la longitud mixima permitida '100' "})
+  if (nombre.length > 100) {
+    return res.status(400).json({ error: "El nombre excede la longitud mixima permitida '100' " })
   }
 
   try {
@@ -84,26 +102,26 @@ async function updateOrder(req, res) {
 async function deleteOrder(req, res) {
   const { id } = req.params;
 
-  try{
-    const pedido= await Pedidos.findByPk(id);
+  try {
+    const pedido = await Pedidos.findByPk(id);
 
-    if(!pedido){
-      return res.status(404).json({error: "Pedido no encontrado"})
+    if (!pedido) {
+      return res.status(404).json({ error: "Pedido no encontrado" })
     }
 
     await pedido.destroy();
 
 
     res.status(204).send(pedido);
-  }catch(error){
-    res.status(500).json({error : "Error al eliminar el pedido."})
+  } catch (error) {
+    res.status(500).json({ error: "Error al eliminar el pedido." })
   }
 }
 
 module.exports = {
-    getAllOrders,
-    getOrderById,
-    createOrder,
-    updateOrder,
-    deleteOrder
+  getAllOrders,
+  getOrderById,
+  createOrder,
+  updateOrder,
+  deleteOrder
 };
