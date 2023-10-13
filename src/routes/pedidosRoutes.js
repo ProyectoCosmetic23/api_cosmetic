@@ -5,8 +5,6 @@ const pedidosController = require ('../controllers/Pedidos/pedidosController');
 router.get('/orders', pedidosController.getAllOrders);
 router.get('/orders/:id', pedidosController.getOrderById);
 router.post('/orders', pedidosController.createOrder);
-router.put('/orders/anulate/:id', pedidosController.updateOrder);
-router.put('/orders/anulate/:id', pedidosController.updateOrder);
-router.delete('/orders/:id', pedidosController.deleteOrder)
+router.put('/orders/anulate/:id', pedidosController.anulateOrderById);
 
 module.exports = router;
