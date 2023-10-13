@@ -369,13 +369,13 @@ VALUES ('A123456', 'Cliente 1', 'Apellido 1', 'cliente1@example.com', '987654321
 INSERT INTO pedidos (id_Cliente, id_Empleado, numero_Pedido, fecha_Pedido, fecha_Entrega, tipo_Pago, estado_Pedido, total_Pedido)
 VALUES (1, 1, 1001, NOW(), NOW() + interval '7 days', 'Tarjeta de crédito', 'En Proceso', 200.00);
 
-INSERT INTO detalle_Pedido (id_Pedido, id_Cliente, id_Empleado, fecha_Pedido, fecha_Entrega, numero_Pedido, tipo_Pago, id_Producto, cantidad_Producto, precio_Producto)
+INSERT INTO detalle_Pedido (id_Pedido, id_Producto, cantidad_Producto, precio_Producto)
 VALUES (1, 1, 1, NOW(), NOW() + interval '7 days', 1001, 'Tarjeta de crédito', 1, 10, 15.00);
 
 INSERT INTO ventas (id_Pedido, id_Cliente, id_Empleado, numero_Factura, fecha_Venta, estado_Venta, tipo_Pago, total_Venta)
 VALUES (1, 1, 1, 1001, NOW(), 'Completada', 'Tarjeta de crédito', 200.00);
 
-INSERT INTO detalle_Venta (id_Venta, id_Cliente, id_Empleado, numero_Factura, fecha_Venta, tipo_Pago, total_Venta, id_Producto, cantidad, precio_Producto)
+INSERT INTO detalle_Venta (id_Venta,  id_Producto, cantidad, precio_Producto)
 VALUES (1, 1, 1, 1001, NOW(), 'Tarjeta de crédito', 200.00, 1, 10, 15.00);
 
 INSERT INTO usuarios (id_Rol, fecha_Creacion_Usuario, nombre_Usuario, correo_Usuario, contrasena_Usuario, estado_Usuario, observacion_Usuario, id_Empleado)
