@@ -47,7 +47,7 @@ const Pedidos = sequelize.define('pedidos', {
   },
   total_pedido: {
     type: DataTypes.DECIMAL,
-    allowNull: false
+    allowNull: true
   }
 }, {
   sequelize,
