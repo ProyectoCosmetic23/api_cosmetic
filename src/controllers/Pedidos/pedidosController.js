@@ -101,7 +101,7 @@ async function anulateOrderById(req, res) {
   }
 }
 
-// 
+// Exportar las funciones del módulo
 
 module.exports = {
   getAllOrders,
