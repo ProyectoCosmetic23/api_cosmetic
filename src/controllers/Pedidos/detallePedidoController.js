@@ -77,22 +77,25 @@ async function createOrder(req, res) {
   }
 }
 
-// Anular un pedido
-async function anulateOrderById(req, res) {
-  const { id } = req.params;
-  const { estado_pedido } = req.body;
 
-  estado_pedido = "Anulado";
+// Editar un pedido
+async function updateOrder(req, res) {
+  const { id } = req.params;
+  const {  } = req.body;
+
+  if (nombre.length > 100) {
+    return res.status(400).json({ error: "El nombre excede la longitud mixima permitida '100' " })
+  }
 
   try {
     const pedido = await Pedidos.findByPk(id);
 
     if (!pedido) {
-      return res.status(404).json({ error: 'Pedido no encontrado.' });
+      return res.status(404).json({ error: 'Producto no encontrado.' });
     }
 
     await pedido.update({
-      estado_pedido
+
     });
 
     res.json(pedido);
@@ -101,11 +104,30 @@ async function anulateOrderById(req, res) {
   }
 }
 
-// 
+// Eliminar un pedido
+async function deleteOrder(req, res) {
+  const { id } = req.params;
+
+  try {
+    const pedido = await Pedidos.findByPk(id);
+
+    if (!pedido) {
+      return res.status(404).json({ error: "Pedido no encontrado" })
+    }
+
+    await pedido.destroy();
+
+
+    res.status(204).send(pedido);
+  } catch (error) {
+    res.status(500).json({ error: "Error al eliminar el pedido." })
+  }
+}
 
 module.exports = {
   getAllOrders,
   getOrderById,
   createOrder,
-  anulateOrderById,
+  updateOrder,
+  deleteOrder
 };

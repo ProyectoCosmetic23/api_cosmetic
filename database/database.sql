@@ -122,7 +122,7 @@ CREATE TABLE pedidos (
 	fecha_Entrega TIMESTAMP NOT NULL,
 	tipo_Pago VARCHAR (100) NOT NULL,
 	estado_Pedido CHARACTER VARYING(15),
-	total_Pedido NUMERIC NOT NULL
+	total_Pedido NUMERIC
 );
 
 /* Se crea la tabla detalle_Pedido */
