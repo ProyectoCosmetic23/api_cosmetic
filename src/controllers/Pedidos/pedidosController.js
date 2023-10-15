@@ -101,6 +101,32 @@ async function anulateOrderById(req, res) {
   }
 }
 
+// Anular un pedido
+async function updateStatusById(req, res) {
+  const { id } = req.params;
+  const { estado_pedido } = req.body;
+
+  if (estado_pedido == '') {
+
+  }
+
+  try {
+    const pedido = await Pedidos.findByPk(id);
+
+    if (!pedido) {
+      return res.status(404).json({ error: 'Pedido no encontrado.' });
+    }
+
+    await pedido.update({
+      estado_pedido
+    });
+
+    res.json(pedido);
+  } catch (error) {
+    res.status(500).json({ error: 'Error al actualizar el pedido.' });
+  }
+}
+
 // Exportar las funciones del módulo
 
 module.exports = {
@@ -108,4 +134,5 @@ module.exports = {
   getOrderById,
   createOrder,
   anulateOrderById,
+  updateStatusById
 };
