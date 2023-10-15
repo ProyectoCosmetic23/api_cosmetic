@@ -45,6 +45,10 @@ const Ventas = sequelize.define('ventas', {
     type: DataTypes.STRING(15),
     allowNull: true
   },
+  estado_pago: {
+    type: DataTypes.STRING(15),
+    allowNull: true
+  },
   tipo_pago: {
     type: DataTypes.STRING(100),
     allowNull: false

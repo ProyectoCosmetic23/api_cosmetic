@@ -45,6 +45,14 @@ const Pedidos = sequelize.define('pedidos', {
     type: DataTypes.STRING(15),
     allowNull: true
   },
+  estado_entrega: {
+    type: DataTypes.STRING(15),
+    allowNull: true
+  },
+  estado_pago: {
+    type: DataTypes.STRING(15),
+    allowNull: true
+  },
   total_pedido: {
     type: DataTypes.DECIMAL,
     allowNull: true
