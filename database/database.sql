@@ -122,6 +122,8 @@ CREATE TABLE pedidos (
 	fecha_Entrega TIMESTAMP NOT NULL,
 	tipo_Pago VARCHAR (100) NOT NULL,
 	estado_Pedido CHARACTER VARYING(15),
+	estado_Entrega CHARACTER VARYING(15),
+	estado_Pago CHARACTER VARYING(15),
 	total_Pedido NUMERIC
 );
 
@@ -145,6 +147,7 @@ CREATE TABLE ventas (
 	numero_Factura INT NOT NULL,
 	fecha_Venta TIMESTAMP NOT NULL,
 	estado_Venta CHARACTER VARYING(15),
+	estado_Pago CHARACTER VARYING(15),
 	tipo_Pago VARCHAR (100) NOT NULL,
 	total_Venta NUMERIC NOT NULL
 );
@@ -360,10 +363,10 @@ VALUES (1, 1, 'Categoría 1', 50, 9.00, 14.00, 700.00),
        (3, 3, 'Categoría 3', 40, 7.00, 12.00, 480.00);
 
 -- Insertar registros en la tabla pedidos
-INSERT INTO pedidos (id_Cliente, id_Empleado, numero_Pedido, fecha_Pedido, fecha_Entrega, tipo_Pago, estado_Pedido, total_Pedido)
-VALUES (1, 1, 1001, current_timestamp, current_timestamp, 'Efectivo', 'En proceso', 1500.00),
-       (2, 2, 1002, current_timestamp, current_timestamp, 'Tarjeta', 'Entregado', 1200.00),
-       (3, 3, 1003, current_timestamp, current_timestamp, 'Cheque', 'Cancelado', 1800.00);
+INSERT INTO pedidos (id_Cliente, id_Empleado, numero_Pedido, fecha_Pedido, fecha_Entrega, tipo_Pago, estado_Pedido, estado_Entrega, estado_Pago, total_Pedido)
+VALUES (1, 1, 1001, current_timestamp, current_timestamp, 'Efectivo', 'Activo', 'En proceso', 'Por pagar', 1500.00),
+       (2, 2, 1002, current_timestamp, current_timestamp, 'Tarjeta', 'Activo', 'Por entregar', 'Por pagar', 1200.00),
+       (3, 3, 1003, current_timestamp, current_timestamp, 'Cheque', 'Activo', 'Entregado', 'Por pagar', 1800.00);
 
 -- Insertar registros en la tabla detalle_Pedido
 INSERT INTO detalle_Pedido (id_Pedido, id_Producto, cantidad_Producto, precio_Producto)
@@ -372,10 +375,10 @@ VALUES (1, 1, 30, 14.00),
        (3, 3, 20, 12.00);
 
 -- Insertar registros en la tabla ventas
-INSERT INTO ventas (id_Pedido, id_Cliente, id_Empleado, numero_Factura, fecha_Venta, estado_Venta, tipo_Pago, total_Venta)
-VALUES (1, 1, 1, 5001, current_timestamp, 'Completada', 'Efectivo', 420.00),
-       (2, 2, 2, 5002, current_timestamp, 'Completada', 'Tarjeta', 675.00),
-       (3, 3, 3, 5003, current_timestamp, 'Pendiente', 'Cheque', 360.00);
+INSERT INTO ventas (id_Pedido, id_Cliente, id_Empleado, numero_Factura, fecha_Venta, estado_Venta, estado_Pago, tipo_Pago, total_Venta)
+VALUES (1, 1, 1, 5001, current_timestamp, 'Activo', 'Por pagar', 'Efectivo', 420.00),
+       (2, 2, 2, 5002, current_timestamp, 'Activo', 'Por pagar', 'Tarjeta', 675.00),
+       (3, 3, 3, 5003, current_timestamp, 'Activo', 'Pagado', 'Cheque', 360.00);
 
 -- Insertar registros en la tabla detalle_Venta
 INSERT INTO detalle_Venta (id_Venta, id_Producto, cantidad, precio_Producto)
