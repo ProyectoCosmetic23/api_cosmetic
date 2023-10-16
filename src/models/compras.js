@@ -1,7 +1,7 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/sequelize');
 
-const Compras = sequelize.define('compras', {
+const Compra = sequelize.define('compras', {
   id_compra: {
     autoIncrement: true,
     autoIncrementIdentity: true,
@@ -35,7 +35,8 @@ const Compras = sequelize.define('compras', {
   },
   estado_compra: {
     type: DataTypes.STRING(15),
-    allowNull: true
+    allowNull: true,
+    defaultValue:'Activo'
   },
   foto_compra: {
     type: DataTypes.BLOB,
@@ -61,4 +62,4 @@ const Compras = sequelize.define('compras', {
   ]
 });
 
-module.exports = Compras;
+module.exports = Compra;
