@@ -1,7 +1,7 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/sequelize');
 
-const categorias_productos = sequelize.define('categorias_productos', {
+const Categoria = sequelize.define('categorias_productos', {
   id_categoria: {
     autoIncrement: true,
     autoIncrementIdentity: true,
@@ -16,7 +16,8 @@ const categorias_productos = sequelize.define('categorias_productos', {
   },
   estado_categoria: {
     type: DataTypes.STRING(15),
-    allowNull: true
+    allowNull: true,
+    defaultValue: "Activo"
   },
   observacion_categoria: {
     type: DataTypes.STRING(100),
@@ -49,4 +50,4 @@ const categorias_productos = sequelize.define('categorias_productos', {
   ]
 });
 
-module.exports = categorias_productos;
+module.exports = Categoria;
