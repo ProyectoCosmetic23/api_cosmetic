@@ -35,6 +35,11 @@ const Comisiones = sequelize.define('comisiones', {
     type: DataTypes.INTEGER,
     allowNull: false
   },
+  estado_comision: {
+    type: DataTypes.STRING(15),
+    allowNull: true,
+    defaultValue: 'Activo',
+  },
   total_comision: {
     type: DataTypes.DECIMAL,
     allowNull: false

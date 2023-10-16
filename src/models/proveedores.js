@@ -36,7 +36,8 @@ const Proveedores = sequelize.define('proveedores', {
   },
   estado_proveedor: {
     type: DataTypes.STRING(15),
-    allowNull: true
+    allowNull: true,
+    defaultValue: 'Activo',
   },
   observacion_proveedor: {
     type: DataTypes.STRING(100),
