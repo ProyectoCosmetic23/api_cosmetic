@@ -94,11 +94,11 @@ async function anulateOrderById(req, res) {
       return res.status(404).json({ error: 'Pedido no encontrado.' });
     }
     await pedido.update({
-      estado_pedido
+      estado_pedido: estado_pedido
     });
     res.json(pedido);
   } catch (error) {
-    res.status(500).json({ error: 'Error al actualizar el pedido.' });
+    res.status(500).json({ error: 'Error al anular el pedido.' });
   }
 }
 
