@@ -123,27 +123,66 @@ function validateStockMin(productoDB) {
         return  'Stock minimo alcanzado.';
     }
 }
-  
-// Anular una compra
-async function anulateShopById(req,res){
-    const { id } = req.params;
-    const { estado_compra } = req.body;
 
-    estado_compra = "Anulado";
-    try{
+
+// Anular una compra
+async function anulateShopById(req, res) {
+    const { id } = req.params;
+    const estado_compra = "Anulado";
+    let mensaje = '';
+
+    try {
+        // Obtener la compra por su ID
         const compra = await Compra.findByPk(id);
+
         if (!compra) {
             return res.status(404).json({ error: 'Compra no encontrada.' });
         }
 
+        // Obtener el detalle de compra asociado a la compra
+        const detalle_compra = await Detalle_Compra.findAll({
+            where: { id_compra: id }
+        });
+
+        // Verificar si hay detalles de compra
+        if (!detalle_compra || detalle_compra.length === 0) {
+            return res.status(404).json({ mensaje: 'Detalles de compra no encontrados.' });
+        }
+
+        // Calcular la cantidad total a anular y actualizar el inventario
+        let cantidadTotalAnular = 0;
+
+        for (const detalle of detalle_compra) {
+            cantidadTotalAnular += detalle.cantidad_producto;
+
+            // Obtener el producto asociado a este detalle
+            const productoDB = await Producto.findByPk(detalle.id_producto);
+
+            if (!productoDB) {
+                return res.status(404).json({ mensaje: 'Producto no encontrado.' });
+            }
+
+            // Actualizar el inventario restando la cantidad anulada
+            const nuevoInventario = productoDB.cantidad - detalle.cantidad_producto;
+
+            // Actualizar el producto en la base de datos
+            await productoDB.update({
+                cantidad: nuevoInventario,
+            });
+        }
+
+        // Actualizar el estado de la compra
         await compra.update({
-        estado_compra
-    });
-    res.json(compra);
-    }catch(error){
-        res.status(500).json({ error: 'Error al actualizar la compra.' });
+            estado_compra: estado_compra,
+        });
+
+        res.json(compra);
+    } catch (error) {
+        res.status(500).json({ mensaje: 'Error al anular la compra.' });
     }
 }
+
+
 //Exportar las funciones del módulo compras
 
 module.exports = {
