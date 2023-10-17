@@ -11,7 +11,7 @@ const Productos = sequelize.define('productos', {
   },
   id_categoria: {
     type: DataTypes.INTEGER,
-    allowNull: false,
+    allowNull: true,
     references: {
       model: 'categorias_productos',
       key: 'id_categoria'
@@ -19,39 +19,40 @@ const Productos = sequelize.define('productos', {
   },
   nombre_producto: {
     type: DataTypes.STRING(80),
-    allowNull: false
+    allowNull: true
   },
   cantidad: {
     type: DataTypes.INTEGER,
-    allowNull: false
+    allowNull: true
   },
   stock_maximo: {
     type: DataTypes.INTEGER,
-    allowNull: false
+    allowNull: true
   },
   stock_minimo: {
     type: DataTypes.INTEGER,
-    allowNull: false
+    allowNull: true
   },
   precio_costo: {
     type: DataTypes.DECIMAL,
-    allowNull: false
+    allowNull: true
   },
   precio_venta: {
     type: DataTypes.DECIMAL,
-    allowNull: false
+    allowNull: true
   },
   ganancia: {
     type: DataTypes.DECIMAL,
-    allowNull: false
+    allowNull: true
   },
   fecha_creacion_producto: {
     type: DataTypes.DATE,
-    allowNull: false
+    allowNull: true
   },
   estado_producto: {
     type: DataTypes.STRING(15),
-    allowNull: true
+    allowNull: true,
+    defaultValue: "Activo"
   },
   observacion: {
     type: DataTypes.STRING(100),

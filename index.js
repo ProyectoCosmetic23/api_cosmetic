@@ -1,6 +1,7 @@
 const express = require('express');
 const sequelize = require('./src/config/sequelize');
-const empleadosRoutes = require('./src/routes/empleadosRoutes');
+const empleadosRoutes = require('./src/routes/productosRoutes');
+const productosRoutes = require('./src/routes/productosRoutes');
 const pedidosRoutes = require('./src/routes/pedidosRoutes');
 
 
@@ -21,6 +22,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use('/api', pedidosRoutes);
 app.use('/api', empleadosRoutes);
+app.use('/api', productosRoutes);
 
 
 app.listen(PORT, () => {
