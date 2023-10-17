@@ -1,5 +1,6 @@
 const express = require('express');
 const sequelize = require('./src/config/sequelize');
+const empleadosRoutes = require('./src/routes/empleadosRoutes');
 const pedidosRoutes = require('./src/routes/pedidosRoutes');
 
 
@@ -19,6 +20,8 @@ app.use(express.urlencoded({ extended: true }));
 })();
 
 app.use('/api', pedidosRoutes);
+app.use('/api', empleadosRoutes);
+
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
