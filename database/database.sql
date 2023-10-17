@@ -170,6 +170,7 @@ CREATE TABLE comisiones(
 	id_Venta INT NOT NULL UNIQUE,
 	fecha_Comision TIMESTAMP NOT NULL,
 	porcentaje_Comision INT NOT NULL,
+	estado_Comision CHARACTER VARYING(15),
 	total_Comision NUMERIC NOT NULL,
 	observacion_Comision VARCHAR(100)
 );
@@ -385,12 +386,13 @@ INSERT INTO detalle_Venta (id_Venta, id_Producto, cantidad, precio_Producto)
 VALUES (1, 1, 15, 14.00),
        (2, 2, 20, 18.00),
        (3, 3, 12, 12.00);
+	   
+--INSERTAR EN COMISIONES
 
--- Insertar registros en la tabla comisiones
-INSERT INTO comisiones (id_Empleado, id_Venta, fecha_Comision, porcentaje_Comision, total_Comision, observacion_Comision)
-VALUES (1, 1, current_timestamp, 10, 42.00, 'Comisión para empleado 1'),
-       (2, 2, current_timestamp, 12, 81.00, 'Comisión para empleado 2'),
-       (3, 3, current_timestamp, 8, 28.80, 'Comisión para empleado 3');
+INSERT INTO comisiones (id_Empleado, id_Venta, fecha_Comision, porcentaje_Comision, estado_Comision, total_Comision, observacion_Comision)
+VALUES (1, 1, current_timestamp, 10,'Activo', 42.00, 'Comisión para empleado 1'),
+       (2, 2, current_timestamp, 12,'Activo', 81.00, 'Comisión para empleado 2'),
+       (3, 3, current_timestamp, 8,'Activo', 28.80, 'Comisión para empleado 3');
 
 -- Insertar registros en la tabla pagos
 INSERT INTO pagos (id_Venta, id_Cliente, fecha_Pago, total_Pago, total_Restante)
