@@ -1,4 +1,3 @@
-
 const Comisiones = require('../../models/comisiones');
 
 
@@ -29,7 +28,6 @@ async function getComsById(req, res) {
         res.status(500).json({ error: 'Error al obtener la comisión.' });
     }
 }
-
 // Función para crear una comision
 async function createComs(req, res) {
     const {
@@ -57,6 +55,10 @@ async function createComs(req, res) {
         res.status(400).json({ error: 'Error al crear el proveedor.' });
         console.log(error.message);
     }
+}
+
+async function updateComs(req, res) {
+    
 }
 
 async function updateEstado(req, res) {

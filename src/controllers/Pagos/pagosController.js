@@ -35,15 +35,15 @@ async function createPago(req, res) {
     let {
         id_venta,
         id_cliente,
-        fecha_pago,
         total_pago,
     } = req.body;
 
     // Convierte total_pago a un número
     total_pago = parseFloat(total_pago);
-
+    //Pone la fecha automaticamente
     try {
         // Consulta la venta relacionada
+        
         const venta = await Ventas.findByPk(id_venta);
         if (!venta) {
             return res.status(404).json({ error: 'Venta no encontrada.' });
@@ -73,6 +73,8 @@ async function createPago(req, res) {
             venta.estado_pago = 'Por pagar';
         }
         await venta.save();
+        // Obtiene la fecha actual
+        const fecha_pago = new Date();
 
         // Crea un nuevo pago con los datos proporcionados y el total_restante calculado
         const nuevoPago = await Pagos.create({
