@@ -110,9 +110,48 @@ async function getPagosVenta(req, res) {
     }
 }
 
+async function getPagosClien(req, res) {
+    const id_cliente = req.params.id;
+
+    try {
+        const pagosCliente = await Pagos.findAll({
+            where: { id_cliente },
+        });
+
+        if (pagosCliente.length === 0) {
+            return res.status(404).json({ message: "No hay pagos para este cliente" })
+        }
+        res.json(pagosCliente);
+    } catch (error) {
+        console.error('Error fetching payments:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+}
+
+async function getPagosClienVent(req, res) {
+    const id_cliente = req.params.id;
+    const id_venta = req.params.id;
+
+    try {
+        const pagosClienteVenta = await Pagos.findAll({
+            where: { id_cliente, id_venta },
+        });
+
+        if (pagosClienteVenta.length === 0) {
+            return res.status(404).json({ message: "No hay el cliente no ha realizado pagos para esta venta" })
+        }
+        res.json(pagosClienteVenta);
+    } catch (error) {
+        console.error('Error fetching payments:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+}
+
 module.exports = {
     getAllPagos,
     getPagoById,
     createPago,
     getPagosVenta,
+    getPagosClien,
+    getPagosClienVent,
 };
