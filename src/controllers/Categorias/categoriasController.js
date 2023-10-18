@@ -3,87 +3,122 @@ const Categoria = require ('../../models/categorias_productos');
 
 //Consultar todas la categoria
 
-const getAllCategories = async (req, res) => {
+const getAllCategories = async (req, res, next) => {
   try {
     const categorias = await Categoria.findAll();
     if (categorias.length === 0) {
-      return res.status(404).json({ message: "No hay categorias registradas" })
+      throw new Error('No se encontraron categorías registradas.');
     }
     res.json(categorias);
   } catch (error) {
-    console.error('Error fetching products:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    console.error('Error al recuperar las categorías:', error);
+    next(error);
   }
 };
 
+
 // Obtener el id de una  categoria
 
-async function getCategoryById(req, res) {
+async function getCategoryById(req, res, next) {
   const { id } = req.params;
   try {
     const categorias = await Categoria.findByPk(id);
     if (!categorias) {
-      return res.status(404).json({ error: 'Categoria no encontrada.' });
+      throw new Error('La categoría no fue encontrada.');
     }
     res.json(categorias);
   } catch (error) {
-    res.status(500).json({ error: 'Error al obtener la categoria.' });
+    next(error);
   }
 }
+
 
 //Crear una categoria
-
-async function createCategory(req, res) {
-  const { nombre_categoria, observacion_categoria, fecha_creacion_categoria } = req.body;
+async function createCategory(req, res, next) {
+  const { nombre_categoria, observacion_categoria } = req.body;
+  
   try {
+    if (/^[A-Za-záéíóúÁÉÍÓÚüÜ\s]+$/.test(nombre_categoria)) {
+      throw new Error("El nombre de la categoria solo debe contener letras y espacios");
+    }
+    else if (!nombre_categoria) {
+      throw new Error("Falta el nombre de la categoria");
+    }
+    
+    const categoria = await Categoria.findOne({ where: { nombre_categoria } });
+    if (categoria) {
+      throw new Error("Ya existe una categoria con ese nombre");
+    }
+    
+    if (observacion_categoria.length > 100) {
+      throw new Error("La observación no puede tener más de 100 caracteres");
+    }
+
     const nuevaCategoria = await Categoria.create({
       nombre_categoria,
-      observacion_categoria,
-      fecha_creacion_categoria
+      observacion_categoria
     });
+
     res.json(nuevaCategoria);
   } catch (error) {
-    res.status(400).json({ error: 'Error al crear la categoria.' });
+    next(error); // En lugar de usar res.status(400).json({ error: 'Error al crear la categoria.' });
   }
 }
 
+
 //Modificar una categoria
-const categoryPut = async (req, res) => {
-    const { id } = req.params; // El ID de la categoría se obtiene de los parámetros de la URL
-    const { nombre_categoria, estado_categoria,
-         observacion_categoria } = req.body;
-    let mensaje = '';
+const categoryPut = async (req, res, next) => {
+  const { id } = req.params; // El ID de la categoría se obtiene de los parámetros de la URL
+  const { nombre_categoria, estado_categoria, observacion_categoria } = req.body;
+  let mensaje = '';
 
-    try {
-        if (id) {
-            // Buscar la categoría por su ID
-            const categoria = await Categoria.findByPk(id);
-
-            if (categoria) {
-                // Actualizar los campos de la categoría
-                categoria.nombre_categoria = nombre_categoria;
-                categoria.estado_categoria = estado_categoria;
-                categoria.observacion_categoria = observacion_categoria;
-
-                // Guardar los cambios en la base de datos
-                await categoria.save();
-
-                mensaje = "La modificación se efectuó correctamente";
-            } else {
-                mensaje = "La categoría no fue encontrada";
-            }
-        } else {
-            mensaje = "Falta el ID en la solicitud";
-        }
-    } catch (error) {
-        console.error(error);
-        mensaje = "Ocurrió un error al actualizar la categoría: " + error.message;
+  try {
+    // Validaciones
+    if (!nombre_categoria) {
+      throw new Error("Falta el nombre de la categoría");
+    }
+    
+    if (!/^[A-Za-záéíóúÁÉÍÓÚüÜ\s]+$/.test(nombre_categoria)) {
+      throw new Error("El nombre de la categoría solo debe contener letras y espacios");
+    }
+    
+    if (observacion_categoria.length > 100) {
+      throw new Error("La observación no puede tener más de 100 caracteres");
+    }
+    
+    const categoriaExistente = await Categoria.findOne({ where: { nombre_categoria } });
+    if (categoriaExistente && categoriaExistente.id !== id) {
+      throw new Error("Ya existe una categoría con ese nombre");
     }
 
-    res.json({
-        msg: mensaje
-    });
+    if (id) {
+      // Buscar la categoría por su ID
+      const categoria = await Categoria.findByPk(id);
+
+      if (categoria) {
+        // Actualizar los campos de la categoría
+        categoria.nombre_categoria = nombre_categoria;
+        categoria.estado_categoria = estado_categoria;
+        categoria.observacion_categoria = observacion_categoria;
+
+        // Guardar los cambios en la base de datos
+        await categoria.save();
+
+        mensaje = "La modificación se efectuó correctamente";
+      } else {
+        mensaje = "La categoría no fue encontrada";
+      }
+    } else {
+      mensaje = "Falta el ID en la solicitud";
+    }
+  } catch (error) {
+    console.error(error);
+    mensaje = "Ocurrió un error al actualizar la categoría: " + error.message;
+  }
+
+  res.json({ msg: mensaje });
 };
+
 
 
 const categoriaDelete = async (req, res) => {
