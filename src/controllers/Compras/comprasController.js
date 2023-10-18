@@ -1,4 +1,5 @@
 //Compras controller.js
+const Categoria = require('../../models/categorias_productos');
 const Compra = require ('../../models/compras');
 const Detalle_Compra = require ('../../models/detalle_compra');
 const Producto = require ('../../models/productos');
@@ -9,14 +10,15 @@ const getAllShopping = async (req, res) => {
     try {
         const compras = await Compra.findAll();
         if (compras.length === 0) {
-            return res.status(404).json({ message: "No hay compras registradas" })
+            return res.status(404).json({ success: false, message: "No hay compras registradas" });
         }
-        res.json(compras);
+        res.json({ success: true, data: compras });
     } catch (error) {
-        console.error('Error fetching products:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
+        console.error('Error al obtener las compras:', error);
+        res.status(500).json({ success: false, message: 'Error interno del servidor' });
     }
 };
+;
 
 // Obtener una compra por ID este metodo sirve para ver el detalle de la compra
 
@@ -28,11 +30,18 @@ async function getShoppingById(req, res) {
             where: { id_compra: id }
         });
         if (!compras) {
-            return res.status(404).json({ error: 'Compra no encontrada.' });
+            return res.status(404).json({ success: false, message: 'Compra no encontrada.' });
         }
-        res.json({ compras, detalle_compra });
+        res.json({ success: true, data: { compras, detalle_compra } });
     } catch (error) {
-        res.status(500).json({ error: 'Error al obtener la compra.' });
+        if (error.name === 'SequelizeConnectionError') {
+            // Error de conexión a la base de datos
+            res.status(500).json({ success: false, message: 'Error de conexión a la base de datos.' });
+        } else {
+            // Otro error
+            console.error('Error al obtener la compra:', error);
+            res.status(500).json({ success: false, message: 'Error al obtener la compra.' });
+        }
     }
 }
 
@@ -42,75 +51,55 @@ async function createShop(req, res) {
         id_proveedor,
         numero_factura,
         fecha_compra,
-        fecha_registrocompra,
         estado_compra,
         observacion_compra,
         productos
     } = req.body;
-
-    // Continuar con la creación de la compra
-    const nuevaCompra = await Compra.create({
-        id_proveedor,
-        numero_factura,
-        fecha_compra,
-        fecha_registrocompra,
-        estado_compra,
-        observacion_compra,
-        total_compra: 0
-    });
-    const id_compra = nuevaCompra.id_compra;
-    let total_compra = 0;
-    let alertas = [];    
-
-    // Iterar a través de los productos y crear detalles de compra
-    for (const producto of productos) {
-        const id_producto = producto.id_producto;
-        const cantidad_producto = producto.cantidad_producto;
-
-        // Encontrar el producto correspondiente en la base de datos
-        const productoDB = await Producto.findByPk(id_producto);
-
-        if (productoDB) {
-            // Actualizar el stock
-            productoDB.cantidad += cantidad_producto;
-           
-            alertas = validateStockMax(productoDB,alertas); 
-
-            // Calcular el subtotal y actualizar el precio de costo y precio de venta
-            const subtotal = producto.precio_costo * cantidad_producto;
-            total_compra += subtotal;
-            
-            // Actualizar precio de costo y precio de venta
-            productoDB.precio_costo = producto.precio_costo;
-            productoDB.precio_venta = producto.precio_venta;
-
-            await productoDB.save();
-
-            // Crear el detalle de compra
-            await Detalle_Compra.create({
-                id_compra,
-                id_producto,
-                cantidad_producto,
-                precio_costo: productoDB.precio_costo,
-                precio_venta: productoDB.precio_venta,
-                subtotal,
-            });
+    let mensaje = '';
+    let alertas = [];
+    
+    try {
+        // Validaciones
+        if (isNaN(numero_factura)) {
+            mensaje = "El número de factura debe contener solo números";
+        } else if (numero_factura.trim() === '') {
+            mensaje = "El número de factura no debe estar vacío";
+        } else {
+            // Verificar que el número de factura no se repita en la base de datos
+            const facturaExistente = await Compra.findOne({ where: { numero_factura } });
+            if (facturaExistente) {
+                mensaje = "El número de factura ya existe. Debe ser único.";
+            }
         }
-    }
+        
+        // Validar que la fecha de compra no sea mayor a la fecha actual
+        const fechaActual = new Date();
+        const fechaCompraDate = new Date(fecha_compra);
+        if (fechaCompraDate > fechaActual) {
+            mensaje = "La fecha de compra no puede ser mayor a la fecha actual.";
+        }
 
-    // Actualizar el total de la compra
-    nuevaCompra.total_compra = total_compra;
-    await nuevaCompra.save();
+        if (observacion_compra.length > 100) {
+            mensaje = "La observación no puede tener más de 100 caracteres";
+        }
 
-    comprafinal = {...nuevaCompra}
-    comprafinal.productos = productos;  
-    res.status(201).json({ compra: comprafinal, result:{
-        mensaje:"Compra creada correctamente",
-        alertas:alertas,
-    }});
-    }
+        if (productos.length === 0) {
+            mensaje = "Debes agregar al menos un producto a la compra.";
+        }
 
+        if (mensaje) {
+            return res.status(400).json({ success: false, message: mensaje });
+        }
 
+        // Continuar con la creación de la compra
+        const nuevaCompra = await Compra.create({
+            id_proveedor,
+            numero_factura,
+            fecha_compra,
+            estado_compra,
+            observacion_compra,
+            total_compra: 0
+        });
     function validateStockMax(productoDB,alertas) {
     if(productoDB.cantidad >= productoDB.stock_maximo){
         alertas.push(productoDB.nombre_producto+ ': Stock maximo alcanzado.');
@@ -118,11 +107,78 @@ async function createShop(req, res) {
     return alertas;
 }
 
-function validateStockMin(productoDB) {
-    if(productoDB.cantidad <= productoDB.stock_minimo){
-        return  'Stock minimo alcanzado.';
+        const id_compra = nuevaCompra.id_compra;
+        let total_compra = 0;
+
+        // Iterar a través de los productos y crear detalles de compra
+        for (const producto of productos) {
+            const id_producto = producto.id_producto;
+            const cantidad_producto = producto.cantidad_producto;
+
+            // Encontrar el producto correspondiente en la base de datos
+            const productoDB = await Producto.findByPk(id_producto);
+
+            if (!productoDB) {
+                return res.status(404).json({ success: false, message: 'Producto no encontrado.' });
+            }
+
+            const categoriaDB = await Categoria.findByPk(productoDB.id_categoria);
+
+            if (!categoriaDB) {
+                return res.status(404).json({ success: false, message: 'Categoría no encontrada.' });
+            }
+
+
+            // Actualizar el stock
+            productoDB.cantidad += cantidad_producto;
+
+            alertas = validateStockMax(productoDB, alertas);
+
+            // Calcular el subtotal y actualizar el precio de costo y precio de venta
+            const subtotal = productoDB.precio_costo * cantidad_producto;
+            total_compra += subtotal;
+
+            // Actualizar precio de costo y precio de venta
+            if (cantidad_producto <= 0 || productoDB.precio_costo > productoDB.precio_venta) {
+                mensaje = "La cantidad del producto debe ser mayor a cero y el precio de costo no puede ser mayor al precio de venta";
+                return res.status(400).json({ success: false, message: mensaje });
+            }
+
+            await productoDB.save();
+
+            // Crear el detalle de compra
+            await Detalle_Compra.create({
+                id_compra,
+                id_producto,
+                categoria_producto: productoDB.id_categoria,
+                cantidad_producto,
+                precio_costo: productoDB.precio_costo,
+                precio_venta: productoDB.precio_venta,
+                subtotal,
+            });
+        }
+
+        // Actualizar el total de la compra
+        nuevaCompra.total_compra = total_compra;
+        await nuevaCompra.save();
+
+        const comprafinal = { ...nuevaCompra };
+        comprafinal.productos = productos;
+
+        res.status(201).json({
+            success: true,
+            compra: comprafinal,
+            result: {
+                mensaje: "Compra creada correctamente",
+                alertas: alertas,
+            }
+        });
+    } catch (error) {
+        console.error('Error al crear la compra:', error);
+        res.status(500).json({ success: false, message: 'Error al crear la compra.' });
     }
 }
+
 
 
 // Anular una compra
@@ -183,7 +239,7 @@ async function anulateShopById(req, res) {
 }
 
 
-//Exportar las funciones del módulo compras
+//Exportar las funciones del módulo compras|
 
 module.exports = {
     getAllShopping,

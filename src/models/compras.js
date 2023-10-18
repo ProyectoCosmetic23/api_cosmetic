@@ -1,4 +1,4 @@
-const { DataTypes } = require('sequelize');
+const { DataTypes, NOW } = require('sequelize');
 const sequelize = require('../config/sequelize');
 
 const Compra = sequelize.define('compras', {
@@ -19,7 +19,9 @@ const Compra = sequelize.define('compras', {
   },
   numero_factura: {
     type: DataTypes.STRING(4),
-    allowNull: true
+    allowNull: false,
+    unique: true
+
   },
   fecha_compra: {
     type: DataTypes.DATE,
@@ -27,7 +29,8 @@ const Compra = sequelize.define('compras', {
   },
   fecha_registrocompra: {
     type: DataTypes.DATE,
-    allowNull: true
+    allowNull: true,
+    defaultValue: NOW()
   },
   total_compra: {
     type: DataTypes.DECIMAL,
@@ -36,7 +39,13 @@ const Compra = sequelize.define('compras', {
   estado_compra: {
     type: DataTypes.STRING(15),
     allowNull: true,
-    defaultValue:'Activo'
+    defaultValue:'Activo',
+    validate: {
+      isIn: {
+        args: [["Activo", "Inactivo"]],
+        msg: "El estado de la categoría debe ser 'Activo' o 'Anulada'",
+        }
+      }
   },
   foto_compra: {
     type: DataTypes.BLOB,
@@ -52,6 +61,13 @@ const Compra = sequelize.define('compras', {
   schema: 'public',
   timestamps: false,
   indexes: [
+    {
+      name: "numero_factura_unique",
+      unique: true,
+      fields: [
+        { name: "numero_factura" },
+      ]
+    },
     {
       name: "compras_pkey",
       unique: true,
