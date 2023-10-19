@@ -35,7 +35,7 @@ const getAllRoles = async (req, res) => {
     }
 };
 
-// Obtener un pedido por ID
+// Obtener un rol por ID
 async function getRoleById(req, res) {
     const { id } = req.params;
     try {
@@ -60,7 +60,7 @@ async function getRoleById(req, res) {
     }
 }
 
-// Crear un pedido
+// Crear un rol
 async function createRole(req, res) {
     const { nombre_rol, modulos_rol } = req.body;
     estado_rol = "Activo";
@@ -78,7 +78,7 @@ async function createRole(req, res) {
     }
 }
 
-// Anular un pedido
+// Cambiar el estado de un rol
 async function updateRoleStatus(req, res) {
     const { id } = req.params;
     try {
@@ -103,7 +103,7 @@ async function updateRoleStatus(req, res) {
     }
 }
 
-// Actualizar el estado de un pedido
+// Actualizar un rol
 async function updateRole(req, res) {
     const { id } = req.params;
     const { nombre_rol, estado_rol, modulos_rol } = req.body;
