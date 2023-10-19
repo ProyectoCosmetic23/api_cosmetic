@@ -4,7 +4,7 @@ const comisionesController = require ('../controllers/Comisiones/comisionesContr
 
 router.get('/comisiones', comisionesController.getAllComs);
 router.get('/comisiones/:id', comisionesController.getComsById);
-router.put('/comisiones/:id/estado', comisionesController.updateEstado);
 router.post('/comisiones', comisionesController.createComs);
+router.get('/comisiones/empleado/:id', comisionesController.getComsEmpleado);
 
 module.exports = router;

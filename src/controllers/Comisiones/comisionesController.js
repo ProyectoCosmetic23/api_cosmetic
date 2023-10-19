@@ -14,7 +14,24 @@ const getAllComs = async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 };
+//Obtener comision por id de empleado
+async function getComsEmpleado(req, res) {
+    const id_empleado = req.params.id;
 
+    try {
+        const comsEmpleado = await Comisiones.findAll({
+            where: { id_empleado },
+        });
+
+        if (comsEmpleado.length === 0) {
+            return res.status(404).json({ message: "No hay comisiones para este empleado" })
+        }
+        res.json(comsEmpleado);
+    } catch (error) {
+        console.error('Error fetching payments:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+}
 // Obtener una comision por ID
 async function getComsById(req, res) {
     const { id } = req.params;
@@ -28,26 +45,21 @@ async function getComsById(req, res) {
         res.status(500).json({ error: 'Error al obtener la comisión.' });
     }
 }
+
 // Función para crear una comision
 async function createComs(req, res) {
     const {
         id_empleado,
-        id_venta,
-        fecha_comision,
-        porcentaje_comision,
         total_comision,
-        observacion_comision,
+        id_detalle_comision,
     } = req.body;
 
     try {
         // Crea una comision con los datos proporcionados
         const nuevaComision = await Comisiones.create({
             id_empleado,
-            id_venta,
-            fecha_comision,
-            porcentaje_comision,
             total_comision,
-            observacion_comision,
+            id_detalle_comision,
         });
 
         res.status(201).json(nuevaComision);
@@ -57,38 +69,9 @@ async function createComs(req, res) {
     }
 }
 
-async function updateComs(req, res) {
-    
-}
-
-async function updateEstado(req, res) {
-    const { id } = req.params;
-
-    try {
-        const comision = await Comisiones.findByPk(id);
-
-        if (!comision) {
-            return res.status(404).json({ error: 'comision no encontrada.' });
-        }
-
-        if (comision.estado_comision === 'Activo') {
-            comision.estado_comision = 'Inactivo';
-        } else if (comision.estado_comision === 'Inactivo') {
-            comision.estado_comision = 'Activo';
-        }
-
-        await comision.save();
-
-        res.json(comision);
-    } catch (error) {
-        res.status(500).json({ error: 'Error al actualizar el estado de la comision.' });
-        console.log(error.message);
-    }
-}
-
 module.exports = {
     getAllComs,
     getComsById,
     createComs,
-    updateEstado,
+    getComsEmpleado,
 };
