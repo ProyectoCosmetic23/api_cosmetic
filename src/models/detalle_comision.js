@@ -38,7 +38,7 @@ const Detalle_Comision = sequelize.define('detalle_comision', {
         ]
       },
       {
-        name: "proveedores_pkey",
+        name: "detalle_comision_pkey",
         unique: true,
         fields: [
           { name: "id_detalle_comision" },

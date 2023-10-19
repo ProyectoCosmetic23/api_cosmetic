@@ -174,7 +174,7 @@ CREATE TABLE comisiones(
 /* Se crea la tabla Detalle comision */
 CREATE TABLE detalle_Comision(
 id_Detalle_Comision INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-mes_Comision TIMESTAMP,
+mes_Comision TIMESTAMP UNIQUE,
 porcentaje_Comision INT NOT NULL
 );
 

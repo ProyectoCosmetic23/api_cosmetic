@@ -33,9 +33,11 @@ async function createDetalleCom(req, res) {
     const { porcentaje_comision } = req.body;
 
     try {
-        const fecha_comision = new Date(); // Obtiene la fecha actual
+        const fecha_actual = new Date(); 
+        const mes_comision = new Date(fecha_actual.getFullYear(), fecha_actual.getMonth(), 1);
+
         const nuevoDetalleComision = await Detalle_Comision.create({
-            mes_comision: fecha_comision, // Asigna la fecha actual a mes_comision
+            mes_comision,
             porcentaje_comision,
         });
 
@@ -45,6 +47,7 @@ async function createDetalleCom(req, res) {
         console.log(error.message);
     }
 }
+
 
 module.exports = {
     getAllDetalles,
