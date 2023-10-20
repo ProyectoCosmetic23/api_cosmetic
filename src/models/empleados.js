@@ -1,4 +1,4 @@
-const { DataTypes } = require('sequelize');
+const { DataTypes, NOW } = require('sequelize');
 const sequelize = require('../config/sequelize');
 
 const Empleados = sequelize.define('empleados', {
@@ -41,7 +41,8 @@ const Empleados = sequelize.define('empleados', {
   },
   fecha_creacion_empleado: {
     type: DataTypes.DATE,
-    allowNull: true
+    allowNull: true,
+    defaultValue: new NOW()
   }
 }, {
   sequelize,

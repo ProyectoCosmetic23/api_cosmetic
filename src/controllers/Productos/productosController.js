@@ -45,16 +45,33 @@ async function createProducts(req, res) {
     observacion,
   } = req.body;
 
+  // Validación: Verifica que los campos obligatorios no estén vacíos
+  if (!id_categoria || !nombre_producto || !cantidad || !stock_maximo || !stock_minimo || !precio_costo || !precio_venta) {
+    return res.status(400).json({ error: 'Faltan campos obligatorios' });
+  }
+  if (isNaN(cantidad) || cantidad <= 0) {
+    return res.status(400).json({ error: 'La cantidad debe ser un número mayor que cero' });
+  }
+
+  // Validación: Precio de costo y precio de venta deben ser numéricos y mayores que cero
+  if (isNaN(precio_costo) || isNaN(precio_venta) || precio_costo <= 0 || precio_venta <= 0) {
+    return res.status(400).json({ error: 'El precio de costo y el precio de venta deben ser numéricos y mayores que cero' });
+  }
+
+  // Validación: Stock máximo y stock mínimo deben ser números enteros y stock máximo debe ser mayor que stock mínimo
+  if (!Number.isInteger(stock_maximo) || !Number.isInteger(stock_minimo) || stock_maximo <= stock_minimo) {
+    return res.status(400).json({ error: 'El stock máximo y el stock mínimo deben ser números enteros, y el stock máximo debe ser mayor que el stock mínimo' });
+  }
+
+  // Validación: Nombre debe contener solo letras y espacios
+  if (!/^[A-Za-z0-9\s]+$/.test(nombre_producto)) {
+    return res.status(400).json({ error: 'El nombre debe contener letras, números y espacios' });
+  }
+
   // Calcular la ganancia
   const ganancia = precio_venta - precio_costo;
 
-  // Establecer el valor por defecto para estado_producto en "activo"
-  const estado_producto = "Activo";
-
-  // Obtener la fecha y hora actual
   const fecha_creacion_producto = new Date();
-  fecha_creacion_producto.setDate(fecha_creacion_producto.getDate() - 1); // Resta un día
-  fecha_creacion_producto.setHours(fecha_creacion_producto.getHours() + 2); // Suma 2 horas
 
   try {
     const nuevoProducto = await Producto.create({
@@ -66,8 +83,6 @@ async function createProducts(req, res) {
       precio_costo,
       precio_venta,
       ganancia,
-      fecha_creacion_producto,
-      estado_producto,
       observacion
     });
 
@@ -80,50 +95,77 @@ async function createProducts(req, res) {
 
 
 //Modificar un producto
-const productsPut = async (req, res) => {
+async function productsPut(req, res) {
   const { id } = req.params; // El ID del producto
   const { id_categoria, nombre_producto, stock_maximo, stock_minimo, precio_venta, observacion } = req.body;
   let mensaje = '';
 
+  
+ // Validación: Nombre debe contener letras, números y espacios
+if (!/^[A-Za-z0-9\s]+$/.test(nombre_producto)) {
+  return res.status(400).json({ error: 'El nombre debe contener letras, números y espacios' });
+}
+
+  // Validación: Verifica que los campos obligatorios no estén vacíos
+  if (!id_categoria || !nombre_producto || !stock_maximo || !stock_minimo || !precio_venta) {
+    return res.status(400).json({ error: 'Faltan campos obligatorios' });
+  }
+
+  // Validación: Precio de venta debe ser numérico y mayor que cero
+  if (isNaN(precio_venta) || precio_venta <= 0) {
+    return res.status(400).json({ error: 'El precio de venta debe ser numérico y mayor que cero' });
+  }
+
+  // Validación: Stock máximo y stock mínimo deben ser números enteros y stock máximo debe ser mayor que stock mínimo
+  if (!Number.isInteger(stock_maximo) || !Number.isInteger(stock_minimo) || stock_maximo <= stock_minimo) {
+    return res.status(400).json({ error: 'El stock máximo y el stock mínimo deben ser números enteros, y el stock máximo debe ser mayor que el stock mínimo' });
+  }
+
   try {
-      if (id) {
-          // Buscar el producto por su ID
-          const producto = await Producto.findByPk(id);
+    if (id) {
+      // Buscar el producto por su ID
+      const producto = await Producto.findByPk(id);
 
-          if (producto) {
-              // Guardar el precio de costo original antes de actualizar el precio de venta
-              const precio_costo_original = producto.precio_costo;
+      if (producto) {
+        // Guardar el precio de costo original antes de actualizar el precio de venta
+        const precio_costo_original = producto.precio_costo;
 
-              // Actualizar los campos del producto
-              producto.id_categoria = id_categoria;
-              producto.nombre_producto = nombre_producto;
-              producto.stock_maximo = stock_maximo;
-              producto.stock_minimo = stock_minimo;
-              producto.precio_venta = precio_venta;
-              producto.observacion = observacion;
+        // Actualizar los campos del producto
+        producto.id_categoria = id_categoria;
+        producto.nombre_producto = nombre_producto;
+        producto.stock_maximo = stock_maximo;
+        producto.stock_minimo = stock_minimo;
+        producto.precio_venta = precio_venta;
+        producto.observacion = observacion;
 
-              // Calcular la nueva ganancia
-              producto.ganancia = precio_venta - precio_costo_original;
+        // Validación: Precio de venta debe ser numérico y mayor que cero
+        if (!isNaN(precio_venta) && precio_venta > 0) {
+          // Calcular la nueva ganancia
+          producto.ganancia = precio_venta - precio_costo_original;
 
-              // Guardar los cambios en la base de datos
-              await producto.save();
+          // Guardar los cambios en la base de datos
+          await producto.save();
 
-              mensaje = "La modificación se efectuó correctamente";
-          } else {
-              mensaje = "El producto no fue encontrado";
-          }
+          mensaje = "La modificación se efectuó correctamente";
+        } else {
+          mensaje = "El precio de venta debe ser numérico y mayor que cero";
+        }
       } else {
-          mensaje = "Falta el ID en la solicitud";
+        mensaje = "El producto no fue encontrado";
       }
+    } else {
+      mensaje = "Falta el ID en la solicitud";
+    }
   } catch (error) {
-      console.error("Error al guardar el producto:", error);
-      mensaje = "Ocurrió un error al actualizar el producto: " + error.message;
+    console.error("Error al guardar el producto:", error);
+    mensaje = "Ocurrió un error al actualizar el producto: " + error.message;
   }
 
   res.json({
-      msg: mensaje
+    msg: mensaje
   });
-};
+}
+
 
 
 
@@ -147,9 +189,9 @@ const productsChangeStatus = async (req, res) => {
               // Guardar los cambios en la base de datos
               await producto.save();
 
-              mensaje = "La modificación se efectuó correctamente";
+              mensaje = "Se cambio el estado correctamente";
           } else {
-              mensaje = "El producto no fue encontrada";
+              mensaje = "El producto no fue encontrado";
           }
       } else {
           mensaje = "Falta el ID en la solicitud";
@@ -168,7 +210,7 @@ const productsChangeStatus = async (req, res) => {
 
 //Exportar los metodos del producto
 
-module.exports = {
+module.exports= {
   getAllProducts,
   getProductsById,
   createProducts,
