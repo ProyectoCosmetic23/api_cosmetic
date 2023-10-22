@@ -50,7 +50,7 @@ const Proveedores = sequelize.define('proveedores', {
   },
   fecha_creacion_proveedor: {
     type: DataTypes.DATE,
-    allowNull: true
+    allowNull: false
   }
 }, {
   sequelize,
