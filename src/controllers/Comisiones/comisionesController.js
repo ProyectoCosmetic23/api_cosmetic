@@ -16,6 +16,17 @@ async function createComs(req, res) {
         if (!detalleComision) {
             return res.status(400).json({ error: 'Detalle de comisión no encontrado.' });
         }
+        
+        const comisionExistente = await Comisiones.findOne({
+            where: {
+                id_empleado,
+                id_detalle_comision,
+            }
+        });
+
+        if (comisionExistente) {
+            return res.status(400).json({ error: 'Ya existe una comisión registrada para este empleado en el mismo mes.' });
+        }
 
         // Obtener el primer y último día del mes del detalle de comisión
         const primerDiaMes = new Date(detalleComision.mes_comision);

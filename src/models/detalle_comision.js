@@ -15,8 +15,21 @@ const Detalle_Comision = sequelize.define('detalle_comision', {
   },
   porcentaje_comision: {
     type: DataTypes.INTEGER,
-    allowNull: true
-  }
+    allowNull: true,
+    validate: {
+        isInt: {
+            msg: "El campo 'porcentaje_comision' debe ser un número entero."
+        },
+        min: {
+            args: 1,
+            msg: "El campo 'porcentaje_comision' debe ser mayor o igual a 1."
+        },
+        max: {
+            args: 10,
+            msg: "El campo 'porcentaje_comision' debe ser menor o igual a 10."
+        }
+    }
+}
 }, {
     sequelize,
     tableName: 'detalle_comision',

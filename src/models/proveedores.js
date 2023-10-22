@@ -12,7 +12,17 @@ const Proveedores = sequelize.define('proveedores', {
   nit_cedula: {
     type: DataTypes.STRING(10),
     allowNull: true,
-    unique: "proveedores_nit_cedula_key"
+    unique: "proveedores_nit_cedula_key",
+    validate: {
+      is: {
+        args: /^[0-9]*$/, // Solo números
+        msg: "El campo 'nit_cedula' solo debe contener números."
+      },
+      len: {
+        args: [1, 10], // Mínimo 1 y máximo 10 caracteres
+        msg: "El campo 'nit_cedula' debe tener entre 1 y 10 caracteres."
+      }
+    }
   },
   nombre_proveedor: {
     type: DataTypes.STRING(100),
@@ -22,7 +32,13 @@ const Proveedores = sequelize.define('proveedores', {
   correo_proveedor: {
     type: DataTypes.STRING(100),
     allowNull: false,
-    unique: "proveedores_correo_proveedor_key"
+    unique: "proveedores_correo_proveedor_key",
+    validate: {
+      isEmail: {
+        args: true, // Debe ser un correo electrónico válido
+        msg: "El campo 'correo_proveedor' debe ser un correo electrónico válido."
+      }
+    }
   },
   direccion_proveedor: {
     type: DataTypes.STRING(100),
@@ -32,16 +48,34 @@ const Proveedores = sequelize.define('proveedores', {
   telefono_proveedor: {
     type: DataTypes.STRING(25),
     allowNull: false,
-    unique: "proveedores_telefono_proveedor_key"
+    unique: "proveedores_telefono_proveedor_key",
+    validate: {
+      is: {
+        args: /^[0-9()+\-]*$/, // Solo números, paréntesis y guiones
+        msg: "El campo 'telefono_proveedor' solo debe contener números, paréntesis y guiones."
+      }
+    }
   },
   estado_proveedor: {
     type: DataTypes.STRING(15),
     allowNull: true,
     defaultValue: 'Activo',
+    validate: {
+      isIn: {
+        args: [['Activo', 'Inactivo']], // Solo 'Activo' o 'Inactivo' son válidos
+        msg: "El campo 'estado_proveedor' debe ser 'Activo' o 'Inactivo'."
+      }
+    }
   },
   observacion_proveedor: {
     type: DataTypes.STRING(100),
-    allowNull: true
+    allowNull: true,
+    validate: {
+      len: {
+        args: [0, 100], // Máximo 100 caracteres
+        msg: "El campo 'observacion_proveedor' no debe exceder los 100 caracteres."
+      }
+    }
   },
   nombre_contacto: {
     type: DataTypes.STRING(100),
@@ -50,9 +84,9 @@ const Proveedores = sequelize.define('proveedores', {
   },
   fecha_creacion_proveedor: {
     type: DataTypes.DATE,
-    allowNull: false
+    allowNull: false,
   }
-}, {
+},  {
   sequelize,
   tableName: 'proveedores',
   schema: 'public',

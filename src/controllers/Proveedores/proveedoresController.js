@@ -1,5 +1,6 @@
 // proveedoresController.js
 const Proveedores = require('../../models/proveedores');
+const { Op } = require('sequelize');
 
 
 // Obtener todos los proveedores
@@ -44,7 +45,28 @@ async function createProv(req, res) {
     } = req.body;
 
     try {
-        // Crea un nuevo proveedor con los datos proporcionados
+        // Validar que los campos requeridos no estén vacíos
+        if (!nit_cedula || !nombre_proveedor || !correo_proveedor || !direccion_proveedor || !telefono_proveedor || !nombre_contacto) {
+            return res.status(400).json({ error: 'Todos los campos requeridos deben estar presentes.' });
+        }
+
+        // Validar la unicidad de campos únicos
+        const proveedorExistente = await Proveedores.findOne({
+            where: {
+                [Op.or]: [
+                    { correo_proveedor },
+                    { nombre_proveedor },
+                    { nit_cedula },
+                    { direccion_proveedor },
+                    { nombre_contacto },
+                    { telefono_proveedor },
+                ],
+            },
+        });
+
+        if (proveedorExistente) {
+            return res.status(400).json({ error: 'El proveedor con estos datos ya existe.' });
+        }
         const nuevoProveedor = await Proveedores.create({
             nit_cedula,
             nombre_proveedor,
@@ -85,7 +107,21 @@ async function updateProv(req, res) {
         if (!proveedor) {
             return res.status(404).json({ error: 'Proveedor no encontrado.' });
         }
+        const proveedorExistente = await Proveedores.findOne({
+            where: {
+                [Op.or]: [
+                    { correo_proveedor },
+                    { nombre_proveedor },
+                    { direccion_proveedor },
+                    { nombre_contacto },
+                    { telefono_proveedor },
+                ],
+            },
+        });
 
+        if (proveedorExistente) {
+            return res.status(400).json({ error: 'El proveedor con estos datos ya existe.' });
+        }
 
         await proveedor.update(updatedData);
 

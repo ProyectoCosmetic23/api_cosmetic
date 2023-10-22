@@ -40,10 +40,11 @@ async function createPago(req, res) {
 
     // Convierte total_pago a un número
     total_pago = parseFloat(total_pago);
-    //Pone la fecha automaticamente
     try {
-        // Consulta la venta relacionada
-        
+        if (!id_venta || !id_cliente || !total_pago) {
+            return res.status(400).json({ error: 'Todos los campos requeridos deben estar presentes.' });
+        }
+        // Consulta la venta relacionada   
         const venta = await Ventas.findByPk(id_venta);
         if (!venta) {
             return res.status(404).json({ error: 'Venta no encontrada.' });
@@ -57,7 +58,7 @@ async function createPago(req, res) {
         // Calcula el total pagado sumando los pagos relacionados
         let totalPagado = 0;
         for (const pago of pagosRelacionados) {
-            totalPagado += parseFloat(pago.total_pago); // Convierte total_pago a un número antes de sumarlo
+            totalPagado += parseFloat(pago.total_pago); 
         }
 
         // Añade el total_pago del nuevo pago al totalPagado
@@ -76,19 +77,17 @@ async function createPago(req, res) {
         // Obtiene la fecha actual
         const fecha_pago = new Date();
 
-        // Crea un nuevo pago con los datos proporcionados y el total_restante calculado
+ 
         const nuevoPago = await Pagos.create({
             id_venta,
             id_cliente,
             total_pago,
             fecha_pago,
-            total_restante: totalRestante, // Usa el total_restante calculado al crear el pago
+            total_restante: totalRestante, 
         });
 
-        // Si se creó con éxito, devuelve una respuesta con el pago creado
         res.status(201).json(nuevoPago);
     } catch (error) {
-        // En caso de error, devuelve un mensaje de error
         res.status(400).json({ error: 'Error al crear el pago.' });
     }
 }
