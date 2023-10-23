@@ -1,4 +1,4 @@
-const { DataTypes } = require('sequelize');
+const { DataTypes, NOW } = require('sequelize');
 const sequelize = require('../config/sequelize');
 
 const Proveedores = sequelize.define('proveedores', {
@@ -85,6 +85,7 @@ const Proveedores = sequelize.define('proveedores', {
   fecha_creacion_proveedor: {
     type: DataTypes.DATE,
     allowNull: false,
+    defaultValue: new NOW()
   }
 },  {
   sequelize,

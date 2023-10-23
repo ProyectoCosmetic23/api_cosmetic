@@ -41,7 +41,6 @@ async function createProv(req, res) {
         telefono_proveedor,
         observacion_proveedor,
         nombre_contacto,
-        fecha_creacion_proveedor,
     } = req.body;
 
     try {
@@ -75,7 +74,6 @@ async function createProv(req, res) {
             telefono_proveedor,
             observacion_proveedor,
             nombre_contacto,
-            fecha_creacion_proveedor,
         });
 
         // Si se creó con éxito, devuelve una respuesta con el proveedor creado

@@ -49,7 +49,33 @@ async function createPago(req, res) {
         if (!venta) {
             return res.status(404).json({ error: 'Venta no encontrada.' });
         }
+        //Verificar que solo se admitan números positivos
+        if (total_pago <= 0) {
+            return res.status(400).json({ error: 'El pago solo acepta números positivos mayores a 0.' });
+        }
 
+        // Verificar si la venta ya está pagada
+        if (venta.estado_pago === 'Pagado') {
+            return res.status(400).json({ error: 'Esta venta ya está pagada y no admite más pagos.' });
+        }
+
+        
+        const ultimoPago = await Pagos.findOne({
+            where: { id_venta },
+            order: [['fecha_pago', 'DESC']], // Ordenar por fecha de pago descendente
+        });
+
+        if (ultimoPago) {
+            // Verificar que el total_pago no sea mayor que el total_restante del último pago
+            if (total_pago > ultimoPago.total_restante) {
+                return res.status(400).json({ error: 'El total del pago no puede ser mayor que el total_restante del último pago.' });
+            }
+        }
+
+        //ver que el total pagado no exeda el total de la venta
+        if (total_pago > venta.total_venta) {
+            return res.status(400).json({ error: 'El total del pago no puede ser mayor al total de la venta' });
+        }
         // Consulta todos los pagos relacionados con la venta
         const pagosRelacionados = await Pagos.findAll({
             where: { id_venta },
@@ -58,7 +84,7 @@ async function createPago(req, res) {
         // Calcula el total pagado sumando los pagos relacionados
         let totalPagado = 0;
         for (const pago of pagosRelacionados) {
-            totalPagado += parseFloat(pago.total_pago); 
+            totalPagado += parseFloat(pago.total_pago);
         }
 
         // Añade el total_pago del nuevo pago al totalPagado
@@ -67,6 +93,7 @@ async function createPago(req, res) {
         // Calcula el total restante restando el total pagado del total de la venta
         const totalRestante = venta.total_venta - totalPagado;
 
+
         // Actualiza el estado de la venta
         if (totalRestante <= 0) {
             venta.estado_pago = 'Pagado';
@@ -74,15 +101,11 @@ async function createPago(req, res) {
             venta.estado_pago = 'Por pagar';
         }
         await venta.save();
-        // Obtiene la fecha actual
-        const fecha_pago = new Date();
-
  
         const nuevoPago = await Pagos.create({
             id_venta,
             id_cliente,
             total_pago,
-            fecha_pago,
             total_restante: totalRestante, 
         });
 
@@ -91,6 +114,7 @@ async function createPago(req, res) {
         res.status(400).json({ error: 'Error al crear el pago.' });
     }
 }
+
 
 // Obtener todos los pagos para una venta específica
 async function getPagosVenta(req, res) {
