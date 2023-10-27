@@ -4,10 +4,14 @@ const empleadosRoutes = require('./src/routes/empleadosRoutes');
 const productosRoutes = require('./src/routes/productosRoutes');
 const pedidosRoutes = require('./src/routes/pedidosRoutes');
 const usuariosRoutes = require('./src/routes/usuariosRoutes');
+const cors= require("cors");
+
 
 const app = express();
 
 const PORT = process.env.PORT || 8080;
+app.use(cors())
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
