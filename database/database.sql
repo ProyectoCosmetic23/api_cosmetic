@@ -122,7 +122,7 @@ CREATE TABLE pedidos (
 	fecha_Entrega TIMESTAMP NOT NULL,
 	tipo_Pago VARCHAR (100) NOT NULL,
 	estado_Pedido CHARACTER VARYING(15),
-	total_Pedido NUMERIC NOT NULL
+	total_Pedido NUMERIC
 );
 
 /* Se crea la tabla detalle_Pedido */
@@ -228,16 +228,6 @@ FOREIGN KEY (id_Venta)
 REFERENCES ventas (id_Venta);
 
 ALTER TABLE detalle_Venta
-ADD CONSTRAINT fk_detalle_VentaClientes 
-FOREIGN KEY (id_Cliente)
-REFERENCES clientes (id_Cliente);
-
-ALTER TABLE detalle_Venta
-ADD CONSTRAINT fk_detalle_VentaEmpleados 
-FOREIGN KEY (id_Empleado)
-REFERENCES empleados (id_Empleado);
-
-ALTER TABLE detalle_Venta
 ADD CONSTRAINT fk_detalle_VentaProductos
 FOREIGN KEY (id_Producto)
 REFERENCES productos (id_Producto);
@@ -258,16 +248,6 @@ ALTER TABLE detalle_Pedido
 ADD CONSTRAINT fk_detalle_PedidoPedidos FOREIGN KEY
 (id_Pedido) REFERENCES
 pedidos (id_Pedido);
-
-ALTER TABLE detalle_Pedido
-ADD CONSTRAINT fk_detalle_PedidoClientes FOREIGN KEY 
-(id_Cliente) 
-REFERENCES clientes (id_Cliente);
-
-ALTER TABLE detalle_Pedido
-ADD CONSTRAINT fk_detalle_PedidoEmpleados FOREIGN KEY 
-(id_Empleado) 
-REFERENCES empleados (id_Empleado);
 
 ALTER TABLE detalle_Pedido
 ADD CONSTRAINT fk_detalle_PedidoProductos
@@ -325,67 +305,98 @@ FOREIGN KEY (id_Categoria)
 REFERENCES categorias_Productos (id_Categoria);
 
 
-/* REGISTROS */
+-- Insertar registros en la tabla roles
+INSERT INTO roles (nombre_Rol, estado_Rol, modulos_Rol) 
+VALUES ('Administrador', 'Activo', 'Módulo A, Módulo B, Módulo C'),
+       ('Gerente', 'Activo', 'Módulo B, Módulo C'),
+       ('Empleado', 'Activo', 'Módulo C');
 
-INSERT INTO categorias_Productos (nombre_Categoria, estado_Categoria, observacion_Categoria, fecha_Creacion_Categoria)
-VALUES ('Categoría 1', 'Activa', 'Descripción de Categoría 1', NOW());
-
-INSERT INTO productos (id_Categoria, nombre_Producto, cantidad, stock_Maximo, stock_Minimo, precio_Costo, precio_Venta, ganancia, fecha_Creacion_Producto, estado_Producto, observacion)
-VALUES (1, 'Producto 1', 100, 200, 50, 10.00, 15.00, 5.00, NOW(), 'Activo', 'Descripción del Producto 1');
-
-INSERT INTO productos (id_Categoria, nombre_Producto, cantidad, stock_Maximo, stock_Minimo, precio_Costo, precio_Venta, ganancia, fecha_Creacion_Producto, estado_Producto, observacion)
-VALUES (1, 'Producto 2', 100, 200, 50, 10.00, 15.00, 5.00, NOW(), 'Activo', 'Descripción del Producto 2');
-
-INSERT INTO roles (nombre_Rol, estado_Rol, modulos_Rol)
-VALUES ('Administrador', 'Activo', 'Módulo de Administración');
-
-INSERT INTO empleados (cedula_Empleado, nombre_Empleado, correo, direccion, telefono, estado_Empleado, observacion)
-VALUES ('1234567890', 'Nombre del Empleado', 'correo@ejemplo.com', 'Dirección del Empleado', '555-555-5555', 'Activo', 'Observaciones adicionales');
-
--- Insertar un proveedor
+-- Insertar registros en la tabla proveedores
 INSERT INTO proveedores (nit_Cedula, nombre_Proveedor, correo_Proveedor, direccion_Proveedor, telefono_Proveedor, estado_Proveedor, observacion_Proveedor, nombre_Contacto, fecha_Creacion_Proveedor)
-VALUES ('1234567890', 'Proveedor 1', 'proveedor1@example.com', 'Dirección 1', '1234567890', 'Activo', 'Ninguna', 'Contacto 1', NOW());
+VALUES ('1234567890', 'Proveedor 1', 'proveedor1@email.com', 'Dirección 1', '1234567890', 'Activo', 'Observación 1', 'Contacto 1', current_timestamp),
+       ('9876543210', 'Proveedor 2', 'proveedor2@email.com', 'Dirección 2', '9876543210', 'Activo', 'Observación 2', 'Contacto 2', current_timestamp),
+       ('5555555555', 'Proveedor 3', 'proveedor3@email.com', 'Dirección 3', '5555555555', 'Inactivo', 'Observación 3', 'Contacto 3', current_timestamp);
 
--- Insertar dos compras para el proveedor
--- Compra 1
-INSERT INTO compras (id_Proveedor, numero_Factura, fecha_Compra, fecha_RegistroCompra, total_Compra, estado_Compra, observacion_Compra)
-VALUES (1, 'F001', NOW(), NOW(), 100.00, 'Completada', 'Compra 1');
-
--- Detalles de la compra 1 (productos)
-INSERT INTO detalle_Compra (id_compra, id_Producto, categoria_Producto, cantidad_Producto, precio_Costo, precio_Venta, subTotal)
-VALUES (1, 1, 'Categoría 1', 10, 10.00, 15.00, 150.00);
-
--- Compra 2
-INSERT INTO compras (id_Proveedor, numero_Factura, fecha_Compra, fecha_RegistroCompra, total_Compra, estado_Compra, observacion_Compra)
-VALUES (1, 'F002', NOW(), NOW(), 150.00, 'Completada', 'Compra 2');
-
--- Detalles de la compra 2 (productos)
-INSERT INTO detalle_Compra (id_Compra, id_Producto, categoria_Producto, cantidad_Producto, precio_Costo, precio_Venta, subTotal)
-VALUES (2, 2, 'Categoría 2', 5, 20.00, 25.00, 125.00);
-
-INSERT INTO clientes (nit_O_Cedula_Cliente, nombre_Cliente, apellido_Cliente, correo_Cliente, telefono_Cliente, direccion_Cliente, estado_Cliente)
-VALUES ('A123456', 'Cliente 1', 'Apellido 1', 'cliente1@example.com', '9876543210', 'Dirección Cliente 1', 'Activo');
-
-INSERT INTO pedidos (id_Cliente, id_Empleado, numero_Pedido, fecha_Pedido, fecha_Entrega, tipo_Pago, estado_Pedido, total_Pedido)
-VALUES (1, 1, 1001, NOW(), NOW() + interval '7 days', 'Tarjeta de crédito', 'En Proceso', 200.00);
-
-INSERT INTO detalle_Pedido (id_Pedido, id_Producto, cantidad_Producto, precio_Producto)
-VALUES (1, 1, 1, NOW(), NOW() + interval '7 days', 1001, 'Tarjeta de crédito', 1, 10, 15.00);
-
-INSERT INTO ventas (id_Pedido, id_Cliente, id_Empleado, numero_Factura, fecha_Venta, estado_Venta, tipo_Pago, total_Venta)
-VALUES (1, 1, 1, 1001, NOW(), 'Completada', 'Tarjeta de crédito', 200.00);
-
-INSERT INTO detalle_Venta (id_Venta,  id_Producto, cantidad, precio_Producto)
-VALUES (1, 1, 1, 1001, NOW(), 'Tarjeta de crédito', 200.00, 1, 10, 15.00);
-
-INSERT INTO usuarios (id_Rol, fecha_Creacion_Usuario, nombre_Usuario, correo_Usuario, contrasena_Usuario, estado_Usuario, observacion_Usuario, id_Empleado)
-VALUES (1, NOW(), 'usuario1', 'usuario1@example.com', 'contraseña1', 'Activo', 'Observaciones usuario 1', 1);
-
+-- Insertar registros en la tabla empleados
 INSERT INTO empleados (cedula_Empleado, nombre_Empleado, correo, direccion, telefono, estado_Empleado, observacion)
-VALUES ('E123456', 'Empleado 1', 'empleado1@example.com', 'Dirección Empleado 1', '9876543210', 'Activo', 'Observaciones empleado 1');
+VALUES ('1111111111', 'Empleado 1', 'empleado1@email.com', 'Dirección 1', '1111111111', 'Activo', 'Observación 1'),
+       ('2222222222', 'Empleado 2', 'empleado2@email.com', 'Dirección 2', '2222222222', 'Activo', 'Observación 2'),
+       ('3333333333', 'Empleado 3', 'empleado3@email.com', 'Dirección 3', '3333333333', 'Inactivo', 'Observación 3');
 
-INSERT INTO pagos (id_Venta, id_Cliente, fecha_Pago, total_Pago, total_Restante)
-VALUES (1, 1, NOW(), 200.00, 0.00);
+-- Insertar registros en la tabla clientes
+INSERT INTO clientes (nit_O_Cedula_Cliente, nombre_Cliente, apellido_Cliente, correo_Cliente, telefono_Cliente, direccion_Cliente, estado_Cliente)
+VALUES ('1000000000', 'Cliente 1', 'Apellido 1', 'cliente1@email.com', '1000000000', 'Dirección 1', 'Activo'),
+       ('2000000000', 'Cliente 2', 'Apellido 2', 'cliente2@email.com', '2000000000', 'Dirección 2', 'Activo'),
+       ('3000000000', 'Cliente 3', 'Apellido 3', 'cliente3@email.com', '3000000000', 'Dirección 3', 'Inactivo');
 
+-- Insertar registros en la tabla categorias_Productos
+INSERT INTO categorias_Productos (nombre_Categoria, estado_Categoria, observacion_Categoria, fecha_Creacion_Categoria)
+VALUES ('Categoría 1', 'Activo', 'Observación 1', current_timestamp),
+       ('Categoría 2', 'Activo', 'Observación 2', current_timestamp),
+       ('Categoría 3', 'Inactivo', 'Observación 3', current_timestamp);
+
+-- Insertar registros en la tabla productos
+INSERT INTO productos (id_Categoria, nombre_Producto, cantidad, stock_Maximo, stock_Minimo, precio_Costo, precio_Venta, ganancia, fecha_Creacion_Producto, estado_Producto, observacion)
+VALUES (1, 'Producto 1', 100, 200, 50, 10.00, 15.00, 5.00, current_timestamp, 'Activo', 'Observación 1'),
+       (2, 'Producto 2', 150, 250, 75, 12.00, 20.00, 8.00, current_timestamp, 'Activo', 'Observación 2'),
+       (3, 'Producto 3', 75, 100, 25, 8.00, 14.00, 6.00, current_timestamp, 'Inactivo', 'Observación 3');
+
+-- Insertar registros en la tabla usuarios
+INSERT INTO usuarios (id_Rol, id_Empleado, fecha_Creacion_Usuario, nombre_Usuario, correo_Usuario, contrasena_Usuario, estado_Usuario, observacion_Usuario)
+VALUES (1, 1, current_timestamp, 'admin', 'admin@email.com', 'contrasena_admin', 'Activo', 'Observación 1'),
+       (2, 2, current_timestamp, 'gerente', 'gerente@email.com', 'contrasena_gerente', 'Activo', 'Observación 2'),
+       (3, 3, current_timestamp, 'empleado', 'empleado@email.com', 'contrasena_empleado', 'Inactivo', 'Observación 3');
+
+-- Insertar registros en la tabla compras
+INSERT INTO compras (id_Proveedor, numero_Factura, fecha_Compra, fecha_RegistroCompra, total_Compra, estado_Compra, foto_Compra, observacion_Compra)
+VALUES (1, '0001', current_timestamp, current_timestamp, 500.00, 'Completada', NULL, 'Observación 1'),
+       (2, '0002', current_timestamp, current_timestamp, 750.00, 'Pendiente', NULL, 'Observación 2'),
+       (3, '0003', current_timestamp, current_timestamp, 400.00, 'Completada', NULL, 'Observación 3');
+
+-- Insertar registros en la tabla detalle_Compra
+INSERT INTO detalle_Compra (id_Compra, id_Producto, categoria_Producto, cantidad_Producto, precio_Costo, precio_Venta, subTotal)
+VALUES (1, 1, 'Categoría 1', 50, 9.00, 14.00, 700.00),
+       (2, 2, 'Categoría 2', 75, 11.00, 18.00, 1350.00),
+       (3, 3, 'Categoría 3', 40, 7.00, 12.00, 480.00);
+
+-- Insertar registros en la tabla pedidos
+INSERT INTO pedidos (id_Cliente, id_Empleado, numero_Pedido, fecha_Pedido, fecha_Entrega, tipo_Pago, estado_Pedido, total_Pedido)
+VALUES (1, 1, 1001, current_timestamp, current_timestamp, 'Efectivo', 'En proceso', 1500.00),
+       (2, 2, 1002, current_timestamp, current_timestamp, 'Tarjeta', 'Entregado', 1200.00),
+       (3, 3, 1003, current_timestamp, current_timestamp, 'Cheque', 'Cancelado', 1800.00);
+
+-- Insertar registros en la tabla detalle_Pedido
+INSERT INTO detalle_Pedido (id_Pedido, id_Producto, cantidad_Producto, precio_Producto)
+VALUES (1, 1, 30, 14.00),
+       (2, 2, 25, 18.00),
+       (3, 3, 20, 12.00);
+
+-- Insertar registros en la tabla ventas
+INSERT INTO ventas (id_Pedido, id_Cliente, id_Empleado, numero_Factura, fecha_Venta, estado_Venta, tipo_Pago, total_Venta)
+VALUES (1, 1, 1, 5001, current_timestamp, 'Completada', 'Efectivo', 420.00),
+       (2, 2, 2, 5002, current_timestamp, 'Completada', 'Tarjeta', 675.00),
+       (3, 3, 3, 5003, current_timestamp, 'Pendiente', 'Cheque', 360.00);
+
+-- Insertar registros en la tabla detalle_Venta
+INSERT INTO detalle_Venta (id_Venta, id_Producto, cantidad, precio_Producto)
+VALUES (1, 1, 15, 14.00),
+       (2, 2, 20, 18.00),
+       (3, 3, 12, 12.00);
+
+-- Insertar registros en la tabla comisiones
 INSERT INTO comisiones (id_Empleado, id_Venta, fecha_Comision, porcentaje_Comision, total_Comision, observacion_Comision)
-VALUES (1, 1, NOW(), 10, 20.00, 'Comisión para empleado 1');
+VALUES (1, 1, current_timestamp, 10, 42.00, 'Comisión para empleado 1'),
+       (2, 2, current_timestamp, 12, 81.00, 'Comisión para empleado 2'),
+       (3, 3, current_timestamp, 8, 28.80, 'Comisión para empleado 3');
+
+-- Insertar registros en la tabla pagos
+INSERT INTO pagos (id_Venta, id_Cliente, fecha_Pago, total_Pago, total_Restante)
+VALUES (1, 1, current_timestamp, 420.00, 0.00),
+       (2, 2, current_timestamp, 675.00, 0.00),
+       (3, 3, current_timestamp, 360.00, 0.00);
+
+-- Insertar registros en la tabla devoluciones
+INSERT INTO devoluciones (id_Venta, id_Producto, fecha_Devolucion, cantidad_Devuelta, valor_Devolucion, estado_Producto_Devuelto, estado_Producto_Proveedor)
+VALUES (1, 1, current_timestamp, 5, 70.00, 'Devuelto', 'En proceso'),
+       (2, 2, current_timestamp, 4, 72.00, 'Devuelto', 'Completado'),
+       (3, 3, current_timestamp, 6, 72.00, 'Devuelto', 'En proceso');
