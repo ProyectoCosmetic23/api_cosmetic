@@ -11,7 +11,11 @@ const Detalle_Compra = sequelize.define('detalle_compra', {
   },
   id_compra: {
     type: DataTypes.INTEGER,
-    allowNull: false
+    allowNull: false,
+    references: {
+      model: 'compras',
+      key: 'id_compra'
+    }
   },
   id_producto: {
     type: DataTypes.INTEGER,
@@ -58,3 +62,5 @@ const Detalle_Compra = sequelize.define('detalle_compra', {
 });
 
 module.exports = Detalle_Compra;
+
+
