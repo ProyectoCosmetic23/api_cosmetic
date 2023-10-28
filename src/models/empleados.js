@@ -1,4 +1,4 @@
-const { DataTypes } = require('sequelize');
+const { DataTypes, NOW } = require('sequelize');
 const sequelize = require('../config/sequelize');
 
 const Empleados = sequelize.define('empleados', {
@@ -16,27 +16,33 @@ const Empleados = sequelize.define('empleados', {
   },
   nombre_empleado: {
     type: DataTypes.STRING(80),
-    allowNull: false
+    allowNull: true
   },
   correo: {
     type: DataTypes.STRING(80),
-    allowNull: false
+    allowNull: true
   },
   direccion: {
     type: DataTypes.STRING(80),
-    allowNull: false
+    allowNull: true
   },
   telefono: {
     type: DataTypes.STRING(80),
-    allowNull: false
+    allowNull: true
   },
   estado_empleado: {
     type: DataTypes.STRING(15),
-    allowNull: true
+    allowNull: true,
+    defaultValue: "Activo"
   },
   observacion: {
     type: DataTypes.STRING(100),
     allowNull: true
+  },
+  fecha_creacion_empleado: {
+    type: DataTypes.DATE,
+    allowNull: true,
+    defaultValue: new NOW()
   }
 }, {
   sequelize,

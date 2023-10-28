@@ -1,4 +1,4 @@
-const { DataTypes } = require('sequelize');
+const { DataTypes, NOW } = require('sequelize');
 const sequelize = require('../config/sequelize');
 
 const Pagos = sequelize.define('pagos', {
@@ -27,7 +27,8 @@ const Pagos = sequelize.define('pagos', {
   },
   fecha_pago: {
     type: DataTypes.DATE,
-    allowNull: false
+    allowNull: false,
+    defaultValue: new NOW()
   },
   total_pago: {
     type: DataTypes.DECIMAL,

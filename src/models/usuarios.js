@@ -1,4 +1,4 @@
-const { DataTypes } = require('sequelize');
+const { DataTypes, NOW } = require('sequelize');
 const sequelize = require('../config/sequelize');
 
 const Usuarios = sequelize.define('usuarios', {
@@ -27,24 +27,26 @@ const Usuarios = sequelize.define('usuarios', {
   },
   fecha_creacion_usuario: {
     type: DataTypes.DATE,
-    allowNull: true
+    allowNull: true,
+    defaultValue: new NOW()
   },
   nombre_usuario: {
     type: DataTypes.STRING(100),
-    allowNull: false,
+    allowNull: true,
     unique: "usuarios_nombre_usuario_key"
   },
   correo_usuario: {
     type: DataTypes.STRING(100),
-    allowNull: false
+    allowNull: true
   },
   contrasena_usuario: {
     type: DataTypes.STRING(100),
-    allowNull: false
+    allowNull: true
   },
   estado_usuario: {
     type: DataTypes.STRING(15),
-    allowNull: true
+    allowNull: true,
+    defaultValue: "Activo"
   },
   observacion_usuario: {
     type: DataTypes.STRING(100),
