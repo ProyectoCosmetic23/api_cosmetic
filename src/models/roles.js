@@ -2,23 +2,23 @@ const { DataTypes } = require('sequelize');
 const sequelize = require('../config/sequelize');
 
 const Roles = sequelize.define('roles', {
-  id_rol: {
+  id_role: {
     autoIncrement: true,
     autoIncrementIdentity: true,
     type: DataTypes.INTEGER,
     allowNull: false,
     primaryKey: true
   },
-  nombre_rol: {
+  name_role: {
     type: DataTypes.STRING(100),
     allowNull: false,
-    unique: "roles_nombre_rol_key"
+    unique: "roles_name_role_key"
   },
-  estado_rol: {
+  state_role: {
     type: DataTypes.STRING(15),
     allowNull: false
   },
-  modulos_rol: {
+  modules_role: {
     type: DataTypes.STRING(150),
     allowNull: false
   }
@@ -29,17 +29,17 @@ const Roles = sequelize.define('roles', {
   timestamps: false,
   indexes: [
     {
-      name: "roles_nombre_rol_key",
+      name: "roles_name_role_key",
       unique: true,
       fields: [
-        { name: "nombre_rol" },
+        { name: "name_role" },
       ]
     },
     {
       name: "roles_pkey",
       unique: true,
       fields: [
-        { name: "id_rol" },
+        { name: "id_role" },
       ]
     },
   ]

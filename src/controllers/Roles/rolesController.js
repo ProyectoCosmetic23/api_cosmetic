@@ -10,21 +10,21 @@ const getAllRoles = async (req, res) => {
         }
         var lista_Roles = []
         for (let role of roles) {
-            var id_rol = role.id_rol;
-            console.log(id_rol);
-            var nombre_rol = role.nombre_rol;
-            console.log(nombre_rol);
-            var estado_rol = role.estado_rol;
-            console.log(estado_rol);
-            var modulos_string = role.modulos_rol;
-            console.log(modulos_string);
-            var modulos_array = modulos_string.split(", ");
-            console.log(modulos_array);
+            var id_role = role.id_role;
+            console.log(id_role);
+            var name_role = role.name_role;
+            console.log(name_role);
+            var state_role = role.state_role;
+            console.log(state_role);
+            var modules_string = role.modules_rol;
+            console.log(modules_string);
+            var modules_array = modules_string.split(", ");
+            console.log(modules_array);
             var rol_converted = {
-                id_rol: id_rol,
-                nombre_rol: nombre_rol,
-                estado_rol: estado_rol,
-                modulos_rol: modulos_array
+                id_role: id_role,
+                name_role: name_role,
+                state_role: state_role,
+                modules_rol: modules_array
             }
             lista_Roles.push(rol_converted)
         }
@@ -43,16 +43,16 @@ async function getRoleById(req, res) {
         if (!role) {
             return res.status(404).json({ error: 'Rol no encontrado.' });
         }
-        var id_role = role.id_rol;
-        var nombre_rol = role.nombre_rol;
-        var estado_rol = role.estado_rol;
-        var modulos_string = role.modulos_rol
-        var modulos_array = modulos_string.split(", ");
+        var id_role = role.id_role;
+        var name_role = role.name_role;
+        var state_role = role.state_role;
+        var modules_string = role.modules_rol
+        var modules_array = modules_string.split(", ");
         var role_detail = {
-            id_rol: id_role,
-            nombre_rol: nombre_rol,
-            estado_rol: estado_rol,
-            modulos_rol: modulos_array
+            id_role: id_role,
+            name_role: name_role,
+            state_role: state_role,
+            modules_rol: modules_array
         }
         res.json({ role_detail });
     } catch (error) {
@@ -62,14 +62,14 @@ async function getRoleById(req, res) {
 
 // Crear un rol
 async function createRole(req, res) {
-    const { nombre_rol, modulos_rol } = req.body;
-    estado_rol = "Activo";
-    modulos_string = modulos_rol.join(", ");
+    const { name_role, modules_rol } = req.body;
+    state_role = "Activo";
+    modules_string = modules_rol.join(", ");
     try {
         const nuevo_rol = await Roles.create({
-            nombre_rol: nombre_rol,
-            estado_rol: estado_rol ,
-            modulos_rol: modulos_string
+            name_role: name_role,
+            state_role: state_role ,
+            modules_rol: modules_string
         });
         res.status(201).json({ nuevo_rol });
     } catch (error) {
@@ -83,11 +83,11 @@ async function updateRoleStatus(req, res) {
     const { id } = req.params;
     try {
         const role = await Roles.findByPk(id);
-        var estado_rol = "";
-        if (role.estado_rol == "Activo") {
-            estado_rol = "Inactivo";
-        } else if (role.estado_rol == "Inactivo") {
-            estado_rol = "Activo";
+        var state_role = "";
+        if (role.state_role == "Activo") {
+            state_role = "Inactivo";
+        } else if (role.state_role == "Inactivo") {
+            state_role = "Activo";
         }
 
         if (!role) {
@@ -95,7 +95,7 @@ async function updateRoleStatus(req, res) {
         }
 
         await role.update({
-            estado_rol: estado_rol
+            state_role: state_role
         });
         res.json(role);
     } catch (error) {
@@ -106,14 +106,14 @@ async function updateRoleStatus(req, res) {
 // Actualizar un rol
 async function updateRole(req, res) {
     const { id } = req.params;
-    const { nombre_rol, estado_rol, modulos_rol } = req.body;
+    const { name_role, state_role, modules_rol } = req.body;
     try {
-        var modulos_string = modulos_rol.join(", ");
+        var modules_string = modules_rol.join(", ");
         const role = await Roles.findByPk(id);
         await role.update({
-            nombre_rol: nombre_rol,
-            estado_rol: estado_rol,
-            modulos_rol: modulos_string
+            name_role: name_role,
+            state_role: state_role,
+            modules_rol: modules_string
         })
         res.json(role);
     } catch (error) {
@@ -129,3 +129,6 @@ module.exports = {
     updateRoleStatus,
     updateRole
 };
+
+
+sequelize-auto -o "./models" -d 'cosmetic_db' -h 'localhost' -u 'postgres' -p '5432' -x 'cosmetic1234' -e postgres

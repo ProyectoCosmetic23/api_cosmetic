@@ -1,64 +1,64 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/sequelize');
 
-const Devoluciones = sequelize.define('devoluciones', {
-  id_devolucion: {
+const Returns = sequelize.define('returns', {
+  id_return: {
     autoIncrement: true,
     autoIncrementIdentity: true,
     type: DataTypes.INTEGER,
     allowNull: false,
     primaryKey: true
   },
-  id_venta: {
+  id_sale: {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: 'ventas',
-      key: 'id_venta'
+      model: 'sales',
+      key: 'id_sale'
     }
   },
-  id_producto: {
+  id_product: {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: 'productos',
-      key: 'id_producto'
+      model: 'products',
+      key: 'id_product'
     }
   },
-  fecha_devolucion: {
+  return_date: {
     type: DataTypes.DATE,
     allowNull: true
   },
-  cantidad_devuelta: {
+  return_quantity: {
     type: DataTypes.INTEGER,
     allowNull: false
   },
-  valor_devolucion: {
+  return_value: {
     type: DataTypes.DECIMAL,
     allowNull: true
   },
-  estado_producto_devuelto: {
+  returned_product_state: {
     type: DataTypes.STRING(30),
     allowNull: true
   },
-  estado_producto_proveedor: {
+  provider_product_state: {
     type: DataTypes.STRING(30),
     allowNull: true
   }
 }, {
   sequelize,
-  tableName: 'devoluciones',
+  tableName: 'returns',
   schema: 'public',
   timestamps: false,
   indexes: [
     {
-      name: "devoluciones_pkey",
+      name: "returns_pkey",
       unique: true,
       fields: [
-        { name: "id_devolucion" },
+        { name: "id_return" },
       ]
     },
   ]
 });
 
-module.exports = Devoluciones;
+module.exports = Returns;

@@ -1,66 +1,64 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/sequelize');
 
-const Detalle_Compra = sequelize.define('detalle_compra', {
-  id_detalle_compra: {
+const Purchase_Detail = sequelize.define('purchase_detail', {
+  id_purchase_detail: {
     autoIncrement: true,
     autoIncrementIdentity: true,
     type: DataTypes.INTEGER,
     allowNull: false,
     primaryKey: true
   },
-  id_compra: {
+  id_purchase: {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: 'compras',
-      key: 'id_compra'
+      model: 'purchases',
+      key: 'id_purchase'
     }
   },
-  id_producto: {
+  id_product: {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: 'productos',
-      key: 'id_producto'
+      model: 'products',
+      key: 'id_product'
     }
   },
-  categoria_producto: {
+  product_category: {
     type: DataTypes.STRING(100),
     allowNull: true
   },
-  cantidad_producto: {
+  product_quantity: {
     type: DataTypes.INTEGER,
     allowNull: false
   },
-  precio_costo: {
+  cost_price: {
     type: DataTypes.DECIMAL,
     allowNull: true
   },
-  precio_venta: {
+  selling_price: {
     type: DataTypes.DECIMAL,
     allowNull: true
   },
-  subtotal: {
+  sub_total: {
     type: DataTypes.DECIMAL,
     allowNull: true
   }
 }, {
   sequelize,
-  tableName: 'detalle_compra',
+  tableName: 'purchase_detail',
   schema: 'public',
   timestamps: false,
   indexes: [
     {
-      name: "detalle_compra_pkey",
+      name: "purchase_detail_pkey",
       unique: true,
       fields: [
-        { name: "id_detalle_compra" },
+        { name: "id_purchase_detail" },
       ]
     },
   ]
 });
 
-module.exports = Detalle_Compra;
-
-
+module.exports = Purchase_Detail;

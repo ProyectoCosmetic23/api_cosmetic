@@ -1,412 +1,407 @@
-/* Se crea la tabla Roles */
+/* Create the roles table */
 CREATE TABLE roles (
-	id_Rol INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-	nombre_Rol VARCHAR (100) NOT NULL UNIQUE,
-	estado_Rol CHARACTER VARYING(15) NOT NULL,
-	modulos_Rol VARCHAR (150) NOT NULL
+	id_role INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+	name_role VARCHAR (100) NOT NULL UNIQUE,
+	state_role CHARACTER VARYING(15) NOT NULL,
+	modules_role VARCHAR (150) NOT NULL
 );
 
-/* Se crea la tabla proveedores */
-CREATE TABLE proveedores(
-	id_Proveedor INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-	nit_Cedula VARCHAR(10) UNIQUE, 
-	nombre_Proveedor VARCHAR (100) NOT NULL UNIQUE,
-	correo_Proveedor VARCHAR (100) NOT NULL UNIQUE,
-	direccion_Proveedor VARCHAR (100) NOT NULL UNIQUE,
-	telefono_Proveedor VARCHAR (25) NOT NULL UNIQUE,
-	estado_Proveedor  CHARACTER VARYING(15),
-	observacion_Proveedor VARCHAR (100),
-	nombre_Contacto VARCHAR (100) NOT NULL UNIQUE,
-	fecha_Creacion_Proveedor TIMESTAMP
+/* Create the providers table */
+CREATE TABLE providers (
+	id_provider INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+	nit_cedula VARCHAR(10) UNIQUE,
+	name_provider VARCHAR (100) NOT NULL UNIQUE,
+	email_provider VARCHAR (100) NOT NULL UNIQUE,
+	address_provider VARCHAR (100) NOT NULL UNIQUE,
+	phone_provider VARCHAR (25) NOT NULL UNIQUE,
+	state_provider CHARACTER VARYING(15),
+	observation_provider VARCHAR (100),
+	name_contact VARCHAR (100) NOT NULL UNIQUE,
+	creation_date_provider TIMESTAMP
 );
 
-CREATE TABLE empleados (
-	id_Empleado INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-	cedula_Empleado VARCHAR(10) UNIQUE,
-	nombre_Empleado VARCHAR(80) NOT NULL,
-	correo VARCHAR(80) NOT NULL,
-	direccion VARCHAR(80) NOT NULL,
-	telefono VARCHAR (80) NOT NULL,
-	estado_Empleado CHARACTER VARYING(15),	
-	observacion VARCHAR(100)
+CREATE TABLE employees (
+	id_employee INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+	id_card_employee VARCHAR(10) UNIQUE,
+	name_employee VARCHAR(80) NOT NULL,
+	email VARCHAR(80) NOT NULL,
+	address VARCHAR(80) NOT NULL,
+	phone VARCHAR (80) NOT NULL,
+	state_employee CHARACTER VARYING(15),
+	observation VARCHAR(100),
+    creation_date_employee TIMESTAMP
 );
 
-/* Se crea la tabla clientes */
-CREATE TABLE clientes (
-	id_Cliente  INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-	nit_O_Cedula_Cliente VARCHAR(10) UNIQUE,
-	nombre_Cliente VARCHAR (100) NOT NULL,
-	apellido_Cliente VARCHAR (100),
-	correo_Cliente VARCHAR (100) NOT NULL ,
-	telefono_Cliente VARCHAR (20) NOT NULL,
-	direccion_Cliente VARCHAR (100)NOT NULL,
-	estado_Cliente CHARACTER VARYING(15) NOT NULL 
+/* Create the clients table */
+CREATE TABLE clients (
+	id_client  INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+	nit_or_id_client VARCHAR(10) UNIQUE,
+	name_client VARCHAR (100) NOT NULL,
+	last_name_client VARCHAR (100),
+	email_client VARCHAR (100) NOT NULL,
+	phone_client VARCHAR (20) NOT NULL,
+	address_client VARCHAR (100) NOT NULL,
+	state_client CHARACTER VARYING(15) NOT NULL 
 );
 
-/* Se crea la tabla categorias */
-
-CREATE TABLE categorias_Productos(
-	id_Categoria INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-	nombre_Categoria VARCHAR(100) UNIQUE ,
-	estado_Categoria CHARACTER VARYING(15),
-	observacion_Categoria VARCHAR (100),
-	fecha_Creacion_Categoria TIMESTAMP
+/* Create the categories table */
+CREATE TABLE product_categories (
+	id_category INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+	name_category VARCHAR(100) UNIQUE,
+	state_category CHARACTER VARYING(15),
+	observation_category VARCHAR (100),
+	creation_date_category TIMESTAMP
 );
 
-/* Se crea la tabla productos */
-
-CREATE TABLE productos (
-	id_Producto INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-	id_Categoria INT NOT NULL,
-	nombre_Producto VARCHAR(80) NOT NULL,
-	cantidad INT NOT NULL,
-	stock_Maximo INT NOT NULL,
-	stock_Minimo INT NOT NULL,
-	precio_Costo NUMERIC NOT NULL,
-	precio_Venta NUMERIC NOT NULL,
-	ganancia NUMERIC NOT NULL,
-	fecha_Creacion_Producto TIMESTAMP NOT NULL,
-	estado_Producto CHARACTER VARYING(15),
-	observacion VARCHAR(100)
+/* Create the products table */
+CREATE TABLE products (
+	id_product INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+	id_category INT NOT NULL,
+	name_product VARCHAR(80) NOT NULL,
+	quantity INT NOT NULL,
+	max_stock INT NOT NULL,
+	min_stock INT NOT NULL,
+	cost_price NUMERIC NOT NULL,
+	selling_price NUMERIC NOT NULL,
+	profit NUMERIC NOT NULL,
+	creation_date_product TIMESTAMP,
+	state_product CHARACTER VARYING(15),
+	observation VARCHAR(100)
 );
 
-/* Se crea la tabla usuarios */
-
-CREATE TABLE usuarios(
-	id_Usuario INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-	id_Rol INT NOT NULL,
-	id_Empleado INT NOT NULL,
-	fecha_Creacion_Usuario TIMESTAMP,
-	nombre_Usuario VARCHAR (100) NOT NULL UNIQUE,
-	correo_Usuario VARCHAR (100) NOT NULL,
-	contrasena_Usuario VARCHAR (100) NOT NULL,
-	estado_Usuario CHARACTER VARYING(15),
-	observacion_Usuario VARCHAR (100)
+/* Create the defective_products table */
+CREATE TABLE defective_products (
+    id_defective_product INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    id_product INT NOT NULL,
+    reason VARCHAR(100),
+    report_date TIMESTAMP
 );
 
-/* Se crea la tabla compras */
 
-CREATE TABLE compras(
-	id_Compra INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-	id_Proveedor INT NOT NULL,
-	numero_Factura VARCHAR(4),
-	fecha_Compra TIMESTAMP,
-	fecha_RegistroCompra TIMESTAMP,
-	total_Compra NUMERIC,
-	estado_Compra CHARACTER VARYING(15),
-	foto_Compra BYTEA,
-	observacion_Compra VARCHAR (100)
+
+/* Create the users table */
+CREATE TABLE users (
+	id_user INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+	id_role INT NOT NULL,
+	id_employee INT NOT NULL,
+	creation_date_user TIMESTAMP,
+	username VARCHAR (100) NOT NULL UNIQUE,
+	email VARCHAR (100) NOT NULL,
+	password VARCHAR (100) NOT NULL,
+	state_user CHARACTER VARYING(15),
+	observation_user VARCHAR (100)
 );
 
-/* Se crea la tabla detalle_Compra */
-
-CREATE TABLE detalle_Compra (
-	id_Detalle_Compra  INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-	id_Compra INT NOT NULL,
-	id_Producto INT NOT NULL,
-	categoria_Producto  VARCHAR(100),
-	cantidad_Producto INT NOT NULL,
-	precio_Costo NUMERIC,
-	precio_Venta NUMERIC,
-	subTotal NUMERIC
+/* Create the purchases table */
+CREATE TABLE purchases (
+	id_purchase INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+	id_provider INT NOT NULL,
+	invoice_number VARCHAR(4),
+	purchase_date TIMESTAMP,
+	record_date_purchase TIMESTAMP,
+	total_purchase NUMERIC,
+	state_purchase CHARACTER VARYING(15),
+	purchase_photo BYTEA,
+	observation_purchase VARCHAR (100)
 );
 
-/* Se crea la tabla Pedido */
-
-CREATE TABLE pedidos (
-	id_Pedido INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-	id_Cliente INT NOT NULL,
-	id_Empleado INT NOT NULL,
-	numero_Pedido INT NOT NULL,
-	fecha_Pedido TIMESTAMP NOT NULL,
-	fecha_Entrega TIMESTAMP NOT NULL,
-	tipo_Pago VARCHAR (100) NOT NULL,
-	estado_Pedido CHARACTER VARYING(15),
-	estado_Entrega CHARACTER VARYING(15),
-	estado_Pago CHARACTER VARYING(15),
-	total_Pedido NUMERIC
+/* Create the purchase detail table */
+CREATE TABLE purchase_detail (
+	id_purchase_detail  INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+	id_purchase INT NOT NULL,
+	id_product INT NOT NULL,
+	product_category  VARCHAR(100),
+	product_quantity INT NOT NULL,
+	cost_price NUMERIC,
+	selling_price NUMERIC,
+	sub_total NUMERIC
 );
 
-/* Se crea la tabla detalle_Pedido */
-
-CREATE TABLE detalle_Pedido (
-	id_Detalle_Pedido INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-	id_Pedido INT NOT NULL,
-	id_Producto INT NOT NULL,
-	cantidad_Producto INT NOT NULL,
-	precio_Producto NUMERIC NOT NULL
+/* Create the orders table */
+CREATE TABLE orders (
+	id_order INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+	id_client INT NOT NULL,
+	id_employee INT NOT NULL,
+	order_number INT NOT NULL,
+	order_date TIMESTAMP NOT NULL,
+	delivery_date TIMESTAMP NOT NULL,
+	payment_type VARCHAR (100) NOT NULL,
+	order_state CHARACTER VARYING(15),
+	delivery_state CHARACTER VARYING(15),
+	payment_state CHARACTER VARYING(15),
+	total_order NUMERIC
 );
 
-/* Se crea la tabla ventas */
-
-CREATE TABLE ventas (
-	id_Venta INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-	id_Pedido INT NOT NULL,
-	id_Cliente INT NOT NULL,
-	id_Empleado INT NOT NULL,
-	numero_Factura INT NOT NULL,
-	fecha_Venta TIMESTAMP NOT NULL,
-	estado_Venta CHARACTER VARYING(15),
-	estado_Pago CHARACTER VARYING(15),
-	tipo_Pago VARCHAR (100) NOT NULL,
-	total_Venta NUMERIC NOT NULL
+/* Create the order detail table */
+CREATE TABLE order_detail (
+	id_order_detail INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+	id_order INT NOT NULL,
+	id_product INT NOT NULL,
+	product_quantity INT NOT NULL,
+	product_price NUMERIC NOT NULL
 );
 
-/* Se crea la tabla detalle_Venta */
-
-CREATE TABLE detalle_Venta (
-	id_Detalle_Venta INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-	id_Venta INT NOT NULL,
-	id_Producto INT NOT NULL,
-	cantidad INT NOT NULL,
-	precio_Producto NUMERIC
+/* Create the sales table */
+CREATE TABLE sales (
+	id_sale INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+	id_order INT NOT NULL,
+	id_client INT NOT NULL,
+	id_employee INT NOT NULL,
+	invoice_number INT NOT NULL,
+	sale_date TIMESTAMP NOT NULL,
+	sale_state CHARACTER VARYING(15),
+	payment_state CHARACTER VARYING(15),
+	payment_type VARCHAR (100) NOT NULL,
+	total_sale NUMERIC NOT NULL,
+	observation_return VARCHAR (250) NULL
 );
 
-/* Se crea la tabla comisiones */
-
-CREATE TABLE comisiones(
-	id_Comision INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-	id_Empleado INT NOT NULL,
-	total_Comision NUMERIC NOT NULL,
-	id_Detalle_Comision INT NOT NULL
+/* Create the sale detail table */
+CREATE TABLE sale_detail (
+	id_sale_detail INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+	id_sale INT NOT NULL,
+	id_product INT NOT NULL,
+	quantity INT NOT NULL,
+	product_price NUMERIC
 );
 
-/* Se crea la tabla Detalle comision */
-CREATE TABLE detalle_Comision(
-id_Detalle_Comision INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-mes_Comision TIMESTAMP UNIQUE,
-porcentaje_Comision INT NOT NULL
+/* Create the commissions table */
+CREATE TABLE commissions (
+	id_commission INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+	id_employee INT NOT NULL,
+	total_commission NUMERIC NOT NULL,
+	id_commission_detail INT NOT NULL
 );
 
-/* Se crea la tabla pagos */
-
-CREATE TABLE pagos(
-	id_Pago INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-	id_Venta INT NOT NULL,
-	id_Cliente INT NOT NULL,
-	fecha_Pago TIMESTAMP NOT NULL, 
-	total_Pago NUMERIC NOT NULL,
-	total_Restante NUMERIC NOT NULL
+/* Create the commission detail table */
+CREATE TABLE commission_detail (
+	id_commission_detail INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+	month_commission TIMESTAMP UNIQUE,
+	commission_percentage INT NOT NULL
 );
 
-/* Se crea la tabla devoluciones */
-
-CREATE TABLE devoluciones (
-id_Devolucion  INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-id_Venta INT NOT NULL,
-id_Producto  INT NOT NULL,
-fecha_Devolucion TIMESTAMP,
-cantidad_Devuelta INT NOT NULL,
-valor_Devolucion NUMERIC,
-estado_Producto_Devuelto  CHARACTER VARYING(30),
-estado_Producto_Proveedor  CHARACTER VARYING(30)
+/* Create the payments table */
+CREATE TABLE payments (
+	id_payment INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+	id_sale INT NOT NULL,
+	id_client INT NOT NULL,
+	payment_date TIMESTAMP NOT NULL,
+	total_payment NUMERIC NOT NULL,
+	total_remaining NUMERIC NOT NULL
 );
 
-/* Llaves foráneas devoluciones */
+/* Create the returns table */
+CREATE TABLE returns (
+	id_return  INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+	id_sale INT NOT NULL,
+	id_product  INT NOT NULL,
+	return_date TIMESTAMP,
+	return_quantity INT NOT NULL,
+	return_value NUMERIC,
+	returned_product_state CHARACTER VARYING(30),
+	provider_product_state CHARACTER VARYING(30)
+);
 
-ALTER TABLE devoluciones
-ADD CONSTRAINT fk_devolucionesVenta
-FOREIGN KEY (id_Venta) REFERENCES ventas(id_Venta);
+/* Foreign Keys for the 'returns' Table */
+ALTER TABLE returns
+ADD CONSTRAINT fk_returnsSale
+FOREIGN KEY (id_sale) REFERENCES sales(id_sale);
 
-ALTER TABLE devoluciones
-ADD CONSTRAINT fk_devolucionesProducto
-FOREIGN KEY (id_Producto) REFERENCES productos (id_Producto);
+ALTER TABLE returns
+ADD CONSTRAINT fk_returnsProduct
+FOREIGN KEY (id_product) REFERENCES products(id_product);
 
-/* Llaves foraneas de la tabla ventas */
-ALTER TABLE ventas
-ADD CONSTRAINT fk_ventasPedidos 
-FOREIGN KEY(id_Pedido) 
-REFERENCES pedidos (id_Pedido);
+/* Foreign Keys for the 'sales' Table */
+ALTER TABLE sales
+ADD CONSTRAINT fk_salesOrder
+FOREIGN KEY(id_order) 
+REFERENCES orders(id_order);
 
-ALTER TABLE ventas
-ADD CONSTRAINT fk_ventasClientes 
-FOREIGN KEY (id_Cliente) 
-REFERENCES clientes (id_Cliente);
+ALTER TABLE sales
+ADD CONSTRAINT fk_salesClient 
+FOREIGN KEY (id_client) 
+REFERENCES clients(id_client);
 
-ALTER TABLE ventas
-ADD CONSTRAINT fk_ventasEmpleados 
-FOREIGN KEY (id_Empleado) 
-REFERENCES empleados (id_Empleado);
+ALTER TABLE sales
+ADD CONSTRAINT fk_salesEmployee 
+FOREIGN KEY (id_employee) 
+REFERENCES employees(id_employee);
 
-/* Llaves foraneas de la tabla detalle de ventas */
-ALTER TABLE detalle_Venta
-ADD CONSTRAINT fk_detalle_VentaVentas 
-FOREIGN KEY (id_Venta)
-REFERENCES ventas (id_Venta);
+/* Foreign Keys for the 'order_detail' Table */
+ALTER TABLE order_detail
+ADD CONSTRAINT fk_orderDetailOrder FOREIGN KEY
+(id_order) REFERENCES
+orders(id_order);
 
-ALTER TABLE detalle_Venta
-ADD CONSTRAINT fk_detalle_VentaProductos
-FOREIGN KEY (id_Producto)
-REFERENCES productos (id_Producto);
+ALTER TABLE order_detail
+ADD CONSTRAINT fk_orderDetailProduct
+FOREIGN KEY (id_product) 
+REFERENCES products(id_product);
 
-/* llaves foraneas de las tabla pedidos  */
-ALTER TABLE pedidos
-ADD CONSTRAINT fk_pedidosClientes
-FOREIGN KEY (id_Cliente) 
-REFERENCES clientes (id_Cliente);
+/* Foreign Keys for the 'payments' Table */
+ALTER TABLE payments
+ADD CONSTRAINT fk_paymentsSale
+FOREIGN KEY (id_sale) 
+REFERENCES sales(id_sale);
 
-ALTER TABLE pedidos
-ADD CONSTRAINT fk_pedidosEmpleados 
-FOREIGN KEY (id_Empleado)
-REFERENCES empleados (id_Empleado);
+ALTER TABLE payments
+ADD CONSTRAINT fk_paymentsClient
+FOREIGN KEY (id_client) 
+REFERENCES clients(id_client);
 
-/* llaves foraneas de las tabla detalle pedidos  */
-ALTER TABLE detalle_Pedido
-ADD CONSTRAINT fk_detalle_PedidoPedidos FOREIGN KEY
-(id_Pedido) REFERENCES
-pedidos (id_Pedido);
+/* Foreign Keys for the 'commissions' Table */
+ALTER TABLE commissions
+ADD CONSTRAINT fk_commissionsEmployee
+FOREIGN KEY (id_employee)
+REFERENCES employees(id_employee);
 
-ALTER TABLE detalle_Pedido
-ADD CONSTRAINT fk_detalle_PedidoProductos
-FOREIGN KEY (id_Producto) 
-REFERENCES productos (id_Producto);
+ALTER TABLE commissions
+ADD CONSTRAINT fk_commissionsCommissionDetail
+FOREIGN KEY (id_commission_detail)
+REFERENCES commission_detail(id_commission_detail);
 
-/* llaves foraneas de las tabla pagos  */
-ALTER TABLE pagos
-ADD CONSTRAINT fk_pagosVentas
-FOREIGN KEY (id_Venta) 
-REFERENCES ventas(id_Venta);
+/* Foreign Keys for the 'purchases' Table */
+ALTER TABLE purchases 
+ADD CONSTRAINT fk_purchasesProvider
+FOREIGN KEY (id_provider) 
+REFERENCES providers(id_provider);
 
-ALTER TABLE pagos
-ADD CONSTRAINT fk_pagosClientes
-FOREIGN KEY (id_Cliente) 
-REFERENCES clientes(id_Cliente);
+/* Foreign Keys for the 'purchase_detail' Table */
+ALTER TABLE purchase_detail
+ADD CONSTRAINT fk_purchaseDetailPurchase 
+FOREIGN KEY (id_purchase) 
+REFERENCES purchases(id_purchase);
 
-/* llaves foraneas de las tabla comisiones  */
-ALTER TABLE comisiones
-ADD CONSTRAINT fk_comisionesEmpleados
-FOREIGN KEY (id_Empleado)
-REFERENCES empleados(id_Empleado);
+ALTER TABLE purchase_detail
+ADD CONSTRAINT fk_purchaseDetailProduct
+FOREIGN KEY (id_product) 
+REFERENCES products(id_product);
 
-ALTER TABLE comisiones
-ADD CONSTRAINT fk_comisionesDetalleComision
-FOREIGN KEY (id_Detalle_Comision)
-REFERENCES detalle_Comision(id_Detalle_Comision);
+/* Foreign Keys for the 'users' Table */
+ALTER TABLE users
+ADD CONSTRAINT fk_usersRole
+FOREIGN KEY (id_role)
+REFERENCES roles(id_role);
 
-/* llaves foraneas de las tabla compras  */
-ALTER TABLE compras 
-ADD CONSTRAINT FK_comprasProveedor
-FOREIGN KEY (id_Proveedor) 
-REFERENCES proveedores (id_Proveedor);
+ALTER TABLE users
+ADD CONSTRAINT fk_usersEmployee
+FOREIGN KEY (id_employee) 
+REFERENCES employees(id_employee);
 
-ALTER TABLE detalle_Compra
-ADD CONSTRAINT FK_comprasProducto 
-FOREIGN KEY (id_Producto) 
-REFERENCES productos (id_Producto);
+/* Foreign Keys for the 'products' Table */
+ALTER TABLE products
+ADD CONSTRAINT fk_productsCategory
+FOREIGN KEY (id_category) 
+REFERENCES product_categories(id_category);
 
-/* llaves foraneas de las tabla usuarios  */
-ALTER TABLE usuarios
-ADD CONSTRAINT fk_usuariosRoles
-FOREIGN KEY (id_Rol)
-REFERENCES roles (id_Rol);
+/* Foreign Keys for the defective_products Table */
+ALTER TABLE defective_products
+ADD CONSTRAINT fk_defectiveProductsProduct
+FOREIGN KEY (id_product) 
+REFERENCES products(id_product);
 
-ALTER TABLE usuarios
-ADD CONSTRAINT fk_usuariosEmpleado
-FOREIGN KEY (id_Empleado) 
-REFERENCES empleados (id_Empleado);
 
-/* llaves foraneas de las tabla productos */
-ALTER TABLE productos
-ADD CONSTRAINT fk_productosCategoriaProductos 
-FOREIGN KEY (id_Categoria) 
-REFERENCES categorias_Productos (id_Categoria);
 
--- Instertar en la tabla detalle comision
-INSERT INTO detalle_Comision (mes_Comision, porcentaje_Comision)
+// —---------------------------------------------------------------------------------------- //
+
+-- Insert into the 'commission_detail' Table
+INSERT INTO commission_detail (month_commission, commission_percentage)
 VALUES (current_timestamp, 10),
-		('2023-04-01', 5),
-		('2023-05-01', 8);
--- Insertar registros en la tabla roles
-INSERT INTO roles (nombre_Rol, estado_Rol, modulos_Rol) 
-VALUES ('Administrador', 'Activo', 'Módulo A, Módulo B, Módulo C'),
-       ('Gerente', 'Activo', 'Módulo B, Módulo C'),
-       ('Empleado', 'Activo', 'Módulo C');
+       ('2023-04-01', 5),
+       ('2023-05-01', 8);
 
--- Insertar registros en la tabla proveedores
-INSERT INTO proveedores (nit_Cedula, nombre_Proveedor, correo_Proveedor, direccion_Proveedor, telefono_Proveedor, estado_Proveedor, observacion_Proveedor, nombre_Contacto, fecha_Creacion_Proveedor)
-VALUES ('1234567890', 'Proveedor 1', 'proveedor1@email.com', 'Dirección 1', '1234567890', 'Activo', 'Observación 1', 'Contacto 1', current_timestamp),
-       ('9876543210', 'Proveedor 2', 'proveedor2@email.com', 'Dirección 2', '9876543210', 'Activo', 'Observación 2', 'Contacto 2', current_timestamp),
-       ('5555555555', 'Proveedor 3', 'proveedor3@email.com', 'Dirección 3', '5555555555', 'Inactivo', 'Observación 3', 'Contacto 3', current_timestamp);
+-- Insert into the 'roles' Table
+INSERT INTO roles (name_role, state_role, modules_role)
+VALUES ('Administrator', 'Active', 'Module A, Module B, Module C'),
+       ('Manager', 'Active', 'Module B, Module C'),
+       ('Employee', 'Active', 'Module C');
 
--- Insertar registros en la tabla empleados
-INSERT INTO empleados (cedula_Empleado, nombre_Empleado, correo, direccion, telefono, estado_Empleado, observacion)
-VALUES ('1111111111', 'Empleado 1', 'empleado1@email.com', 'Dirección 1', '1111111111', 'Activo', 'Observación 1'),
-       ('2222222222', 'Empleado 2', 'empleado2@email.com', 'Dirección 2', '2222222222', 'Activo', 'Observación 2'),
-       ('3333333333', 'Empleado 3', 'empleado3@email.com', 'Dirección 3', '3333333333', 'Inactivo', 'Observación 3');
+-- Insert into the 'providers' Table
+INSERT INTO providers (nit_cedula, name_provider, email_provider, address_provider, phone_provider, state_provider, observation_provider, name_contact, creation_date_provider)
+VALUES ('1234567890', 'Provider 1', 'provider1@email.com', 'Address 1', '1234567890', 'Active', 'Observation 1', 'Contact 1', current_timestamp),
+       ('9876543210', 'Provider 2', 'provider2@email.com', 'Address 2', '9876543210', 'Active', 'Observation 2', 'Contact 2', current_timestamp),
+       ('5555555555', 'Provider 3', 'provider3@email.com', 'Address 3', '5555555555', 'Inactive', 'Observation 3', 'Contact 3', current_timestamp);
 
--- Insertar registros en la tabla clientes
-INSERT INTO clientes (nit_O_Cedula_Cliente, nombre_Cliente, apellido_Cliente, correo_Cliente, telefono_Cliente, direccion_Cliente, estado_Cliente)
-VALUES ('1000000000', 'Cliente 1', 'Apellido 1', 'cliente1@email.com', '1000000000', 'Dirección 1', 'Activo'),
-       ('2000000000', 'Cliente 2', 'Apellido 2', 'cliente2@email.com', '2000000000', 'Dirección 2', 'Activo'),
-       ('3000000000', 'Cliente 3', 'Apellido 3', 'cliente3@email.com', '3000000000', 'Dirección 3', 'Inactivo');
+-- Insert into the 'employees' Table
+INSERT INTO employees (id_card_employee, name_employee, email, address, phone, state_employee, observation,creation_date_employee)
+VALUES ('1111111111', 'Employee 1', 'employee1@email.com', 'Address 1', '1111111111', 'Active', 'Observation 1',current_timestamp),
+       ('2222222222', 'Employee 2', 'employee2@email.com', 'Address 2', '2222222222', 'Active', 'Observation 2',current_timestamp),
+       ('3333333333', 'Employee 3', 'employee3@email.com', 'Address 3', '3333333333', 'Inactive', 'Observation 3',current_timestamp);
 
--- Insertar registros en la tabla categorias_Productos
-INSERT INTO categorias_Productos (nombre_Categoria, estado_Categoria, observacion_Categoria, fecha_Creacion_Categoria)
-VALUES ('Categoría 1', 'Activo', 'Observación 1', current_timestamp),
-       ('Categoría 2', 'Activo', 'Observación 2', current_timestamp),
-       ('Categoría 3', 'Inactivo', 'Observación 3', current_timestamp);
+-- Insert into the 'clients' Table
+INSERT INTO clients (nit_or_id_client, name_client, last_name_client, email_client, phone_client, address_client, state_client)
+VALUES ('1000000000', 'Client 1', 'Last Name 1', 'client1@email.com', '1000000000', 'Address 1', 'Active'),
+       ('2000000000', 'Client 2', 'Last Name 2', 'client2@email.com', '2000000000', 'Address 2', 'Active'),
+       ('3000000000', 'Client 3', 'Last Name 3', 'client3@email.com', '3000000000', 'Address 3', 'Inactive');
 
--- Insertar registros en la tabla productos
-INSERT INTO productos (id_Categoria, nombre_Producto, cantidad, stock_Maximo, stock_Minimo, precio_Costo, precio_Venta, ganancia, fecha_Creacion_Producto, estado_Producto, observacion)
-VALUES (1, 'Producto 1', 100, 200, 50, 10.00, 15.00, 5.00, current_timestamp, 'Activo', 'Observación 1'),
-       (2, 'Producto 2', 150, 250, 75, 12.00, 20.00, 8.00, current_timestamp, 'Activo', 'Observación 2'),
-       (3, 'Producto 3', 75, 100, 25, 8.00, 14.00, 6.00, current_timestamp, 'Inactivo', 'Observación 3');
+-- Insert into the 'product_categories' Table
+INSERT INTO product_categories (name_category, state_category, observation_category, creation_date_category)
+VALUES ('Category 1', 'Active', 'Observation 1', current_timestamp),
+       ('Category 2', 'Active', 'Observation 2', current_timestamp),
+       ('Category 3', 'Inactive', 'Observation 3', current_timestamp);
 
--- Insertar registros en la tabla usuarios
-INSERT INTO usuarios (id_Rol, id_Empleado, fecha_Creacion_Usuario, nombre_Usuario, correo_Usuario, contrasena_Usuario, estado_Usuario, observacion_Usuario)
-VALUES (1, 1, current_timestamp, 'admin', 'admin@email.com', 'contrasena_admin', 'Activo', 'Observación 1'),
-       (2, 2, current_timestamp, 'gerente', 'gerente@email.com', 'contrasena_gerente', 'Activo', 'Observación 2'),
-       (3, 3, current_timestamp, 'empleado', 'empleado@email.com', 'contrasena_empleado', 'Inactivo', 'Observación 3');
+-- Insert into the 'products' Table
+INSERT INTO products (id_category, name_product, quantity, max_stock, min_stock, cost_price, selling_price, profit, creation_date_product, state_product, observation)
+VALUES (1, 'Product 1', 100, 200, 50, 10.00, 15.00, 5.00, current_timestamp, 'Active', 'Observation 1'),
+       (2, 'Product 2', 150, 250, 75, 12.00, 20.00, 8.00, current_timestamp, 'Active', 'Observation 2'),
+       (3, 'Product 3', 75, 100, 25, 8.00, 14.00, 6.00, current_timestamp, 'Inactive', 'Observation 3');
 
--- Insertar registros en la tabla compras
-INSERT INTO compras (id_Proveedor, numero_Factura, fecha_Compra, fecha_RegistroCompra, total_Compra, estado_Compra, foto_Compra, observacion_Compra)
-VALUES (1, '0001', current_timestamp, current_timestamp, 500.00, 'Completada', NULL, 'Observación 1'),
-       (2, '0002', current_timestamp, current_timestamp, 750.00, 'Pendiente', NULL, 'Observación 2'),
-       (3, '0003', current_timestamp, current_timestamp, 400.00, 'Completada', NULL, 'Observación 3');
+-- Insert into the 'users' Table
+INSERT INTO users (id_role, id_employee, creation_date_user, username, email, password, state_user, observation_user)
+VALUES (1, 1, current_timestamp, 'admin', 'admin@email.com', 'password_admin', 'Active', 'Observation 1'),
+       (2, 2, current_timestamp, 'manager', 'manager@email.com', 'password_manager', 'Active', 'Observation 2'),
+       (3, 3, current_timestamp, 'employee', 'employee@email.com', 'password_employee', 'Inactive', 'Observation 3');
 
--- Insertar registros en la tabla detalle_Compra
-INSERT INTO detalle_Compra (id_Compra, id_Producto, categoria_Producto, cantidad_Producto, precio_Costo, precio_Venta, subTotal)
-VALUES (1, 1, 'Categoría 1', 50, 9.00, 14.00, 700.00),
-       (2, 2, 'Categoría 2', 75, 11.00, 18.00, 1350.00),
-       (3, 3, 'Categoría 3', 40, 7.00, 12.00, 480.00);
+-- Insert into the 'purchases' Table
+INSERT INTO purchases (id_provider, invoice_number, purchase_date, record_date_purchase, total_purchase, state_purchase, purchase_photo, observation_purchase)
+VALUES (1, '0001', current_timestamp, current_timestamp, 500.00, 'Completed', NULL, 'Observation 1'),
+       (2, '0002', current_timestamp, current_timestamp, 750.00, 'Pending', NULL, 'Observation 2'),
+       (3, '0003', current_timestamp, current_timestamp, 400.00, 'Completed', NULL, 'Observation 3');
 
--- Insertar registros en la tabla pedidos
-INSERT INTO pedidos (id_Cliente, id_Empleado, numero_Pedido, fecha_Pedido, fecha_Entrega, tipo_Pago, estado_Pedido, estado_Entrega, estado_Pago, total_Pedido)
-VALUES (1, 1, 1001, current_timestamp, current_timestamp, 'Efectivo', 'Activo', 'En proceso', 'Por pagar', 1500.00),
-       (2, 2, 1002, current_timestamp, current_timestamp, 'Tarjeta', 'Activo', 'Por entregar', 'Por pagar', 1200.00),
-       (3, 3, 1003, current_timestamp, current_timestamp, 'Cheque', 'Activo', 'Entregado', 'Por pagar', 1800.00);
+-- Insert into the 'purchase_detail' Table
+INSERT INTO purchase_detail (id_purchase, id_product, product_category, product_quantity, cost_price, selling_price, sub_total)
+VALUES (1, 1, 'Category 1', 50, 9.00, 14.00, 700.00),
+       (2, 2, 'Category 2', 75, 11.00, 18.00, 1350.00),
+       (3, 3, 'Category 3', 40, 7.00, 12.00, 480.00);
 
--- Insertar registros en la tabla detalle_Pedido
-INSERT INTO detalle_Pedido (id_Pedido, id_Producto, cantidad_Producto, precio_Producto)
+-- Insert into the 'orders' Table
+INSERT INTO orders (id_client, id_employee, order_number, order_date, delivery_date, payment_type, order_state, delivery_state, payment_state, total_order)
+VALUES (1, 1, 1001, current_timestamp, current_timestamp, 'Cash', 'Active', 'In Progress', 'To be paid', 1500.00),
+       (2, 2, 1002, current_timestamp, current_timestamp, 'Credit Card', 'Active', 'To be delivered', 'To be paid', 1200.00),
+       (3, 3, 1003, current_timestamp, current_timestamp, 'Check', 'Active', 'Delivered', 'To be paid', 1800.00);
+
+-- Insert into the 'order_detail' Table
+INSERT INTO order_detail (id_order, id_product, product_quantity, product_price)
 VALUES (1, 1, 30, 14.00),
        (2, 2, 25, 18.00),
        (3, 3, 20, 12.00);
 
--- Insertar registros en la tabla ventas
-INSERT INTO ventas (id_Pedido, id_Cliente, id_Empleado, numero_Factura, fecha_Venta, estado_Venta, estado_Pago, tipo_Pago, total_Venta)
-VALUES (1, 1, 1, 5001, current_timestamp, 'Activo', 'Por pagar', 'Efectivo', 420.00),
-       (2, 2, 2, 5002, current_timestamp, 'Activo', 'Por pagar', 'Tarjeta', 675.00),
-       (3, 3, 3, 5003, current_timestamp, 'Activo', 'Pagado', 'Cheque', 360.00);
+-- Insert into the 'sales' Table
+INSERT INTO sales (id_order, id_client, id_employee, invoice_number, sale_date, sale_state, payment_state, payment_type, total_sale)
+VALUES (1, 1, 1, 5001, current_timestamp, 'Active', 'To be paid', 'Cash', 420.00),
+       (2, 2, 2, 5002, current_timestamp, 'Active', 'To be paid', 'Credit Card', 675.00),
+       (3, 3, 3, 5003, current_timestamp, 'Active', 'Paid', 'Check', 360.00);
 
--- Insertar registros en la tabla detalle_Venta
-INSERT INTO detalle_Venta (id_Venta, id_Producto, cantidad, precio_Producto)
+-- Insert into the 'sale_detail' Table
+INSERT INTO sale_detail (id_sale, id_product, quantity, product_price)
 VALUES (1, 1, 15, 14.00),
        (2, 2, 20, 18.00),
        (3, 3, 12, 12.00);
-	   
---INSERTAR EN COMISIONES
 
-INSERT INTO comisiones (id_Empleado, total_Comision, id_Detalle_Comision)
-VALUES (1, 42.00,1),
-       (2, 81.00,2),
-       (3, 28.80,3);
--- Insertar registros en la tabla pagos
-INSERT INTO pagos (id_Venta, id_Cliente, fecha_Pago, total_Pago, total_Restante)
+-- Insert into the 'commissions' Table
+INSERT INTO commissions (id_employee, total_commission, id_commission_detail)
+VALUES (1, 42.00, 1),
+       (2, 81.00, 2),
+       (3, 28.80, 3);
+
+-- Insert into the 'payments' Table
+INSERT INTO payments (id_sale, id_client, payment_date, total_payment, total_remaining)
 VALUES (1, 1, current_timestamp, 420.00, 0.00),
        (2, 2, current_timestamp, 675.00, 0.00),
        (3, 3, current_timestamp, 360.00, 0.00);
--- Insertar registros en la tabla devoluciones
-INSERT INTO devoluciones (id_Venta, id_Producto, fecha_Devolucion, cantidad_Devuelta, valor_Devolucion, estado_Producto_Devuelto, estado_Producto_Proveedor)
-VALUES (1, 1, current_timestamp, 5, 70.00, 'Devuelto', 'En proceso'),
-       (2, 2, current_timestamp, 4, 72.00, 'Devuelto', 'Completado'),
-       (3, 3, current_timestamp, 6, 72.00, 'Devuelto', 'En proceso');
+
+-- Insert into the 'returns' Table
+INSERT INTO returns (id_sale, id_product, return_date, return_quantity, return_value, returned_product_state, provider_product_state)
+VALUES (1, 1, current_timestamp, 5, 70.00, 'Returned', 'In Progress'),
+       (2, 2, current_timestamp, 4, 72.00, 'Returned', 'Completed'),
+       (3, 3, current_timestamp, 6, 72.00, 'Returned', 'In Progress');

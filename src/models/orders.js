@@ -1,76 +1,68 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/sequelize');
 
-const Pedidos = sequelize.define('pedidos', {
-  id_pedido: {
+const Orders = sequelize.define('orders', {
+  id_order: {
     autoIncrement: true,
     autoIncrementIdentity: true,
     type: DataTypes.INTEGER,
     allowNull: false,
     primaryKey: true
   },
-  id_cliente: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    references: {
-      model: 'clientes',
-      key: 'id_cliente'
-    }
-  },
-  id_empleado: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    references: {
-      model: 'empleados',
-      key: 'id_empleado'
-    }
-  },
-  numero_pedido: {
+  id_client: {
     type: DataTypes.INTEGER,
     allowNull: false
   },
-  fecha_pedido: {
+  id_employee: {
+    type: DataTypes.INTEGER,
+    allowNull: false
+  },
+  order_number: {
+    type: DataTypes.INTEGER,
+    allowNull: false
+  },
+  order_date: {
     type: DataTypes.DATE,
     allowNull: false
   },
-  fecha_entrega: {
+  delivery_date: {
     type: DataTypes.DATE,
     allowNull: false
   },
-  tipo_pago: {
+  payment_type: {
     type: DataTypes.STRING(100),
     allowNull: false
   },
-  estado_pedido: {
+  order_state: {
     type: DataTypes.STRING(15),
     allowNull: true
   },
-  estado_entrega: {
+  delivery_state: {
     type: DataTypes.STRING(15),
     allowNull: true
   },
-  estado_pago: {
+  payment_state: {
     type: DataTypes.STRING(15),
     allowNull: true
   },
-  total_pedido: {
+  total_order: {
     type: DataTypes.DECIMAL,
     allowNull: true
   }
 }, {
   sequelize,
-  tableName: 'pedidos',
+  tableName: 'orders',
   schema: 'public',
   timestamps: false,
   indexes: [
     {
-      name: "pedidos_pkey",
+      name: "orders_pkey",
       unique: true,
       fields: [
-        { name: "id_pedido" },
+        { name: "id_order" },
       ]
     },
   ]
 });
 
-module.exports = Pedidos;
+module.exports = Orders;

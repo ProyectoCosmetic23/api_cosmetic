@@ -1,64 +1,65 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/sequelize');
 
-const Clientes = sequelize.define('clientes', {
-  id_cliente: {
+const Clients = sequelize.define('clients', {
+  id_client: {
     autoIncrement: true,
     autoIncrementIdentity: true,
     type: DataTypes.INTEGER,
     allowNull: false,
     primaryKey: true
   },
-  nit_o_cedula_cliente: {
+  nit_or_id_client: {
     type: DataTypes.STRING(10),
     allowNull: true,
-    unique: "clientes_nit_o_cedula_cliente_key"
+    unique: "clients_nit_or_id_client_key"
   },
-  nombre_cliente: {
+  name_client: {
     type: DataTypes.STRING(100),
     allowNull: false
   },
-  apellido_cliente: {
+  last_name_client: {
     type: DataTypes.STRING(100),
     allowNull: true
   },
-  correo_cliente: {
+  email_client: {
     type: DataTypes.STRING(100),
     allowNull: false
   },
-  telefono_cliente: {
+  phone_client: {
     type: DataTypes.STRING(20),
     allowNull: false
   },
-  direccion_cliente: {
+  address_client: {
     type: DataTypes.STRING(100),
     allowNull: false
   },
-  estado_cliente: {
+  state_client: {
     type: DataTypes.STRING(15),
     allowNull: false
   }
 }, {
   sequelize,
-  tableName: 'clientes',
+  tableName: 'clients',
   schema: 'public',
   timestamps: false,
   indexes: [
     {
-      name: "clientes_nit_o_cedula_cliente_key",
+      name: "clients_nit_or_id_client_key",
       unique: true,
       fields: [
-        { name: "nit_o_cedula_cliente" },
+        { name: "nit_or_id_client" },
       ]
     },
     {
-      name: "clientes_pkey",
+      name: "clients_pkey",
       unique: true,
       fields: [
-        { name: "id_cliente" },
+        { name: "id_client" },
       ]
     },
   ]
 });
 
-module.exports = Clientes;
+module.exports = Clients;
+

@@ -1,78 +1,76 @@
-const { DataTypes, NOW } = require('sequelize');
+const { DataTypes } = require('sequelize');
 const sequelize = require('../config/sequelize');
 
-const Usuarios = sequelize.define('usuarios', {
-  id_usuario: {
+const Users = sequelize.define('users', {
+  id_user: {
     autoIncrement: true,
     autoIncrementIdentity: true,
     type: DataTypes.INTEGER,
     allowNull: false,
     primaryKey: true
   },
-  id_rol: {
+  id_role: {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
       model: 'roles',
-      key: 'id_rol'
+      key: 'id_role'
     }
   },
-  id_empleado: {
+  id_employee: {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: 'empleados',
-      key: 'id_empleado'
+      model: 'employees',
+      key: 'id_employee'
     }
   },
-  fecha_creacion_usuario: {
+  creation_date_user: {
     type: DataTypes.DATE,
-    allowNull: true,
-    defaultValue: new NOW()
-  },
-  nombre_usuario: {
-    type: DataTypes.STRING(100),
-    allowNull: true,
-    unique: "usuarios_nombre_usuario_key"
-  },
-  correo_usuario: {
-    type: DataTypes.STRING(100),
     allowNull: true
   },
-  contrasena_usuario: {
+  username: {
     type: DataTypes.STRING(100),
-    allowNull: true
+    allowNull: false,
+    unique: "users_username_key"
   },
-  estado_usuario: {
+  email: {
+    type: DataTypes.STRING(100),
+    allowNull: false
+  },
+  password: {
+    type: DataTypes.STRING(100),
+    allowNull: false
+  },
+  state_user: {
     type: DataTypes.STRING(15),
-    allowNull: true,
-    defaultValue: "Activo"
+    allowNull: true
   },
-  observacion_usuario: {
+  observation_user: {
     type: DataTypes.STRING(100),
     allowNull: true
   }
 }, {
   sequelize,
-  tableName: 'usuarios',
+  tableName: 'users',
   schema: 'public',
   timestamps: false,
   indexes: [
     {
-      name: "usuarios_nombre_usuario_key",
+      name: "users_pkey",
       unique: true,
       fields: [
-        { name: "nombre_usuario" },
+        { name: "id_user" },
       ]
     },
     {
-      name: "usuarios_pkey",
+      name: "users_username_key",
       unique: true,
       fields: [
-        { name: "id_usuario" },
+        { name: "username" },
       ]
     },
   ]
 });
 
-module.exports = Usuarios;
+module.exports = Users;

@@ -1,70 +1,70 @@
-const { DataTypes, NOW } = require('sequelize');
+const { DataTypes } = require('sequelize');
 const sequelize = require('../config/sequelize');
 
-const Empleados = sequelize.define('empleados', {
-  id_empleado: {
+const Employees = sequelize.define('employees', {
+  id_employee: {
     autoIncrement: true,
     autoIncrementIdentity: true,
     type: DataTypes.INTEGER,
     allowNull: false,
     primaryKey: true
   },
-  cedula_empleado: {
+  id_card_employee: {
     type: DataTypes.STRING(10),
     allowNull: true,
-    unique: "empleados_cedula_empleado_key"
+    unique: "employees_id_card_employee_key"
   },
-  nombre_empleado: {
+  name_employee: {
     type: DataTypes.STRING(80),
-    allowNull: true
+    allowNull: false
   },
-  correo: {
+  email: {
     type: DataTypes.STRING(80),
-    allowNull: true
+    allowNull: false
   },
-  direccion: {
+  address: {
     type: DataTypes.STRING(80),
-    allowNull: true
+    allowNull: false
   },
-  telefono: {
+  phone: {
     type: DataTypes.STRING(80),
-    allowNull: true
+    allowNull: false
   },
-  estado_empleado: {
+  state_employee: {
     type: DataTypes.STRING(15),
-    allowNull: true,
-    defaultValue: "Activo"
+    allowNull: true
   },
-  observacion: {
+  observation: {
     type: DataTypes.STRING(100),
     allowNull: true
   },
-  fecha_creacion_empleado: {
+  creation_date_employee: {
     type: DataTypes.DATE,
-    allowNull: true,
-    defaultValue: new NOW()
+    allowNull: true
   }
 }, {
   sequelize,
-  tableName: 'empleados',
+  tableName: 'employees',
   schema: 'public',
   timestamps: false,
   indexes: [
     {
-      name: "empleados_cedula_empleado_key",
+      name: "employees_id_card_employee_key",
       unique: true,
       fields: [
-        { name: "cedula_empleado" },
+        { name: "id_card_employee" },
       ]
     },
     {
-      name: "empleados_pkey",
+      name: "employees_pkey",
       unique: true,
       fields: [
-        { name: "id_empleado" },
+        { name: "id_employee" },
       ]
     },
   ]
 });
 
-module.exports = Empleados;
+
+module.exports = Employees;
+

@@ -1,52 +1,44 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/sequelize');
 
-const Detalle_Pedido = sequelize.define('detalle_pedido', {
-  id_detalle_pedido: {
+const Sale_Detail = sequelize.define('sale_detail', {
+  id_sale_detail: {
     autoIncrement: true,
     autoIncrementIdentity: true,
     type: DataTypes.INTEGER,
     allowNull: false,
     primaryKey: true
   },
-  id_pedido: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    references: {
-      model: 'pedidos',
-      key: 'id_pedido'
-    }
-  },
-  id_producto: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    references: {
-      model: 'productos',
-      key: 'id_producto'
-    }
-  },
-  cantidad_producto: {
+  id_sale: {
     type: DataTypes.INTEGER,
     allowNull: false
   },
-  precio_producto: {
+  id_product: {
+    type: DataTypes.INTEGER,
+    allowNull: false
+  },
+  quantity: {
+    type: DataTypes.INTEGER,
+    allowNull: false
+  },
+  product_price: {
     type: DataTypes.DECIMAL,
-    allowNull: false
+    allowNull: true
   }
 }, {
   sequelize,
-  tableName: 'detalle_pedido',
+  tableName: 'sale_detail',
   schema: 'public',
   timestamps: false,
   indexes: [
     {
-      name: "detalle_pedido_pkey",
+      name: "sale_detail_pkey",
       unique: true,
       fields: [
-        { name: "id_detalle_pedido" },
+        { name: "id_sale_detail" },
       ]
     },
   ]
 });
 
-module.exports = Detalle_Pedido;
+module.exports = Sale_Detail;

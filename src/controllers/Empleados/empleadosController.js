@@ -2,7 +2,6 @@
 const Empleado = require ('../../models/empleados');
 
 //Consultar todas los empleados
-
 const getAllEmployes = async (req, res) => {
   try {
     const empleados = await Empleado.findAll();

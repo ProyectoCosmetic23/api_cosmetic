@@ -1,80 +1,80 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/sequelize');
 
-const Ventas = sequelize.define('ventas', {
-  id_venta: {
+const Sales = sequelize.define('sales', {
+  id_sale: {
     autoIncrement: true,
     autoIncrementIdentity: true,
     type: DataTypes.INTEGER,
     allowNull: false,
     primaryKey: true
   },
-  id_pedido: {
+  id_order: {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: 'pedidos',
-      key: 'id_pedido'
+      model: 'orders',
+      key: 'id_order'
     }
   },
-  id_cliente: {
+  id_client: {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: 'clientes',
-      key: 'id_cliente'
+      model: 'clients',
+      key: 'id_client'
     }
   },
-  id_empleado: {
+  id_employee: {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: 'empleados',
-      key: 'id_empleado'
+      model: 'employees',
+      key: 'id_employee'
     }
   },
-  numero_factura: {
+  invoice_number: {
     type: DataTypes.INTEGER,
     allowNull: false
   },
-  fecha_venta: {
+  sale_date: {
     type: DataTypes.DATE,
     allowNull: false
   },
-   estado_pago: {
+  sale_state: {
     type: DataTypes.STRING(15),
     allowNull: true
   },
-  estado_venta: {
+  payment_state: {
     type: DataTypes.STRING(15),
     allowNull: true
   },
-  estado_pago: {
-    type: DataTypes.STRING(15),
-    allowNull: true
-  },
-  tipo_pago: {
+  payment_type: {
     type: DataTypes.STRING(100),
     allowNull: false
   },
-  total_venta: {
+  total_sale: {
     type: DataTypes.DECIMAL,
     allowNull: false
+  },
+  observation_return: {
+    type: DataTypes.STRING(250),
+    allowNull: true
   }
 }, {
   sequelize,
-  tableName: 'ventas',
+  tableName: 'sales',
   schema: 'public',
   timestamps: false,
   indexes: [
     {
-      name: "ventas_pkey",
+      name: "sales_pkey",
       unique: true,
       fields: [
-        { name: "id_venta" },
+        { name: "id_sale" },
       ]
     },
   ]
 });
 
-module.exports = Ventas;
+module.exports = Sales;

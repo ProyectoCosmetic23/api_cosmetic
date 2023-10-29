@@ -1,105 +1,99 @@
 var DataTypes = require("sequelize").DataTypes;
-var _categorias_productos = require("./categorias_productos");
-var _clientes = require("./clientes");
-var _comisiones = require("./comisiones");
-var _compras = require("./compras");
-var _detalle_compra = require("./detalle_compra");
-var _detalle_pedido = require("./detalle_pedido");
-var _detalle_venta = require("./detalle_venta");
-var _devoluciones = require("./devoluciones");
-var _empleados = require("./empleados");
-var _pagos = require("./pagos");
-var _pedidos = require("./pedidos");
-var _productos = require("./productos");
-var _proveedores = require("./proveedores");
+var _clients = require("./clients");
+var _commission_detail = require("./commission_detail");
+var _commissions = require("./commissions");
+var _defective_products = require("./defective_products");
+var _employees = require("./employees");
+var _order_detail = require("./order_detail");
+var _orders = require("./orders");
+var _payments = require("./payments");
+var _product_categories = require("./product_categories");
+var _products = require("./products");
+var _providers = require("./providers");
+var _purchase_detail = require("./purchase_detail");
+var _purchases = require("./purchases");
+var _returns = require("./returns");
 var _roles = require("./roles");
-var _usuarios = require("./usuarios");
-var _ventas = require("./ventas");
+var _sale_detail = require("./sale_detail");
+var _sales = require("./sales");
+var _users = require("./users");
 
 function initModels(sequelize) {
-  var categorias_productos = _categorias_productos(sequelize, DataTypes);
-  var clientes = _clientes(sequelize, DataTypes);
-  var comisiones = _comisiones(sequelize, DataTypes);
-  var compras = _compras(sequelize, DataTypes);
-  var detalle_compra = _detalle_compra(sequelize, DataTypes);
-  var detalle_pedido = _detalle_pedido(sequelize, DataTypes);
-  var detalle_venta = _detalle_venta(sequelize, DataTypes);
-  var devoluciones = _devoluciones(sequelize, DataTypes);
-  var empleados = _empleados(sequelize, DataTypes);
-  var pagos = _pagos(sequelize, DataTypes);
-  var pedidos = _pedidos(sequelize, DataTypes);
-  var productos = _productos(sequelize, DataTypes);
-  var proveedores = _proveedores(sequelize, DataTypes);
+  var clients = _clients(sequelize, DataTypes);
+  var commission_detail = _commission_detail(sequelize, DataTypes);
+  var commissions = _commissions(sequelize, DataTypes);
+  var defective_products = _defective_products(sequelize, DataTypes);
+  var employees = _employees(sequelize, DataTypes);
+  var order_detail = _order_detail(sequelize, DataTypes);
+  var orders = _orders(sequelize, DataTypes);
+  var payments = _payments(sequelize, DataTypes);
+  var product_categories = _product_categories(sequelize, DataTypes);
+  var products = _products(sequelize, DataTypes);
+  var providers = _providers(sequelize, DataTypes);
+  var purchase_detail = _purchase_detail(sequelize, DataTypes);
+  var purchases = _purchases(sequelize, DataTypes);
+  var returns = _returns(sequelize, DataTypes);
   var roles = _roles(sequelize, DataTypes);
-  var usuarios = _usuarios(sequelize, DataTypes);
-  var ventas = _ventas(sequelize, DataTypes);
+  var sale_detail = _sale_detail(sequelize, DataTypes);
+  var sales = _sales(sequelize, DataTypes);
+  var users = _users(sequelize, DataTypes);
 
-  productos.belongsTo(categorias_productos, { as: "id_categoria_categorias_producto", foreignKey: "id_categoria"});
-  categorias_productos.hasMany(productos, { as: "productos", foreignKey: "id_categoria"});
-  detalle_pedido.belongsTo(clientes, { as: "id_cliente_cliente", foreignKey: "id_cliente"});
-  clientes.hasMany(detalle_pedido, { as: "detalle_pedidos", foreignKey: "id_cliente"});
-  detalle_venta.belongsTo(clientes, { as: "id_cliente_cliente", foreignKey: "id_cliente"});
-  clientes.hasMany(detalle_venta, { as: "detalle_venta", foreignKey: "id_cliente"});
-  pagos.belongsTo(clientes, { as: "id_cliente_cliente", foreignKey: "id_cliente"});
-  clientes.hasMany(pagos, { as: "pagos", foreignKey: "id_cliente"});
-  pedidos.belongsTo(clientes, { as: "id_cliente_cliente", foreignKey: "id_cliente"});
-  clientes.hasMany(pedidos, { as: "pedidos", foreignKey: "id_cliente"});
-  ventas.belongsTo(clientes, { as: "id_cliente_cliente", foreignKey: "id_cliente"});
-  clientes.hasMany(ventas, { as: "venta", foreignKey: "id_cliente"});
-  comisiones.belongsTo(empleados, { as: "id_empleado_empleado", foreignKey: "id_empleado"});
-  empleados.hasOne(comisiones, { as: "comisione", foreignKey: "id_empleado"});
-  detalle_pedido.belongsTo(empleados, { as: "id_empleado_empleado", foreignKey: "id_empleado"});
-  empleados.hasMany(detalle_pedido, { as: "detalle_pedidos", foreignKey: "id_empleado"});
-  detalle_venta.belongsTo(empleados, { as: "id_empleado_empleado", foreignKey: "id_empleado"});
-  empleados.hasMany(detalle_venta, { as: "detalle_venta", foreignKey: "id_empleado"});
-  pedidos.belongsTo(empleados, { as: "id_empleado_empleado", foreignKey: "id_empleado"});
-  empleados.hasMany(pedidos, { as: "pedidos", foreignKey: "id_empleado"});
-  usuarios.belongsTo(empleados, { as: "id_empleado_empleado", foreignKey: "id_empleado"});
-  empleados.hasMany(usuarios, { as: "usuarios", foreignKey: "id_empleado"});
-  ventas.belongsTo(empleados, { as: "id_empleado_empleado", foreignKey: "id_empleado"});
-  empleados.hasMany(ventas, { as: "venta", foreignKey: "id_empleado"});
-  detalle_pedido.belongsTo(pedidos, { as: "id_pedido_pedido", foreignKey: "id_pedido"});
-  pedidos.hasMany(detalle_pedido, { as: "detalle_pedidos", foreignKey: "id_pedido"});
-  ventas.belongsTo(pedidos, { as: "id_pedido_pedido", foreignKey: "id_pedido"});
-  pedidos.hasMany(ventas, { as: "venta", foreignKey: "id_pedido"});
-  detalle_compra.belongsTo(productos, { as: "id_producto_producto", foreignKey: "id_producto"});
-  productos.hasMany(detalle_compra, { as: "detalle_compras", foreignKey: "id_producto"});
-  detalle_pedido.belongsTo(productos, { as: "id_producto_producto", foreignKey: "id_producto"});
-  productos.hasMany(detalle_pedido, { as: "detalle_pedidos", foreignKey: "id_producto"});
-  detalle_venta.belongsTo(productos, { as: "id_producto_producto", foreignKey: "id_producto"});
-  productos.hasMany(detalle_venta, { as: "detalle_venta", foreignKey: "id_producto"});
-  devoluciones.belongsTo(productos, { as: "id_producto_producto", foreignKey: "id_producto"});
-  productos.hasMany(devoluciones, { as: "devoluciones", foreignKey: "id_producto"});
-  compras.belongsTo(proveedores, { as: "id_proveedor_proveedore", foreignKey: "id_proveedor"});
-  proveedores.hasMany(compras, { as: "compras", foreignKey: "id_proveedor"});
-  usuarios.belongsTo(roles, { as: "id_rol_role", foreignKey: "id_rol"});
-  roles.hasMany(usuarios, { as: "usuarios", foreignKey: "id_rol"});
-  comisiones.belongsTo(ventas, { as: "id_venta_venta", foreignKey: "id_venta"});
-  ventas.hasOne(comisiones, { as: "comisione", foreignKey: "id_venta"});
-  detalle_venta.belongsTo(ventas, { as: "id_venta_venta", foreignKey: "id_venta"});
-  ventas.hasMany(detalle_venta, { as: "detalle_venta", foreignKey: "id_venta"});
-  devoluciones.belongsTo(ventas, { as: "id_venta_venta", foreignKey: "id_venta"});
-  ventas.hasMany(devoluciones, { as: "devoluciones", foreignKey: "id_venta"});
-  pagos.belongsTo(ventas, { as: "id_venta_venta", foreignKey: "id_venta"});
-  ventas.hasMany(pagos, { as: "pagos", foreignKey: "id_venta"});
+  payments.belongsTo(clients, { as: "id_client_client", foreignKey: "id_client"});
+  clients.hasMany(payments, { as: "payments", foreignKey: "id_client"});
+  sales.belongsTo(clients, { as: "id_client_client", foreignKey: "id_client"});
+  clients.hasMany(sales, { as: "sales", foreignKey: "id_client"});
+  commissions.belongsTo(commission_detail, { as: "id_commission_detail_commission_detail", foreignKey: "id_commission_detail"});
+  commission_detail.hasMany(commissions, { as: "commissions", foreignKey: "id_commission_detail"});
+  commissions.belongsTo(employees, { as: "id_employee_employee", foreignKey: "id_employee"});
+  employees.hasMany(commissions, { as: "commissions", foreignKey: "id_employee"});
+  sales.belongsTo(employees, { as: "id_employee_employee", foreignKey: "id_employee"});
+  employees.hasMany(sales, { as: "sales", foreignKey: "id_employee"});
+  users.belongsTo(employees, { as: "id_employee_employee", foreignKey: "id_employee"});
+  employees.hasMany(users, { as: "users", foreignKey: "id_employee"});
+  order_detail.belongsTo(orders, { as: "id_order_order", foreignKey: "id_order"});
+  orders.hasMany(order_detail, { as: "order_details", foreignKey: "id_order"});
+  sales.belongsTo(orders, { as: "id_order_order", foreignKey: "id_order"});
+  orders.hasMany(sales, { as: "sales", foreignKey: "id_order"});
+  products.belongsTo(product_categories, { as: "id_category_product_category", foreignKey: "id_category"});
+  product_categories.hasMany(products, { as: "products", foreignKey: "id_category"});
+  defective_products.belongsTo(products, { as: "id_product_product", foreignKey: "id_product"});
+  products.hasMany(defective_products, { as: "defective_products", foreignKey: "id_product"});
+  order_detail.belongsTo(products, { as: "id_product_product", foreignKey: "id_product"});
+  products.hasMany(order_detail, { as: "order_details", foreignKey: "id_product"});
+  purchase_detail.belongsTo(products, { as: "id_product_product", foreignKey: "id_product"});
+  products.hasMany(purchase_detail, { as: "purchase_details", foreignKey: "id_product"});
+  returns.belongsTo(products, { as: "id_product_product", foreignKey: "id_product"});
+  products.hasMany(returns, { as: "returns", foreignKey: "id_product"});
+  purchases.belongsTo(providers, { as: "id_provider_provider", foreignKey: "id_provider"});
+  providers.hasMany(purchases, { as: "purchases", foreignKey: "id_provider"});
+  purchase_detail.belongsTo(purchases, { as: "id_purchase_purchase", foreignKey: "id_purchase"});
+  purchases.hasMany(purchase_detail, { as: "purchase_details", foreignKey: "id_purchase"});
+  users.belongsTo(roles, { as: "id_role_role", foreignKey: "id_role"});
+  roles.hasMany(users, { as: "users", foreignKey: "id_role"});
+  payments.belongsTo(sales, { as: "id_sale_sale", foreignKey: "id_sale"});
+  sales.hasMany(payments, { as: "payments", foreignKey: "id_sale"});
+  returns.belongsTo(sales, { as: "id_sale_sale", foreignKey: "id_sale"});
+  sales.hasMany(returns, { as: "returns", foreignKey: "id_sale"});
 
   return {
-    categorias_productos,
-    clientes,
-    comisiones,
-    compras,
-    detalle_compra,
-    detalle_pedido,
-    detalle_venta,
-    devoluciones,
-    empleados,
-    pagos,
-    pedidos,
-    productos,
-    proveedores,
+    clients,
+    commission_detail,
+    commissions,
+    defective_products,
+    employees,
+    order_detail,
+    orders,
+    payments,
+    product_categories,
+    products,
+    providers,
+    purchase_detail,
+    purchases,
+    returns,
     roles,
-    usuarios,
-    ventas,
+    sale_detail,
+    sales,
+    users,
   };
 }
 module.exports = initModels;
