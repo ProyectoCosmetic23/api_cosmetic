@@ -8,7 +8,7 @@ const getAllRoles = async (req, res) => {
         if (roles.length === 0) {
             return res.status(404).json({ message: "No hay roles registrados" })
         }
-        var lista_Roles = []
+        var roles_list = []
         for (let role of roles) {
             var id_role = role.id_role;
             console.log(id_role);
@@ -16,19 +16,19 @@ const getAllRoles = async (req, res) => {
             console.log(name_role);
             var state_role = role.state_role;
             console.log(state_role);
-            var modules_string = role.modules_rol;
+            var modules_string = role.modules_role;
             console.log(modules_string);
             var modules_array = modules_string.split(", ");
             console.log(modules_array);
-            var rol_converted = {
+            var role_converted = {
                 id_role: id_role,
                 name_role: name_role,
                 state_role: state_role,
                 modules_rol: modules_array
             }
-            lista_Roles.push(rol_converted)
+            roles_list.push(role_converted)
         }
-        res.json(lista_Roles);
+        res.json(roles_list);
     } catch (error) {
         console.error('Error fetching roles:', error);
         res.status(500).json({ error: 'Internal Server Error' });
@@ -129,6 +129,3 @@ module.exports = {
     updateRoleStatus,
     updateRole
 };
-
-
-sequelize-auto -o "./models" -d 'cosmetic_db' -h 'localhost' -u 'postgres' -p '5432' -x 'cosmetic1234' -e postgres

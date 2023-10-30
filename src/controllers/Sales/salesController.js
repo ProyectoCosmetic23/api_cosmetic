@@ -1,15 +1,15 @@
 // ventasController.js
-const Ventas = require('../../models/ventas');
-const Detalle_Venta = require('../../models/detalle_venta');
+const Sales = require('../../models/sales');
+const Sale_Detail = require('../../models/sale_detail');
 
 // Obtener todas las ventas
 const getAllSales = async (req, res) => {
     try {
-        const ventas = await Ventas.findAll();
-        if (ventas.length === 0) {
+        const sales = await Sales.findAll();
+        if (sales.length === 0) {
             return res.status(404).json({ message: "No hay ventas registradas" })
         }
-        res.json(ventas);
+        res.json(sales);
     } catch (error) {
         console.error('Error fetching sales:', error);
         res.status(500).json({ error: 'Internal Server Error' });
@@ -20,14 +20,14 @@ const getAllSales = async (req, res) => {
 async function getSaleById(req, res) {
     const { id } = req.params;
     try {
-        const ventas = await Ventas.findByPk(id);
-        const detalle_venta = await Detalle_Venta.findAll({
-            where: { id_venta: id }
+        const sales = await sales.findByPk(id);
+        const sale_detail = await Sale_Detail.findAll({
+            where: { id_sale: id }
         });
-        if (!ventas) {
+        if (!sales) {
             return res.status(404).json({ error: 'Venta no encontrado.' });
         }
-        res.json({ ventas, detalle_venta });
+        res.json({ sales, sale_detail });
     } catch (error) {
         res.status(500).json({ error: 'Error al obtener la venta.' });
     }
@@ -36,16 +36,16 @@ async function getSaleById(req, res) {
 // Anular una venta
 async function anulateSaleById(req, res) {
     const { id } = req.params;
-    var estado_venta = "Anulado";
+    var sale_state = "Anulado";
     try {
-        const venta = await Ventas.findByPk(id);
-        if (!venta) {
+        const sale = await Sales.findByPk(id);
+        if (!sale) {
             return res.status(404).json({ error: 'Venta no encontrada.' });
         }
-        await venta.update({
-            estado_venta: estado_venta
+        await sale.update({
+            sale_state: sale_state
         });
-        res.json(venta);
+        res.json(sale);
     } catch (error) {
         res.status(500).json({ error: 'Error al anular la venta.' });
     }
