@@ -1,14 +1,14 @@
 //EmpleadosController.js
-const Empleado = require ('../../models/empleados');
+const Employee = require ('../../models/employees');
 
 //Consultar todas los empleados
-const getAllEmployes = async (req, res) => {
+const getAllEmployees = async (req, res) => {
   try {
-    const empleados = await Empleado.findAll();
-    if (empleados.length === 0) {
+    const employees = await Employee.findAll();
+    if (employees.length === 0) {
       return res.status(404).json({ message: "No hay empleados registrados" })
     }
-    res.json(empleados);
+    res.json(employees);
   } catch (error) {
     console.error('Error fetching products:', error);
     res.status(500).json({ error: 'Internal Server Error' });
@@ -17,14 +17,14 @@ const getAllEmployes = async (req, res) => {
 
 // Obtener el id de un empleado
 
-async function getEmployesById(req, res) {
+async function getEmployeesById(req, res) {
   const { id } = req.params;
   try {
-    const empleados = await Empleado.findByPk(id);
-    if (!empleados) {
+    const employees = await Employee.findByPk(id);
+    if (!employees) {
       return res.status(404).json({ error: 'Empleado no encontrado.' });
     }
-    res.json(empleados);
+    res.json(employees);
   } catch (error) {
     res.status(500).json({ error: 'Error al obtener el empleado.' });
   }
@@ -40,59 +40,59 @@ function isValidEmail(email) {
 
 //Crear un empleado
 
-async function createEmploye(req, res) {
+async function createEmployee(req, res) {
   const {
-    cedula_empleado,
-    nombre_empleado,
-    correo,
-    direccion,
-    telefono,
-    observacion,
+    id_card_employee ,
+    name_employee ,
+    email ,
+    address ,
+    phone ,
+    observation ,
   } = req.body;
 
   // Validación: Verifica que los campos obligatorios no estén vacíos
-  if (!cedula_empleado || !nombre_empleado || !correo || !direccion || !telefono) {
+  if (!id_card_employee || !name_employee || !email || !address || !phone) {
     return res.status(400).json({ error: 'Faltan campos obligatorios' });
   }
 
   // Validación: Cédula debe ser numérica
-  if (!/^\d{10}$/.test(cedula_empleado)) {
+  if (!/^\d{10}$/.test(id_card_employee)) {
     return res.status(400).json({ error: 'La cédula debe ser numérica y tener 10 dígitos' });
   }
 
   // Validación: Nombre debe contener letras, números, espacios y el símbolo "~" para la "ñ"
-if (!/^[A-Za-z0-9\s~ñÑ]+$/.test(nombre_producto)) {
+if (!/^[A-Za-z0-9\s~ñÑ]+$/.test(name_employee)) {
   return res.status(400).json({ error: 'El nombre debe contener letras, números, espacios y el símbolo "~" para la "ñ"' });
 }
 
 
   // Validación: Correo debe ser válido
-  if (!isValidEmail(correo)) {
+  if (!isValidEmail(email)) {
     return res.status(400).json({ error: 'El correo no es válido' });
   }
 
   // Validación: Teléfono debe ser numérico
-  if (!/^\d{10}$/.test(telefono)) {
+  if (!/^\d{10}$/.test(phone)) {
     return res.status(400).json({ error: 'El teléfono debe ser numérico y tener 10 dígitos' });
   }
 
   try {
-    const correoExistente = await Empleado.findOne({ where: { correo } });
+    const existingemail = await Employee.findOne({ where: { email } });
 
-    if (correoExistente) {
+    if (existingemail) {
       return res.status(400).json({ error: "El correo ya está en uso." });
     }
 
-    const nuevoEmpleado = await Empleado.create({
-      cedula_empleado,
-      nombre_empleado,
-      correo,
-      direccion,
-      telefono,
-      observacion,
+    const newEmployee = await Employee.create({
+      id_card_employee,
+      name_employee,
+      email,
+      address,
+      phone,
+      observation,
     });
 
-    res.json(nuevoEmpleado);
+    res.json(newEmployee);
   } catch (error) {
     console.error('Error al crear el empleado:', error);
     res.status(500).json({ error: 'Error al crear el empleado. Detalles: ' + error.message });
@@ -100,50 +100,50 @@ if (!/^[A-Za-z0-9\s~ñÑ]+$/.test(nombre_producto)) {
 }
 
 //Modificar un empleado
-async function employePut(req, res) {
+async function employeePut(req, res) {
   const { id } = req.params; // El ID del empleado
-  const { nombre_empleado, correo, direccion, telefono, observacion } = req.body;
+  const { name_employee, email, address, phone, observation } = req.body;
 
   if (!id) {
     return res.status(400).json({ error: 'Falta el ID en la solicitud' });
   }
 
   // Validación: El nombre debe contener letras, números, espacios y el símbolo "~" para la "ñ"
-  if (nombre_empleado && !/^[A-Za-z0-9\s~ñÑ]+$/.test(nombre_empleado)) {
+  if (name_employee && !/^[A-Za-z0-9\s~ñÑ]+$/.test(name_employee)) {
     return res.status(400).json({ error: 'El nombre debe contener letras, números, espacios y el símbolo "~" para la "ñ"' });
   }
   
   
 
   // Validación: Correo debe ser válido
-  if (correo && !isValidEmail(correo)) {
+  if (email && !isValidEmail(email)) {
     return res.status(400).json({ error: 'El correo no es válido' });
   }
 
   // Validación: Teléfono debe ser numérico
-  if (telefono && !/^\d{10}$/.test(telefono)) {
+  if (phone && !/^\d{10}$/.test(phone)) {
     return res.status(400).json({ error: 'El teléfono debe ser numérico y tener 10 dígitos' });
   }
 
   try {
     // Buscar el empleado por su ID
-    const empleado = await Empleado.findByPk(id);
+    const employee = await Employee.findByPk(id);
 
-    if (!empleado) {
+    if (!employee) {
       return res.status(404).json({ error: 'Empleado no encontrado' });
     }
 
     // Validar que al menos un campo a modificar esté presente
-    if (nombre_empleado || correo || direccion || telefono || observacion) {
+    if (name_employee || email || address || phone || observation) {
       // Actualizar los campos del empleado
-      if (nombre_empleado) empleado.nombre_empleado = nombre_empleado;
-      if (correo) empleado.correo = correo;
-      if (direccion) empleado.direccion = direccion;
-      if (telefono) empleado.telefono = telefono;
-      if (observacion) empleado.observacion = observacion;
+      if (name_employee) employee.name_employee = name_employee;
+      if (email) employee.email = email;
+      if (address) employee.address = address;
+      if (phone) employee.phone = phone;
+      if (observation) employee.observation = observation;
 
       // Guardar los cambios en la base de datos
-      await empleado.save();
+      await employee.save();
 
       return res.json({ msg: 'La modificación se efectuó correctamente' });
     } else {
@@ -158,23 +158,23 @@ async function employePut(req, res) {
 
 
 //cambiar estado del empleado
-const employeChangeStatus = async (req, res) => {
+const employeeChangeStatus = async (req, res) => {
   const { id } = req.params; // El ID del empleado
-  const { estado_empleado} = req.body;
+  const { state_employee } = req.body;
   let mensaje = '';
 
   try {
       if (id) {
           // Buscar el empleado por su ID
-          const empleado = await Empleado.findByPk(id);
+          const employee = await Employee.findByPk(id);
 
-          if (empleado) {
+          if (employee) {
               // Actualizar los campos del empleado
-              empleado.estado_empleado = estado_empleado;
+              employee.state_employee = state_employee;
               
 
               // Guardar los cambios en la base de datos
-              await empleado.save();
+              await employee.save();
 
               mensaje = "Se cambio el estado correctamente";
           } else {
@@ -198,9 +198,9 @@ const employeChangeStatus = async (req, res) => {
 //Exportar los metodos del empleado
 
 module.exports= {
-  getAllEmployes,
-  getEmployesById,
-  createEmploye,
-  employePut,
-  employeChangeStatus
+  getAllEmployees,
+  getEmployeesById,
+  createEmployee,
+  employeePut,
+  employeeChangeStatus
 };

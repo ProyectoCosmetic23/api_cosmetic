@@ -1,4 +1,4 @@
-const { DataTypes } = require('sequelize');
+const { DataTypes, NOW } = require('sequelize');
 const sequelize = require('../config/sequelize');
 
 const Employees = sequelize.define('employees', {
@@ -16,23 +16,24 @@ const Employees = sequelize.define('employees', {
   },
   name_employee: {
     type: DataTypes.STRING(80),
-    allowNull: false
+    allowNull: true
   },
   email: {
     type: DataTypes.STRING(80),
-    allowNull: false
+    allowNull: true
   },
   address: {
     type: DataTypes.STRING(80),
-    allowNull: false
+    allowNull: true
   },
   phone: {
     type: DataTypes.STRING(80),
-    allowNull: false
+    allowNull: true
   },
   state_employee: {
     type: DataTypes.STRING(15),
-    allowNull: true
+    allowNull: true,
+    defaultValue: "Activo"
   },
   observation: {
     type: DataTypes.STRING(100),
@@ -40,7 +41,8 @@ const Employees = sequelize.define('employees', {
   },
   creation_date_employee: {
     type: DataTypes.DATE,
-    allowNull: true
+    allowNull: true,
+    defaultValue: new NOW()
   }
 }, {
   sequelize,

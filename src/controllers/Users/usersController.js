@@ -1,16 +1,16 @@
 const nodemailer = require ('nodemailer');
-const Usuarios = require ('../../models/usuarios.js');
+const Users = require ('../../models/users.js');
 const jwt = require('jsonwebtoken');
 
 
 //Función para traer todos los usuarios
 const getAllUsers = async (req, res) => {
   try {
-    const usuarios = await Usuarios.findAll();
-    if (usuarios.length === 0) {
+    const users = await Users.findAll();
+    if (users.length === 0) {
       return res.status(404).json({ message: "No hay usuarios registrados" });
     }
-    res.json(usuarios);
+    res.json(users);
   } catch (error) {
     console.error('Error fetching usuarios:', error);
     res.status(500).json({ error: 'Error interno del servidor' });
@@ -22,11 +22,11 @@ const getAllUsers = async (req, res) => {
 async function getUserById(req, res) {
   const { id } = req.params;
   try {
-    const usuario = await Usuarios.findByPk(id);
-    if (!usuario) {
+    const user = await Users.findByPk(id);
+    if (!user) {
       return res.status(404).json({ error: 'Usuario no encontrado.' });
     }
-    res.json(usuario);
+    res.json(user);
   } catch (error) {
     res.status(500).json({ error: 'Error al obtener el usuario.' });
   }
@@ -34,47 +34,47 @@ async function getUserById(req, res) {
 
 //Función para crear un usuario nuevo
 async function createUser(req, res) {
-  const { id_rol, id_empleado, nombre_usuario, correo_usuario, contrasena_usuario, observacion_usuario } = req.body;
+  const { id_role , id_employee , username , email , password , observation_user  } = req.body;
 
   // Validar la existencia de los campos requeridos
-  if (!id_rol || !id_empleado || !nombre_usuario || !correo_usuario || !contrasena_usuario) {
+  if (!id_role  || !id_employee  || !username  || !email  || !password ) {
     return res.status(400).json({ error: "Todos los campos son obligatorios." });
   }
 
   // Validar la longitud de la contraseña
-  if (contrasena_usuario.length <= 6) {
+  if (password .length <= 6) {
     return res.status(400).json({ error: "La contraseña debe tener al menos 7 caracteres." });
   }
 
   // Validar que la contraseña contenga al menos una mayúscula, un número y un carácter especial
   const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/;
-  if (!passwordRegex.test(contrasena_usuario)) {
+  if (!passwordRegex.test(password )) {
     return res.status(400).json({ error: "La contraseña debe contener al menos una mayúscula, un número y un carácter especial." });
   }
 
   // Validar el formato del correo electrónico
   const emailRegex = /^[A-Za-z0-9._%-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$/;
-  if (!emailRegex.test(correo_usuario)) {
+  if (!emailRegex.test(email)) {
     return res.status(400).json({ error: "El correo electrónico no es válido." });
   }
 
 
   try {
-    const correoExistente = await Usuarios.findOne({ where: { correo_usuario } });
+    const existingemail = await Usuarios.findOne({ where: { email } });
 
-    if (correoExistente) {
+    if (existingemail) {
       return res.status(400).json({ error: "El correo ya está en uso." });
     }
 
-    const usuario = await Usuarios.create({
-      id_rol,
-      id_empleado,
-      nombre_usuario,
-      correo_usuario,
-      contrasena_usuario,
-      observacion_usuario
+    const user = await Users.create({
+      id_role,
+      id_employee,
+      username,
+      email,
+      password,
+      observation_user
     });
-    res.status(201).json(usuario);
+    res.status(201).json(user);
   } catch (error) {
     res.status(400).json({ error: 'Error al crear el usuario.' });
   }
@@ -84,36 +84,36 @@ async function createUser(req, res) {
 //Función para editar el usuario
 async function updateUser(req, res) {
   const { id } = req.params;
-  const { id_rol, id_empleado, nombre_usuario, correo_usuario, observacion_usuario } = req.body;
+  const { id_role, id_employee, username, email, observation_user } = req.body;
 
   try {
-    const usuario = await Usuarios.findByPk(id);
+    const user = await Users.findByPk(id);
 
-    if (!usuario) {
+    if (!user) {
       return res.status(404).json({ error: 'Usuario no encontrado.' });
     }
 
     // Validar el formato del correo electrónico
     const emailRegex = /^[A-Za-z0-9._%-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$/;
-    if (correo_usuario && !emailRegex.test(correo_usuario)) {
+    if (email && !emailRegex.test(email)) {
       return res.status(400).json({ error: "El correo electrónico no es válido." });
     }
 
     // Validar si el correo ya está en uso por otro usuario
-    const existingUser = await Usuarios.findOne({ where: { correo_usuario } });
+    const existingUser = await Users.findOne({ where: { email } });
     if (existingUser && existingUser.id !== id) {
       return res.status(400).json({ error: "El correo ya está en uso por otro usuario." });
     }
 
-    await usuario.update({
-      id_rol,
-      id_empleado,
-      nombre_usuario,
-      correo_usuario,
-      observacion_usuario
+    await user.update({
+      id_role,
+      id_employee,
+      username,
+      email,
+      observation_user
     });
 
-    res.json(usuario);
+    res.json(user);
   } catch (error) {
     res.status(500).json({ error: 'Error al actualizar el usuario.' });
   }
@@ -122,26 +122,26 @@ async function updateUser(req, res) {
 
 //Metodo para loguearse
 async function loginUser(req, res) {
-  const { correo_usuario, contrasena_usuario } = req.body;
+  const { email, password } = req.body;
 
   try {
-    const usuario = await Usuarios.findOne({ where: { correo_usuario: correo_usuario } });
+    const user = await Users.findOne({ where: { email: email } });
 
-    if (!usuario) {
+    if (!user) {
       return res.status(401).json({ error: 'Credenciales incorrectas.' });
     }
 
-    if (usuario.estado_usuario === 'inactivo') {
+    if (user.state_user === 'inactivo') {
       return res.status(400).json({ error: 'El usuario está inactivo.' });
     }
 
-    if (usuario.contrasena_usuario !== contrasena_usuario) {
+    if (user.password !== password) {
       return res.status(401).json({ error: 'Credenciales incorrectas.' });
     }
 
     res.json({
       message: "Inicio de sesión exitoso.",
-      name: usuario.nombre_usuario
+      name: user.username
     });
 
   } catch (error) {
@@ -153,21 +153,21 @@ async function loginUser(req, res) {
 //Metodo para actualizar el estado
 const updateUserState = async (req, res) => {
   const { id } = req.params; // El ID del usuario
-  const { estado_usuario} = req.body;
+  const { state_user} = req.body;
   let mensaje = '';
 
   try {
       if (id) {
           // Buscar el usuario por su ID
-          const usuario = await Usuarios.findByPk(id);
+          const user = await Users.findByPk(id);
 
-          if (usuario) {
+          if (user) {
               // Actualizar los campos del usuario
-              usuario.estado_usuario = estado_usuario;
+              user.state_user = state_user;
               
 
               // Guardar los cambios en la base de datos
-              await usuario.save();
+              await user.save();
 
               mensaje = "Se cambio el estado correctamente";
           } else {
@@ -205,12 +205,12 @@ const transporter = nodemailer.createTransport({
 
 
 // Función para enviar Email
-async function sendEmail(correo_usuario, mailOptions) {
+async function sendEmail(email, mailOptions) {
   try {
     // Verifica si el usuario con el correo proporcionado existe
-    const usuario = await Usuarios.findOne({ where: { correo_usuario: correo_usuario } });
+    const user = await Users.findOne({ where: { email: email } });
 
-    if (!usuario) {
+    if (!user) {
       return { success: false, message: 'Usuario no encontrado.' };
     }
     const resetToken = generateResetToken();
@@ -230,13 +230,13 @@ let resetTokens = {};
 
 //Metodo para recuperacion de contraseña
 async function forgotPassword(req, res) {
-  const { correo_usuario } = req.body;
+  const { email } = req.body;
 
   try {
     // Busca al usuario por el correo proporcionado
-    const usuario = await Usuarios.findOne({ where: { correo_usuario: correo_usuario } });
+    const user = await Users.findOne({ where: { email: email } });
 
-    if (!usuario) {
+    if (!user) {
       return res.status(404).json({ error: 'Usuario no encontrado.' });
     }
 
@@ -244,18 +244,18 @@ async function forgotPassword(req, res) {
     const resetToken = generateResetToken();
 
     // Almacena el token en la variable temporal
-    resetTokens[resetToken] = usuario;
+    resetTokens[resetToken] = user;
 
     // Construye el objeto mailOptions con la información necesaria, incluyendo el token en el enlace
     const mailOptions = {
       from: 'julianctsistemas@gmail.com',
-      to: correo_usuario,
+      to: email,
       subject: 'Recuperación de Contraseña',
       text: `Haga clic en el siguiente enlace para restablecer su contraseña: https://localhost:8080/api/change-password?token=${resetToken}`,
     };
 
     // Enviar correo con el enlace de restablecimiento de contraseña
-    await sendEmail(correo_usuario, mailOptions);
+    await sendEmail(email, mailOptions);
 
     res.json({ message: 'Se ha enviado un enlace para restablecer la contraseña por correo electrónico.' });
   } catch (error) {
@@ -271,15 +271,15 @@ async function changePassword(req, res) {
 
   try {
     // Busca al usuario por el token de reseteo
-    const usuario = resetTokens[token];
+    const user = resetTokens[token];
 
-    if (!usuario) {
+    if (!user) {
       return res.status(404).json({ error: 'Usuario no encontrado.' });
     }
 
     // Actualiza la contraseña
-    usuario.contrasena_usuario = newPassword;
-    await usuario.save();
+    user.password = newPassword;
+    await user.save();
 
     // Elimina el token de la memoria
     delete resetTokens[token];

@@ -1,4 +1,4 @@
-const { DataTypes } = require('sequelize');
+const { DataTypes, NOW } = require('sequelize');
 const sequelize = require('../config/sequelize');
 
 const Products = sequelize.define('products', {
@@ -11,7 +11,7 @@ const Products = sequelize.define('products', {
   },
   id_category: {
     type: DataTypes.INTEGER,
-    allowNull: false,
+    allowNull: true,
     references: {
       model: 'product_categories',
       key: 'id_category'
@@ -19,39 +19,41 @@ const Products = sequelize.define('products', {
   },
   name_product: {
     type: DataTypes.STRING(80),
-    allowNull: false
+    allowNull: true
   },
   quantity: {
     type: DataTypes.INTEGER,
-    allowNull: false
+    allowNull: true
   },
   max_stock: {
     type: DataTypes.INTEGER,
-    allowNull: false
+    allowNull: true
   },
   min_stock: {
     type: DataTypes.INTEGER,
-    allowNull: false
+    allowNull: true
   },
   cost_price: {
     type: DataTypes.DECIMAL,
-    allowNull: false
+    allowNull: true
   },
   selling_price: {
     type: DataTypes.DECIMAL,
-    allowNull: false
+    allowNull: true
   },
   profit: {
     type: DataTypes.DECIMAL,
-    allowNull: false
+    allowNull: true
   },
   creation_date_product: {
     type: DataTypes.DATE,
-    allowNull: true
+    allowNull: true,
+    defaultValue: new NOW()
   },
   state_product: {
     type: DataTypes.STRING(15),
-    allowNull: true
+    allowNull: true,
+    defaultValue: "Activo"
   },
   observation: {
     type: DataTypes.STRING(100),
