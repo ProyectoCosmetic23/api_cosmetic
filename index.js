@@ -8,6 +8,8 @@ const ordersRoutes = require('./src/routes/ordersRoutes');
 const orderDetailRoutes = require('./src/routes/orderDetailRoutes');
 const salesRoutes = require('./src/routes/salesRoutes');
 const saleDetailRoutes = require('./src/routes/saleDetailRoutes');
+const categoryRoutes = require('./src/routes/categoryRoutes');
+const purchaseRoutes = require('./src/routes/purchaseRoutes');
 
 const cors= require("cors");
 
@@ -36,7 +38,8 @@ app.use('/api', saleDetailRoutes);
 app.use('/api', employeesRoutes);
 app.use('/api', productsRoutes);
 app.use('/api', usersRoutes);
-
+app.use('/api', categoryRoutes);
+app.use('/api', purchaseRoutes);
 
 
 app.listen(PORT, () => {
