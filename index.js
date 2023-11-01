@@ -3,6 +3,13 @@ const sequelize = require('./src/config/sequelize');
 const employeesRoutes = require('./src/routes/employeesRoutes');
 const productsRoutes = require('./src/routes/productsRoutes');
 const usersRoutes = require('./src/routes/usersRoutes');
+const rolesRoutes = require('./src/routes/rolesRoutes');
+const ordersRoutes = require('./src/routes/ordersRoutes');
+const orderDetailRoutes = require('./src/routes/orderDetailRoutes');
+const salesRoutes = require('./src/routes/salesRoutes');
+const saleDetailRoutes = require('./src/routes/saleDetailRoutes');
+const categoryRoutes = require('./src/routes/categoryRoutes');
+const purchaseRoutes = require('./src/routes/purchaseRoutes');
 
 const cors= require("cors");
 
@@ -23,11 +30,16 @@ app.use(express.urlencoded({ extended: true }));
   }
 })();
 
-
+app.use('/api', rolesRoutes);
+app.use('/api', ordersRoutes);
+app.use('/api', orderDetailRoutes);
+app.use('/api', salesRoutes);
+app.use('/api', saleDetailRoutes);
 app.use('/api', employeesRoutes);
 app.use('/api', productsRoutes);
 app.use('/api', usersRoutes);
-
+app.use('/api', categoryRoutes);
+app.use('/api', purchaseRoutes);
 
 
 app.listen(PORT, () => {
