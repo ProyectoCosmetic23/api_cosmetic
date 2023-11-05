@@ -11,6 +11,7 @@ const saleDetailRoutes = require('./src/routes/saleDetailRoutes');
 const categoryRoutes = require('./src/routes/categoryRoutes');
 const purchaseRoutes = require('./src/routes/purchaseRoutes');
 const returnsRoutes = require('./src/routes/returnsRoutes');
+const clientsRoutes = require('./src/routes/clientsRoutes');
 
 const cors= require("cors");
 
@@ -42,6 +43,7 @@ app.use('/api', usersRoutes);
 app.use('/api', categoryRoutes);
 app.use('/api', purchaseRoutes);
 app.use('/api', returnsRoutes);
+app.use('/api', clientsRoutes);
 
 
 app.listen(PORT, () => {
