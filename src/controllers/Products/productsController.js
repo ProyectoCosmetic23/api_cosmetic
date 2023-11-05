@@ -1,5 +1,5 @@
 //ProductosController.js
-const Product = require ('../../models/products');
+const Product = require('../../models/products');
 
 //Consultar todos los productos
 
@@ -42,7 +42,7 @@ async function createProducts(req, res) {
     min_stock,
     cost_price,
     selling_price,
-    observation ,
+    observation,
   } = req.body;
 
   // Validación: Verifica que los campos obligatorios no estén vacíos
@@ -69,7 +69,7 @@ async function createProducts(req, res) {
   }
 
   // Calcular la ganancia
-  const profit  = selling_price - cost_price;
+  const profit = selling_price - cost_price;
 
 
   try {
@@ -99,11 +99,11 @@ async function productsPut(req, res) {
   const { id_category, name_product, max_stock, min_stock, selling_price, observation } = req.body;
   let mensaje = '';
 
-  
- // Validación: Nombre debe contener letras, números y espacios
-if (!/^[A-Za-z0-9\s]+$/.test(name_product)) {
-  return res.status(400).json({ error: 'El nombre debe contener letras, números y espacios' });
-}
+
+  // Validación: Nombre debe contener letras, números y espacios
+  if (!/^[A-Za-z0-9\s]+$/.test(name_product)) {
+    return res.status(400).json({ error: 'El nombre debe contener letras, números y espacios' });
+  }
 
   // Validación: Verifica que los campos obligatorios no estén vacíos
   if (!id_category || !name_product || !max_stock || !min_stock || !selling_price) {
@@ -176,32 +176,32 @@ const productsChangeStatus = async (req, res) => {
   let mensaje = '';
 
   try {
-      if (id) {
-          // Buscar el producto por su ID
-          const product = await Product.findByPk(id);
+    if (id) {
+      // Buscar el producto por su ID
+      const product = await Product.findByPk(id);
 
-          if (producto) {
-              // Actualizar los campos del producto
-              product.state_product  = state_product ;
-              
+      if (producto) {
+        // Actualizar los campos del producto
+        product.state_product = state_product;
 
-              // Guardar los cambios en la base de datos
-              await product.save();
 
-              mensaje = "Se cambio el estado correctamente";
-          } else {
-              mensaje = "El producto no fue encontrado";
-          }
+        // Guardar los cambios en la base de datos
+        await product.save();
+
+        mensaje = "Se cambio el estado correctamente";
       } else {
-          mensaje = "Falta el ID en la solicitud";
+        mensaje = "El producto no fue encontrado";
       }
+    } else {
+      mensaje = "Falta el ID en la solicitud";
+    }
   } catch (error) {
     console.error("Error al guardar el producto:", error);
     mensaje = "Ocurrió un error al actualizar el producto: " + error.message;
-}
+  }
 
   res.json({
-      msg: mensaje
+    msg: mensaje
   });
 };
 
@@ -209,7 +209,7 @@ const productsChangeStatus = async (req, res) => {
 
 //Exportar los metodos del producto
 
-module.exports= {
+module.exports = {
   getAllProducts,
   getProductsById,
   createProducts,
