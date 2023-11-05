@@ -170,7 +170,8 @@ CREATE TABLE commissions (
 	id_commission INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 	id_employee INT NOT NULL,
 	total_commission NUMERIC NOT NULL,
-	id_commission_detail INT NOT NULL
+	id_commission_detail INT NOT NULL,
+	total_sales INT NOT NULL
 );
 
 /* Create the commission detail table */
@@ -302,7 +303,7 @@ REFERENCES products(id_product);
 
 
 
-// —---------------------------------------------------------------------------------------- //
+
 
 -- Insert into the 'commission_detail' Table
 INSERT INTO commission_detail (month_commission, commission_percentage)
@@ -389,10 +390,7 @@ VALUES (1, 1, 15, 14.00),
        (3, 3, 12, 12.00);
 
 -- Insert into the 'commissions' Table
-INSERT INTO commissions (id_employee, total_commission, id_commission_detail)
-VALUES (1, 42.00, 1),
-       (2, 81.00, 2),
-       (3, 28.80, 3);
+
 
 -- Insert into the 'payments' Table
 INSERT INTO payments (id_sale, id_client, payment_date, total_payment, total_remaining)

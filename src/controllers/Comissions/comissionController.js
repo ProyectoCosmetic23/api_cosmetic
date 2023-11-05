@@ -1,8 +1,8 @@
 const Comissions = require('../../models/commissions');
 const Comission_Detail = require('../../models/commission_detail');
 const Sales = require('../../models/sales');
+const Employee = require('../../models/employees');
 const { Op } = require('sequelize'); // Importa Sequelize.Op para los operadores
-
 
 async function createComs(req, res) {
     const {
@@ -62,6 +62,7 @@ async function createComs(req, res) {
             id_employee,
             total_commission,
             id_commission_detail,
+            total_sales: employeeSales, // Asignar el valor de total_sales
         });
 
         res.status(201).json(newComs);
@@ -74,18 +75,27 @@ async function createComs(req, res) {
 
 
 // Obtener todos las comisiones
-const getAllComs = async (req, res) => {
+async function getAllComs(req, res) {
     try {
         const comissions = await Comissions.findAll();
         if (comissions.length === 0) {
-            return res.status(404).json({ message: "No hay comisiones registradas" })
+            return res.status(404).json({ message: "No hay comisiones registradas" });
         }
+
+        // Itera a través de las comisiones y agrega el nombre del empleado
+        for (const comission of comissions) {
+            const employee = await Employee.findByPk(comission.id_employee);
+            comission.employee_name = employee ? employee.name_employee : '';
+        }
+
         res.json(comissions);
+
     } catch (error) {
-        console.error('Error fetching products:', error);
+        console.error('Error fetching comissions:', error);
         res.status(500).json({ error: 'Internal Server Error' });
     }
-};
+}
+
 //Obtener comision por id de empleado
 async function getComsEmploy(req, res) {
     const id_employee = req.params.id;
@@ -99,6 +109,23 @@ async function getComsEmploy(req, res) {
             return res.status(404).json({ message: "No hay comisiones para este empleado" })
         }
         res.json(comsEmployee);
+    } catch (error) {
+        console.error('Error fetching payments:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+}
+async function getComsDetailId(req, res) {
+    const id_commission_detail = req.params.id;
+
+    try {
+        const comsDetailComs = await Comissions.findAll({
+            where: { id_commission_detail },
+        });
+
+        if (comsDetailComs.length === 0) {
+            return res.status(404).json({ message: "No hay comisiones para este detalle" })
+        }
+        res.json(comsDetailComs);
     } catch (error) {
         console.error('Error fetching payments:', error);
         res.status(500).json({ error: 'Internal Server Error' });
@@ -118,6 +145,7 @@ async function getComsById(req, res) {
     }
 }
 
+
 // Función para crear una comision
 
 module.exports = {
@@ -125,4 +153,5 @@ module.exports = {
     getComsById,
     createComs,
     getComsEmploy,
+    getComsDetailId
 };

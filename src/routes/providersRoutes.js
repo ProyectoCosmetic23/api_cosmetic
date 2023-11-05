@@ -6,6 +6,6 @@ router.get('/proveedores', providersController.getAllProv);
 router.get('/proveedores/:id', providersController.getProvById);
 router.put('/proveedores/:id', providersController.updateProv);
 router.post('/proveedores', providersController.createProv);
-router.put('/proveedores/:id/estado', providersController.updateState);
+router.put('/proveedores/estado/:id', providersController.updateState);
 
 module.exports = router;
