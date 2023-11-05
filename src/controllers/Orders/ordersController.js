@@ -13,7 +13,7 @@ const getAllOrders = async (req, res) => {
     }
     res.json(orders);
   } catch (error) {
-    console.error('Error fetching products:', error);
+    console.error('Error al obtener Pedidos:', error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };

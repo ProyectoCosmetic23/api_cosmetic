@@ -39,37 +39,36 @@ const getAllRoles = async (req, res) => {
 async function getRoleById(req, res) {
     const { id } = req.params;
     try {
-        const role = await Roles.findByPk(id);
+        var role = await Roles.findByPk(id);
         if (!role) {
             return res.status(404).json({ error: 'Rol no encontrado.' });
         }
         var id_role = role.id_role;
         var name_role = role.name_role;
         var state_role = role.state_role;
-        var modules_string = role.modules_rol
+        var modules_string = role.modules_role;
         var modules_array = modules_string.split(", ");
-        var role_detail = {
+        res.json({ 
             id_role: id_role,
             name_role: name_role,
             state_role: state_role,
-            modules_rol: modules_array
-        }
-        res.json({ role_detail });
+            modules_role: modules_array
+        });
     } catch (error) {
-        res.status(500).json({ error: 'Error al obtener el rol.' });
+        res.status(500).json({ error: 'Error al obtener el rol.' + error});
     }
 }
 
 // Crear un rol
 async function createRole(req, res) {
-    const { name_role, modules_rol } = req.body;
+    const { name_role, modules_role } = req.body;
     state_role = "Activo";
-    modules_string = modules_rol.join(", ");
+    modules_string = modules_role.join(", ");
     try {
         const nuevo_rol = await Roles.create({
             name_role: name_role,
             state_role: state_role ,
-            modules_rol: modules_string
+            modules_role: modules_string
         });
         res.status(201).json({ nuevo_rol });
     } catch (error) {
