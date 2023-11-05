@@ -42,12 +42,12 @@ function isValidEmail(email) {
 
 async function createEmployee(req, res) {
   const {
-    id_card_employee ,
-    name_employee ,
-    email ,
-    address ,
-    phone ,
-    observation ,
+    id_card_employee,
+    name_employee,
+    email,
+    address,
+    phone,
+    observation,
   } = req.body;
 
   // Validación: Verifica que los campos obligatorios no estén vacíos
@@ -61,10 +61,9 @@ async function createEmployee(req, res) {
   }
 
   // Validación: Nombre debe contener letras, números, espacios y el símbolo "~" para la "ñ"
-if (!/^[A-Za-z0-9\s~ñÑ]+$/.test(name_employee)) {
-  return res.status(400).json({ error: 'El nombre debe contener letras, números, espacios y el símbolo "~" para la "ñ"' });
-}
-
+  if (!/^[A-Za-z0-9\s~ñÑ]+$/.test(name_employee)) {
+    return res.status(400).json({ error: 'El nombre debe contener letras, números, espacios y el símbolo "~" para la "ñ"' });
+  }
 
   // Validación: Correo debe ser válido
   if (!isValidEmail(email)) {
@@ -76,13 +75,7 @@ if (!/^[A-Za-z0-9\s~ñÑ]+$/.test(name_employee)) {
     return res.status(400).json({ error: 'El teléfono debe ser numérico y tener 10 dígitos' });
   }
 
-  try {
-    const existingemail = await Employee.findOne({ where: { email } });
-
-    if (existingemail) {
-      return res.status(400).json({ error: "El correo ya está en uso." });
-    }
-
+  
     const newEmployee = await Employee.create({
       id_card_employee,
       name_employee,
@@ -93,12 +86,34 @@ if (!/^[A-Za-z0-9\s~ñÑ]+$/.test(name_employee)) {
     });
 
     res.json(newEmployee);
-  } catch (error) {
+  }  (error) =>{
     console.error('Error al crear el empleado:', error);
     res.status(500).json({ error: 'Error al crear el empleado. Detalles: ' + error.message });
   }
-}
 
+
+  async function checkCedulaAvailability(req, res) {
+    const { cedula } = req.query;
+    try {
+      const existingCedula = await Employee.findOne({ where: { id_card_employee: cedula } });
+      res.json(!existingCedula);
+    } catch (error) {
+      console.error('Error al verificar la cédula:', error);
+      res.status(500).json({ error: 'Error al verificar la cédula.' });
+    }
+  }
+
+  async function checkEmailAvailability(req, res) {
+    const { email } = req.query;
+    try {
+      const existingEmail = await Employee.findOne({ where: { email } });
+      res.json(!existingEmail);
+    } catch (error) {
+      console.error('Error al verificar el correo:', error);
+      res.status(500).json({ error: 'Error al verificar el correo.' });
+    }
+  }
+ 
 //Modificar un empleado
 async function employeePut(req, res) {
   const { id } = req.params; // El ID del empleado
@@ -193,14 +208,14 @@ const employeeChangeStatus = async (req, res) => {
   });
 };
 
-
-
-//Exportar los metodos del empleado
-
 module.exports= {
   getAllEmployees,
   getEmployeesById,
   createEmployee,
   employeePut,
-  employeeChangeStatus
+  employeeChangeStatus,
+  checkCedulaAvailability,
+  checkEmailAvailability
+  
+
 };
