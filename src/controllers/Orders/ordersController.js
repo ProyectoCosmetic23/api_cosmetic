@@ -66,7 +66,7 @@ async function getOrderById(req, res) {
 
 // Función para crear un nuevo pedido
 async function createOrder(req, res) {
-  const { id_client, id_employee, order_date, delivery_date, payment_type, total_order, products } = req.body;
+  const { id_client, id_employee, order_date, payment_type, total_order, products } = req.body;
   const order_state = "Activo";
   const delivery_state = "En proceso";
   const payment_state = "Por pagar";
@@ -75,7 +75,7 @@ async function createOrder(req, res) {
     const lastInvoiceNumber = await getLastInvoiceNumber();
     const newInvoiceNumber = lastInvoiceNumber + 1;
 
-    const newOrder = await createNewOrder(id_client, id_employee, newInvoiceNumber, order_date, delivery_date, payment_type, order_state, delivery_state, payment_state, total_order);
+    const newOrder = await createNewOrder(id_client, id_employee, newInvoiceNumber, order_date, payment_type, order_state, delivery_state, payment_state, total_order);
 
     const order_detail = await createOrderDetail(newOrder.id_order, products);
 
@@ -203,12 +203,14 @@ async function updateOrderDeliveryStatus(order, newDeliveryStatus) {
 
 // Función para crear datos de venta a partir de un pedido
 function createSaleDataFromOrder(order) {
+  const delivery_date = new Date();
   return {
     id_order: order.id_order,
     id_client: order.id_client,
     id_employee: order.id_employee,
     invoice_number: order.order_number,
-    sale_date: order.order_date,
+    order_date: order.order_date,
+    delivery_date: delivery_date,
     payment_state: order.payment_state,
     sale_state: "Activo",
     payment_type: order.payment_type,

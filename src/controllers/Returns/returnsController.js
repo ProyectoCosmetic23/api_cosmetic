@@ -113,13 +113,14 @@ const createNewSaleAndCancelOldSale = async (req, res) => {
         id_order,
         id_client,
         id_employee,
+        order_date,
         payment_state,
         payment_type,
         products,
         observation_return,
     } = req.body;
 
-    const sale_date = new Date();
+    const delivery_date = new Date();
     const sale_state = 'Activo';
 
     try {
@@ -142,7 +143,8 @@ const createNewSaleAndCancelOldSale = async (req, res) => {
             id_client,
             id_employee,
             invoice_number: newInvoiceNumber,
-            sale_date,
+            order_date,
+            delivery_date,
             sale_state,
             payment_state,
             payment_type,
