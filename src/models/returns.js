@@ -1,4 +1,4 @@
-module.exports = Returns;const { DataTypes } = require('sequelize');
+const { DataTypes } = require('sequelize');
 const sequelize = require('../config/sequelize');
 
 const Returns = sequelize.define('returns', {
