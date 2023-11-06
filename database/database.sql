@@ -114,7 +114,8 @@ CREATE TABLE purchase_detail (
 	product_quantity INT NOT NULL,
 	cost_price NUMERIC,
 	selling_price NUMERIC,
-	sub_total NUMERIC
+	sub_total NUMERIC,
+	vat NUMERIC
 );
 
 /* Create the orders table */

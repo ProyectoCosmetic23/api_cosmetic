@@ -44,7 +44,12 @@ const Purchase_Detail = sequelize.define('purchase_detail', {
   sub_total: {
     type: DataTypes.DECIMAL,
     allowNull: true
+  },
+  vat: {
+    type: DataTypes.DECIMAL,
+    allowNull: true
   }
+
 }, {
   sequelize,
   tableName: 'purchase_detail',
