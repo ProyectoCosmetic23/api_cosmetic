@@ -6,18 +6,18 @@ const Product = require ('../../models/products');
 const Proveedor = require ('../../models/providers');
 
 // Obtener todos las purchases
-const getAllShopping = async (req, res) => {
+const getAllShopping = async (req, res, next) => {
     try {
-        const purchases = await Purchase.findAll();
-        if (purchases.length === 0) {
-            return res.status(404).json({ success: false, message: "No hay purchases registradas" });
-        }
-        res.json({ success: true, data: purchases });
+      const purchases = await Purchase.findAll();
+      if (purchases.length === 0) {
+        throw new Error('No se encontraron compras registradas.');
+      }
+      res.json(purchases);
     } catch (error) {
-        console.error('Error al obtener las purchases:', error);
-        res.status(500).json({ success: false, message: 'Error interno del servidor' });
+      console.error('Error al recuperar las compras:', error);
+      next(error);
     }
-};
+  };
 ;
 
 // Obtener una purchase por ID este metodo sirve para ver el detalle de la purchase
@@ -155,6 +155,7 @@ async function createShop(req, res) {
                 cost_price: productDB.cost_price,
                 selling_price: productDB.selling_price,
                 subtotal,
+                vat
             });
         }
 
@@ -239,6 +240,35 @@ async function anulateShopById(req, res) {
 }
 
 
+
+// Middleware function to validate if a category already exists
+async function validateInvoiceExists(req, res, next) {
+    try {
+      const { invoice_number } = req.query;
+  
+      // Check if a category with the same name exists
+      const existingInvoice = await Purchase.findOne({ where: { invoice_number: invoice_number} });
+  
+      if (existingInvoice) {
+        // If a category with the same name exists, return an error response
+        return res.status(400).json(true);
+      }
+  
+      // Check if the category name is empty
+      if (!invoice_number) {
+        // If the category name is empty, return an error response
+        return res.status(400).json(true);
+      }
+  
+      // Continue to the next middleware or route handler
+      return res.status(200).json(false);
+    } catch (error) {
+      // Handle any errors that may occur during the process
+      return res.status(500).json({ message: "Error interno del servidor"});
+    }
+  }
+  
+
 //Exportar las funciones del módulo purchases|
 
 module.exports = {
@@ -246,4 +276,5 @@ module.exports = {
     getShoppingById,
     createShop,
     anulateShopById,
+    validateInvoiceExists
 };
