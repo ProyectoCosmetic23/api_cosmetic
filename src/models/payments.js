@@ -1,8 +1,8 @@
-const { DataTypes } = require('sequelize');
+const { DataTypes, NOW } = require('sequelize');
 const sequelize = require('../config/sequelize');
 
-const Returns = sequelize.define('returns', {
-  id_return: {
+const Payments = sequelize.define('payments', {
+  id_payment: {
     autoIncrement: true,
     autoIncrementIdentity: true,
     type: DataTypes.INTEGER,
@@ -17,44 +17,41 @@ const Returns = sequelize.define('returns', {
       key: 'id_sale'
     }
   },
-  id_product: {
+  id_client: {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: 'products',
-      key: 'id_product'
+      model: 'clients',
+      key: 'id_client'
     }
   },
-  return_date: {
+  payment_date: {
     type: DataTypes.DATE,
-    allowNull: true
+    allowNull: false,
+    defaultValue: new NOW(),
   },
-  return_quantity: {
-    type: DataTypes.INTEGER,
+  total_payment: {
+    type: DataTypes.DECIMAL,
     allowNull: false
   },
-  return_value: {
+  total_remaining: {
     type: DataTypes.DECIMAL,
-    allowNull: true
-  },
-  return_reason: {
-    type: DataTypes.STRING(250),
     allowNull: false
   }
 }, {
   sequelize,
-  tableName: 'returns',
+  tableName: 'payments',
   schema: 'public',
   timestamps: false,
   indexes: [
     {
-      name: "returns_pkey",
+      name: "payments_pkey",
       unique: true,
       fields: [
-        { name: "id_return" },
+        { name: "id_payment" },
       ]
     },
   ]
 });
 
-module.exports = Returns;
+module.exports = Payments;

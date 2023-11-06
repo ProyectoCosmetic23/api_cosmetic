@@ -73,11 +73,11 @@ CREATE TABLE products (
 CREATE TABLE defective_products (
     id_defective_product INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     id_product INT NOT NULL,
-    reason VARCHAR(100),
-    report_date TIMESTAMP
+    return_reason VARCHAR(100),
+    return_date TIMESTAMP,
+	return_quantity INT NOT NULL,
+	return_value NUMERIC NOT NULL
 );
-
-
 
 /* Create the users table */
 CREATE TABLE users (
@@ -124,7 +124,6 @@ CREATE TABLE orders (
 	id_employee INT NOT NULL,
 	order_number INT NOT NULL,
 	order_date TIMESTAMP NOT NULL,
-	delivery_date TIMESTAMP NOT NULL,
 	payment_type VARCHAR (100) NOT NULL,
 	order_state CHARACTER VARYING(15),
 	delivery_state CHARACTER VARYING(15),
@@ -148,7 +147,8 @@ CREATE TABLE sales (
 	id_client INT NOT NULL,
 	id_employee INT NOT NULL,
 	invoice_number INT NOT NULL,
-	sale_date TIMESTAMP NOT NULL,
+	order_date TIMESTAMP NOT NULL,
+	delivery_date TIMESTAMP,
 	sale_state CHARACTER VARYING(15),
 	payment_state CHARACTER VARYING(15),
 	payment_type VARCHAR (100) NOT NULL,
@@ -195,11 +195,10 @@ CREATE TABLE returns (
 	id_return  INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 	id_sale INT NOT NULL,
 	id_product  INT NOT NULL,
-	return_date TIMESTAMP,
+	return_date TIMESTAMP NOT NULL,
 	return_quantity INT NOT NULL,
-	return_value NUMERIC,
-	returned_product_state CHARACTER VARYING(30),
-	provider_product_state CHARACTER VARYING(30)
+	return_value NUMERIC NOT NULL,
+	return_reason VARCHAR (250) NOT NULL
 );
 
 /* Foreign Keys for the 'returns' Table */
@@ -401,7 +400,7 @@ VALUES (1, 1, current_timestamp, 420.00, 0.00),
        (3, 3, current_timestamp, 360.00, 0.00);
 
 -- Insert into the 'returns' Table
-INSERT INTO returns (id_sale, id_product, return_date, return_quantity, return_value, returned_product_state, provider_product_state)
-VALUES (1, 1, current_timestamp, 5, 70.00, 'Returned', 'In Progress'),
-       (2, 2, current_timestamp, 4, 72.00, 'Returned', 'Completed'),
-       (3, 3, current_timestamp, 6, 72.00, 'Returned', 'In Progress');
+INSERT INTO returns (id_sale, id_product, return_date, return_quantity, return_value, return_reason)
+VALUES (1, 1, current_timestamp, 5, 70.00, 'Defecto de fábrica'),
+       (2, 2, current_timestamp, 4, 72.00, 'Defecto de fábrica'),
+       (3, 3, current_timestamp, 6, 72.00, 'Defecto de fábrica');

@@ -1,20 +1,20 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/sequelize');
 
-const Returns = sequelize.define('returns', {
-  id_return: {
+const Purchase_Detail = sequelize.define('purchase_detail', {
+  id_purchase_detail: {
     autoIncrement: true,
     autoIncrementIdentity: true,
     type: DataTypes.INTEGER,
     allowNull: false,
     primaryKey: true
   },
-  id_sale: {
+  id_purchase: {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: 'sales',
-      key: 'id_sale'
+      model: 'purchases',
+      key: 'id_purchase'
     }
   },
   id_product: {
@@ -25,36 +25,40 @@ const Returns = sequelize.define('returns', {
       key: 'id_product'
     }
   },
-  return_date: {
-    type: DataTypes.DATE,
+  product_category: {
+    type: DataTypes.STRING(100),
     allowNull: true
   },
-  return_quantity: {
+  product_quantity: {
     type: DataTypes.INTEGER,
     allowNull: false
   },
-  return_value: {
+  cost_price: {
     type: DataTypes.DECIMAL,
     allowNull: true
   },
-  return_reason: {
-    type: DataTypes.STRING(250),
-    allowNull: false
+  selling_price: {
+    type: DataTypes.DECIMAL,
+    allowNull: true
+  },
+  sub_total: {
+    type: DataTypes.DECIMAL,
+    allowNull: true
   }
 }, {
   sequelize,
-  tableName: 'returns',
+  tableName: 'purchase_detail',
   schema: 'public',
   timestamps: false,
   indexes: [
     {
-      name: "returns_pkey",
+      name: "purchase_detail_pkey",
       unique: true,
       fields: [
-        { name: "id_return" },
+        { name: "id_purchase_detail" },
       ]
     },
   ]
 });
 
-module.exports = Returns;
+module.exports = Purchase_Detail;

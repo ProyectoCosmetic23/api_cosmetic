@@ -1,21 +1,13 @@
-const { DataTypes } = require('sequelize');
+const { DataTypes, NOW } = require('sequelize');
 const sequelize = require('../config/sequelize');
 
-const Returns = sequelize.define('returns', {
-  id_return: {
+const Defective_Products = sequelize.define('defective_products', {
+  id_defective_product: {
     autoIncrement: true,
     autoIncrementIdentity: true,
     type: DataTypes.INTEGER,
     allowNull: false,
     primaryKey: true
-  },
-  id_sale: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    references: {
-      model: 'sales',
-      key: 'id_sale'
-    }
   },
   id_product: {
     type: DataTypes.INTEGER,
@@ -25,9 +17,14 @@ const Returns = sequelize.define('returns', {
       key: 'id_product'
     }
   },
+  return_reason: {
+    type: DataTypes.STRING(100),
+    allowNull: false
+  },
   return_date: {
     type: DataTypes.DATE,
-    allowNull: true
+    allowNull: false,
+    defaultValue: new NOW()
   },
   return_quantity: {
     type: DataTypes.INTEGER,
@@ -35,26 +32,22 @@ const Returns = sequelize.define('returns', {
   },
   return_value: {
     type: DataTypes.DECIMAL,
-    allowNull: true
-  },
-  return_reason: {
-    type: DataTypes.STRING(250),
     allowNull: false
-  }
+  },
 }, {
   sequelize,
-  tableName: 'returns',
+  tableName: 'defective_products',
   schema: 'public',
   timestamps: false,
   indexes: [
     {
-      name: "returns_pkey",
+      name: "defective_products_pkey",
       unique: true,
       fields: [
-        { name: "id_return" },
+        { name: "id_defective_product" },
       ]
     },
   ]
 });
 
-module.exports = Returns;
+module.exports = Defective_Products;
