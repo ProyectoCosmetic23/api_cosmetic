@@ -27,7 +27,8 @@ const Purchases = sequelize.define('purchases', {
   },
   record_date_purchase: {
     type: DataTypes.DATE,
-    allowNull: true
+    allowNull: true,
+    defaultValue: DataTypes.NOW()
   },
   total_purchase: {
     type: DataTypes.DECIMAL,
@@ -35,7 +36,8 @@ const Purchases = sequelize.define('purchases', {
   },
   state_purchase: {
     type: DataTypes.STRING(15),
-    allowNull: true
+    allowNull: true,
+    defaultValue: 'Ativo'
   },
   purchase_photo: {
     type: DataTypes.BLOB,

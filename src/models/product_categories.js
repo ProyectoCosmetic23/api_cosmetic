@@ -16,7 +16,8 @@ const Product_Categories = sequelize.define('product_categories', {
   },
   state_category: {
     type: DataTypes.STRING(15),
-    allowNull: true
+    allowNull: true,
+    defaultValue: "Activo"
   },
   observation_category: {
     type: DataTypes.STRING(100),
@@ -24,7 +25,8 @@ const Product_Categories = sequelize.define('product_categories', {
   },
   creation_date_category: {
     type: DataTypes.DATE,
-    allowNull: true
+    allowNull: true,
+    defaultValue: DataTypes.NOW()
   }
 }, {
   sequelize,
