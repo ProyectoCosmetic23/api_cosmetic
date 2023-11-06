@@ -14,6 +14,7 @@ const providerRoutes = require('./src/routes/providersRoutes');
 const paymentRoutes = require('./src/routes/paymentsRoutes');
 const comissionRoutes = require('./src/routes/comissionRoutes');
 const comissionDetailRoutes = require('./src/routes/comissionDetailRoutes');
+const clientsRoutes = require('./src/routes/clientsRoutes');
 
 
 const cors= require("cors");
@@ -49,6 +50,7 @@ app.use('/api', providerRoutes);
 app.use('/api', paymentRoutes);
 app.use('/api', comissionDetailRoutes);
 app.use('/api', comissionRoutes);
+app.use('/api', clientsRoutes);
 
 
 app.listen(PORT, () => {
