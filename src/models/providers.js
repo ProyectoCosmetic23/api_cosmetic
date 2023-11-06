@@ -1,4 +1,4 @@
-const { DataTypes } = require('sequelize');
+const { DataTypes, NOW } = require('sequelize');
 const sequelize = require('../config/sequelize');
 
 const Providers = sequelize.define('providers', {
@@ -36,7 +36,8 @@ const Providers = sequelize.define('providers', {
   },
   state_provider: {
     type: DataTypes.STRING(15),
-    allowNull: true
+    allowNull: true,
+    defaultValue: "Activo"
   },
   observation_provider: {
     type: DataTypes.STRING(100),
@@ -49,7 +50,8 @@ const Providers = sequelize.define('providers', {
   },
   creation_date_provider: {
     type: DataTypes.DATE,
-    allowNull: false
+    allowNull: false,
+    defaultValue: new NOW()
   }
 }, {
   sequelize,
