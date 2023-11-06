@@ -28,6 +28,10 @@ const Comissions = sequelize.define('commissions', {
         model: 'commission_detail',
         key: 'id_commission_detail'
       }
+    },
+    total_sales:{
+      type: DataTypes.INTEGER,
+      allowNull: false,
     }
   }, {
     sequelize,
