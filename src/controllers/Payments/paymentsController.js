@@ -155,8 +155,9 @@ async function getPayClien(req, res) {
 }
 
 async function getPayClienSale(req, res) {
-    const id_client = req.params.id;
-    const id_sale = req.params.id;
+    const id_client = req.params.id_client;
+    const id_sale = req.params.id_sale;
+    console.log(id_client, id_sale);
 
     try {
         const payClienSale = await Payments.findAll({
