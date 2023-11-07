@@ -1,18 +1,18 @@
 const express = require('express');
 const router = express.Router();
-const clientesController= require('../controllers/Clients/clientesController');
+const clientsController= require('../controllers/Clients/clientsController');
 
 //Rutas clientes
-router.get('/clientes', clientesController.getAllCustomers);
-router.get('/clientes/:id', clientesController.getCustomerById);
-router.post('/clientes', clientesController.createCustomer);
+router.get('/clients', clientsController.getAllCustomers);
+router.get('/clients/:id', clientsController.getCustomerById);
+router.post('/clients', clientsController.createCustomer);
 
 //Ruta eliminar cliente utilizando metodo delete
-router.delete('/clientes/:id', clientesController.customerDelete);
+router.delete('/clients/:id', clientsController.customerDelete);
 
 //Ruta para actualizar un cliente por id utilizando put
-router.put('/clientes/:id', clientesController.customerPut);
-router.put('/clientes/:id/change-status', clientesController.CustomerChangeStatus)
+router.put('/clients/:id', clientsController.customerPut);
+router.put('/clients/:id/change-status', clientsController.CustomerChangeStatus)
 
 
 module.exports= router;

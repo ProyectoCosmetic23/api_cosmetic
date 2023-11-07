@@ -366,10 +366,10 @@ VALUES (1, 1, 'Category 1', 50, 9.00, 14.00, 700.00),
        (3, 3, 'Category 3', 40, 7.00, 12.00, 480.00);
 
 -- Insert into the 'orders' Table
-INSERT INTO orders (id_client, id_employee, order_number, order_date, delivery_date, payment_type, order_state, delivery_state, payment_state, total_order)
-VALUES (1, 1, 1001, current_timestamp, current_timestamp, 'Cash', 'Active', 'In Progress', 'To be paid', 1500.00),
-       (2, 2, 1002, current_timestamp, current_timestamp, 'Credit Card', 'Active', 'To be delivered', 'To be paid', 1200.00),
-       (3, 3, 1003, current_timestamp, current_timestamp, 'Check', 'Active', 'Delivered', 'To be paid', 1800.00);
+INSERT INTO orders (id_client, id_employee, order_number, order_date, payment_type, order_state, delivery_state, payment_state, total_order)
+VALUES (1, 1, 1001, current_timestamp, 'Cash', 'Active', 'In Progress', 'To be paid', 1500.00),
+       (2, 2, 1002, current_timestamp, 'Credit Card', 'Active', 'To be delivered', 'To be paid', 1200.00),
+       (3, 3, 1003, current_timestamp, 'Check', 'Active', 'Delivered', 'To be paid', 1800.00);
 
 -- Insert into the 'order_detail' Table
 INSERT INTO order_detail (id_order, id_product, product_quantity, product_price)
@@ -378,7 +378,7 @@ VALUES (1, 1, 30, 14.00),
        (3, 3, 20, 12.00);
 
 -- Insert into the 'sales' Table
-INSERT INTO sales (id_order, id_client, id_employee, invoice_number, sale_date, sale_state, payment_state, payment_type, total_sale)
+INSERT INTO sales (id_order, id_client, id_employee, invoice_number, order_date, sale_state, payment_state, payment_type, total_sale)
 VALUES (1, 1, 1, 5001, current_timestamp, 'Active', 'To be paid', 'Cash', 420.00),
        (2, 2, 2, 5002, current_timestamp, 'Active', 'To be paid', 'Credit Card', 675.00),
        (3, 3, 3, 5003, current_timestamp, 'Active', 'Paid', 'Check', 360.00);

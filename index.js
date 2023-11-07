@@ -17,13 +17,20 @@ const comissionDetailRoutes = require('./src/routes/comissionDetailRoutes');
 const clientsRoutes = require('./src/routes/clientsRoutes');
 const returnsRoutes = require('./src/routes/returnsRoutes');
 
-
 const cors= require("cors");
 
 const app = express();
 
 const PORT = process.env.PORT || 8080;
-app.use(cors())
+
+const corsOptions = {
+  origin: [
+    'https://api-cosmetic-w32d.onrender.com',
+    'http://localhost:4200'
+  ]
+};
+
+app.use(cors(corsOptions));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
