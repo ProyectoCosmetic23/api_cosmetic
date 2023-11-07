@@ -43,7 +43,7 @@ async function createComs(req, res) {
         let employeeSales = await Sales.sum('total_sale', {
             where: {
                 id_employee,
-                sale_date: {
+                order_date: {
                     [Op.gte]: firstDayMonth,
                     [Op.lte]: lastDayMonth,
                 },

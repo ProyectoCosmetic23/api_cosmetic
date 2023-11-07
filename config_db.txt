@@ -1,5 +1,33 @@
-$env:PGPASSWORD=" aqui va la contraseña "
+-> crea el servicio de postgres ahí bien melo con Ohio como lugar
 
-psql "sslmode=require host=<Aquí va el host>.ohio-postgres.render.com port=5432 dbname=<Aquí el nombre de la bd> user=<Aquí el user>"7
+-> luego se envía esto a la terminal
 
-psql -h dpg-cl5a062l7jac73cfphr0-a.ohio-postgres.render.com -U adminuser -d cosmetic_db_qyvo -p 5432 -f database.sql
+$env:PGPASSWORD="<aqui va la contraseña que le aparece en render cuando crea el servicio>"
+
+-> Luego se envía ésto.
+
+psql "sslmode=require host=<Aquí va el host>.ohio-postgres.render.com port=5432 dbname=<Aquí el nombre de la bd> user=<Aquí el user>"
+
+-> Tira éste comando con sus datos, que le va a pedir la contraseña del usuario y le va a exportar la bd. Nea, si tiene una query con su BD full es mejor, porque esto exporta a veces con errores
+
+pg_dump -U <username> -d <databas_ename> -f archivo_respaldo.sql -W
+
+-> Sigue ésto, que es como importar la bd  
+
+psql -h <Aquí va el host y queda pegadito del punto>.ohio-postgres.render.com -U <username> -d <dbname de render> -p 5432 -f <el nombre del archivo que le va a pasar con .sql al final, aqui es donde le digo que es mejor con una query suya>
+
+-> Y luego ordena su archivo de config de sequelize así con sus respectivos datos
+
+const { Sequelize } = require('sequelize');
+
+const sequelize = new Sequelize('cosmetic_db_qyvo', 'adminuser', '8OIXi0HzBZ9hdicPW4abzHM900CCL5wW', {
+  host: 'dpg-cl5a062l7jac73cfphr0-a.ohio-postgres.render.com',
+  dialect: 'postgres',
+  dialectOptions: {
+    ssl: {
+      require: true, // Habilita SSL/TLS
+    },
+  },
+});
+
+module.exports = sequelize;
