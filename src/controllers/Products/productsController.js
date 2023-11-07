@@ -1,5 +1,5 @@
 //ProductosController.js
-const Product = require ('../../models/products');
+const Product = require('../../models/products');
 
 //Consultar todos los productos
 
@@ -43,7 +43,7 @@ async function createProducts(req, res) {
     min_stock,
     cost_price,
     selling_price,
-    observation ,
+    observation,
   } = req.body;
 
   // Validación: Verifica que los campos obligatorios no estén vacíos
@@ -70,7 +70,7 @@ async function createProducts(req, res) {
   }
 
   // Calcular la ganancia
-  const profit  = selling_price - cost_price;
+  const profit = selling_price - cost_price;
 
 
   try {
@@ -100,11 +100,11 @@ async function productsPut(req, res) {
   const { id_category, name_product, max_stock, min_stock, selling_price, observation } = req.body;
   let mensaje = '';
 
-  
- // Validación: Nombre debe contener letras, números y espacios
-if (!/^[A-Za-z0-9\s]+$/.test(name_product)) {
-  return res.status(400).json({ error: 'El nombre debe contener letras, números y espacios' });
-}
+
+  // Validación: Nombre debe contener letras, números y espacios
+  if (!/^[A-Za-z0-9\s]+$/.test(name_product)) {
+    return res.status(400).json({ error: 'El nombre debe contener letras, números y espacios' });
+  }
 
   // Validación: Verifica que los campos obligatorios no estén vacíos
   if (!id_category || !name_product || !max_stock || !min_stock || !selling_price) {
@@ -176,49 +176,43 @@ async function productsChangeStatus(req, res) {
   let mensaje = '';
 
   try {
-      if (id) {
-          // Buscar el empleado por su ID
-          const product = await Product.findByPk(id);
+    if (id) {
+      // Buscar el empleado por su ID
+      const product = await Product.findByPk(id);
 
-          if (product) {
-              var state_product_new = "";
+      if (product) {
+        var state_product_new = "";
 
-              if (product.state_product === "Activo") {
-                  state_product_new = "Inactivo";
-              } else if (product.state_product === "Inactivo") {
-                  state_product_new = "Activo";
-              }
+        if (product.state_product === "Activo") {
+          state_product_new = "Inactivo";
+        } else if (product.state_product === "Inactivo") {
+          state_product_new = "Activo";
+        }
 
-              // Actualizar el estado del empleado
-              product.state_product = state_product_new;
+        // Actualizar el estado del empleado
+        product.state_product = state_product_new;
 
-              // Guardar los cambios en la base de datos
-              await product.save();
-
-              mensaje = "Cambio de estado realizado con éxito.";
-          } else {
-              mensaje = "El producto no fue encontrado.";
-          }
+        mensaje = "Cambio de estado realizado con éxito.";
       } else {
-          mensaje = "Falta el ID en la solicitud.";
+        mensaje = "El producto no fue encontrado.";
       }
+    } else {
+      mensaje = "Falta el ID en la solicitud.";
+    }
   } catch (error) {
-      console.error("Error al cambiar el estado del empleado:", error);
-      mensaje = "Fallo al realizar el cambio de estado: " + error.message;
+    console.error("Error al cambiar el estado del empleado:", error);
+    mensaje = "Fallo al realizar el cambio de estado: " + error.message;
   }
-
   res.json({
-      msg: mensaje
+    msg: mensaje
   });
-
-
-  
 }
+
 
 
 //Exportar los metodos del producto
 
-module.exports= {
+module.exports = {
   getAllProducts,
   getProductsById,
   createProducts,

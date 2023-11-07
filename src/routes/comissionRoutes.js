@@ -2,9 +2,11 @@ const express = require('express');
 const router = express.Router();
 const comissionController = require ('../controllers/Comissions/comissionController');
 
-router.get('/comisiones', comissionController.getAllComs);
-router.get('/comisiones/:id', comissionController.getComsById);
-router.post('/comisiones', comissionController.createComs);
-router.get('/comisiones/empleado/:id', comissionController.getComsEmploy);
+router.get('/commissions', comissionController.getAllComs);
+router.get('/commissions/:id', comissionController.getComsById);
+router.post('/commissions', comissionController.createComs);
+router.get('/commissions/employee/:id', comissionController.getComsEmploy);
+router.get('/commissions/detail/:id', comissionController.getComsDetailId);
+
 
 module.exports = router;

@@ -10,6 +10,13 @@ const salesRoutes = require('./src/routes/salesRoutes');
 const saleDetailRoutes = require('./src/routes/saleDetailRoutes');
 const categoryRoutes = require('./src/routes/categoryRoutes');
 const purchaseRoutes = require('./src/routes/purchaseRoutes');
+const providerRoutes = require('./src/routes/providersRoutes');
+const paymentRoutes = require('./src/routes/paymentsRoutes');
+const comissionRoutes = require('./src/routes/comissionRoutes');
+const comissionDetailRoutes = require('./src/routes/comissionDetailRoutes');
+const clientsRoutes = require('./src/routes/clientsRoutes');
+const returnsRoutes = require('./src/routes/returnsRoutes');
+
 
 const cors= require("cors");
 
@@ -40,6 +47,12 @@ app.use('/api', productsRoutes);
 app.use('/api', usersRoutes);
 app.use('/api', categoryRoutes);
 app.use('/api', purchaseRoutes);
+app.use('/api', providerRoutes);
+app.use('/api', paymentRoutes);
+app.use('/api', comissionDetailRoutes);
+app.use('/api', comissionRoutes);
+app.use('/api', clientsRoutes);
+app.use('/api', returnsRoutes);
 
 
 app.listen(PORT, () => {
