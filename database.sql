@@ -313,15 +313,15 @@ VALUES (current_timestamp, 10),
 
 -- Insert into the 'roles' Table
 INSERT INTO roles (name_role, state_role, modules_role)
-VALUES ('Administrator', 'Active', 'Module A, Module B, Module C'),
-       ('Manager', 'Active', 'Module B, Module C'),
-       ('Employee', 'Active', 'Module C');
+VALUES ('Administrator', 'Activo', 'Module A, Module B, Module C'),
+       ('Manager', 'Activo', 'Module B, Module C'),
+       ('Employee', 'Activo', 'Module C');
 
 -- Insert into the 'providers' Table
 INSERT INTO providers (nit_cedula, name_provider, email_provider, address_provider, phone_provider, state_provider, observation_provider, name_contact, creation_date_provider)
-VALUES ('1234567890', 'Provider 1', 'provider1@email.com', 'Address 1', '1234567890', 'Active', 'Observation 1', 'Contact 1', current_timestamp),
-       ('9876543210', 'Provider 2', 'provider2@email.com', 'Address 2', '9876543210', 'Active', 'Observation 2', 'Contact 2', current_timestamp),
-       ('5555555555', 'Provider 3', 'provider3@email.com', 'Address 3', '5555555555', 'Inactive', 'Observation 3', 'Contact 3', current_timestamp);
+VALUES ('1234567890', 'Provider 1', 'provider1@email.com', 'Address 1', '1234567890', 'Activo', 'Observation 1', 'Contact 1', current_timestamp),
+       ('9876543210', 'Provider 2', 'provider2@email.com', 'Address 2', '9876543210', 'Activo', 'Observation 2', 'Contact 2', current_timestamp),
+       ('5555555555', 'Provider 3', 'provider3@email.com', 'Address 3', '5555555555', 'Inactivo', 'Observation 3', 'Contact 3', current_timestamp);
 
 -- Insert into the 'employees' Table
 INSERT INTO employees (id_card_employee, name_employee, email, address, phone, state_employee, observation,creation_date_employee)
@@ -367,9 +367,9 @@ VALUES (1, 1, 'Category 1', 50, 9.00, 14.00, 700.00),
 
 -- Insert into the 'orders' Table
 INSERT INTO orders (id_client, id_employee, order_number, order_date, payment_type, order_state, delivery_state, payment_state, total_order)
-VALUES (1, 1, 1001, current_timestamp, 'Cash', 'Active', 'In Progress', 'To be paid', 1500.00),
-       (2, 2, 1002, current_timestamp, 'Credit Card', 'Active', 'To be delivered', 'To be paid', 1200.00),
-       (3, 3, 1003, current_timestamp, 'Check', 'Active', 'Delivered', 'To be paid', 1800.00);
+VALUES (1, 1, 1001, current_timestamp, 'Contado', 'Activo', 'En proceso', 'Por pagar', 1500.00),
+       (2, 2, 1002, current_timestamp, 'Credito', 'Activo', 'Por entregar', 'Por pagar', 1200.00),
+       (3, 3, 1003, current_timestamp, 'Contado', 'Activo', 'Por entregar', 'Por pagar', 1800.00);
 
 -- Insert into the 'order_detail' Table
 INSERT INTO order_detail (id_order, id_product, product_quantity, product_price)
@@ -379,9 +379,9 @@ VALUES (1, 1, 30, 14.00),
 
 -- Insert into the 'sales' Table
 INSERT INTO sales (id_order, id_client, id_employee, invoice_number, order_date, sale_state, payment_state, payment_type, total_sale)
-VALUES (1, 1, 1, 5001, current_timestamp, 'Active', 'To be paid', 'Cash', 420.00),
-       (2, 2, 2, 5002, current_timestamp, 'Active', 'To be paid', 'Credit Card', 675.00),
-       (3, 3, 3, 5003, current_timestamp, 'Active', 'Paid', 'Check', 360.00);
+VALUES (1, 1, 1, 5001, current_timestamp, 'Activa', 'Por pagar', 'Contado', 420.00),
+       (2, 2, 2, 5002, current_timestamp, 'Activa', 'Por pagar', 'Crédito', 675.00),
+       (3, 3, 3, 5003, current_timestamp, 'Activa', 'Pagado', 'Contado', 360.00);
 
 -- Insert into the 'sale_detail' Table
 INSERT INTO sale_detail (id_sale, id_product, quantity, product_price)
@@ -390,7 +390,10 @@ VALUES (1, 1, 15, 14.00),
        (3, 3, 12, 12.00);
 
 -- Insert into the 'commissions' Table
-
+INSERT INTO commissions(id_employee, total_commission, id_commission_detail, total_sales)
+VALUES(1, 42.00, 1, 1500),
+	  ( 2, 81.00,2, 2500),
+	  (3, 28.00, 3, 3500);
 
 -- Insert into the 'payments' Table
 INSERT INTO payments (id_sale, id_client, payment_date, total_payment, total_remaining)

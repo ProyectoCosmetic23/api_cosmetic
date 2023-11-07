@@ -1,0 +1,5 @@
+$env:PGPASSWORD=" aqui va la contraseña "
+
+psql "sslmode=require host=<Aquí va el host>.ohio-postgres.render.com port=5432 dbname=<Aquí el nombre de la bd> user=<Aquí el user>"7
+
+psql -h dpg-cl5a062l7jac73cfphr0-a.ohio-postgres.render.com -U adminuser -d cosmetic_db_qyvo -p 5432 -f database.sql
