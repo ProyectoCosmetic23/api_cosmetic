@@ -105,13 +105,13 @@ async function updateRoleStatus(req, res) {
 // Actualizar un rol
 async function updateRole(req, res) {
     const { id } = req.params;
-    const { name_role, state_role, modules_rol } = req.body;
+    const { name_role, modules_role } = req.body;
+    console.log(modules_role);
     try {
-        var modules_string = modules_rol.join(", ");
+        var modules_string = modules_role.join(", ");
         const role = await Roles.findByPk(id);
         await role.update({
             name_role: name_role,
-            state_role: state_role,
             modules_rol: modules_string
         })
         res.json(role);
