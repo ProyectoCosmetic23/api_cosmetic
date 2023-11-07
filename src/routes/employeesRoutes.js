@@ -10,7 +10,7 @@ router.post('/employees', employeesController.createEmployee);
 
 // Ruta específica para actualizar un empleado por ID (utiliza PUT)
 router.put('/employees/:id', employeesController.employeePut);
-router.put('/employees/cambiarEstado/:id', employeesController.employeeChangeStatus);
+router.put('/employees/changeState/:id', employeesController.employeeChangeStatus);
 
 router.get('/employees-check-cedula', employeesController.checkCedulaAvailability);
 router.get('/employees-check-email', employeesController.checkEmailAvailability);

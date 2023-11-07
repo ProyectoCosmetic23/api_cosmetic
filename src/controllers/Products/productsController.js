@@ -20,8 +20,9 @@ const getAllProducts = async (req, res) => {
 
 async function getProductsById(req, res) {
   const { id } = req.params;
+  console.log('ID ', id)
   try {
-    const products = await Products.findByPk(id);
+    const products = await Product.findByPk(id);
     if (!products) {
       return res.status(404).json({ error: 'Producto no encontrado.' });
     }
@@ -170,41 +171,49 @@ if (!/^[A-Za-z0-9\s]+$/.test(name_product)) {
 
 
 //cambiar estado del producto
-const productsChangeStatus = async (req, res) => {
-  const { id } = req.params; // El ID del producto
-  const { state_product } = req.body;
+async function productsChangeStatus(req, res) {
+  const { id } = req.params;
   let mensaje = '';
 
   try {
       if (id) {
-          // Buscar el producto por su ID
+          // Buscar el empleado por su ID
           const product = await Product.findByPk(id);
 
-          if (producto) {
-              // Actualizar los campos del producto
-              product.state_product  = state_product ;
-              
+          if (product) {
+              var state_product_new = "";
+
+              if (product.state_product === "Activo") {
+                  state_product_new = "Inactivo";
+              } else if (product.state_product === "Inactivo") {
+                  state_product_new = "Activo";
+              }
+
+              // Actualizar el estado del empleado
+              product.state_product = state_product_new;
 
               // Guardar los cambios en la base de datos
               await product.save();
 
-              mensaje = "Se cambio el estado correctamente";
+              mensaje = "Cambio de estado realizado con éxito.";
           } else {
-              mensaje = "El producto no fue encontrado";
+              mensaje = "El producto no fue encontrado.";
           }
       } else {
-          mensaje = "Falta el ID en la solicitud";
+          mensaje = "Falta el ID en la solicitud.";
       }
   } catch (error) {
-    console.error("Error al guardar el producto:", error);
-    mensaje = "Ocurrió un error al actualizar el producto: " + error.message;
-}
+      console.error("Error al cambiar el estado del empleado:", error);
+      mensaje = "Fallo al realizar el cambio de estado: " + error.message;
+  }
 
   res.json({
       msg: mensaje
   });
-};
 
+
+  
+}
 
 
 //Exportar los metodos del producto

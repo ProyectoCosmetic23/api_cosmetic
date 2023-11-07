@@ -50,6 +50,7 @@ const Products = sequelize.define('products', {
     allowNull: true,
     defaultValue: new NOW()
   },
+  
   state_product: {
     type: DataTypes.STRING(15),
     allowNull: true,
