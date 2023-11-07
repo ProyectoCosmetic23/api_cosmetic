@@ -77,6 +77,24 @@ async function createRole(req, res) {
     }
 }
 
+// Actualizar un rol
+async function updateRole(req, res) {
+    const { id } = req.params;
+    const { name_role, modules_role } = req.body;
+    console.log(modules_role);
+    try {
+        var modules_string = modules_role.join(", ");
+        const role = await Roles.findByPk(id);
+        await role.update({
+            name_role: name_role,
+            modules_rol: modules_string
+        })
+        res.json(role);
+    } catch (error) {
+        res.status(500).json({ error: 'Error al actualizar el rol. ' + error});
+    }
+}
+
 // Cambiar el estado de un rol
 async function updateRoleStatus(req, res) {
     const { id } = req.params;
@@ -99,24 +117,6 @@ async function updateRoleStatus(req, res) {
         res.json(role);
     } catch (error) {
         res.status(500).json({ error: 'Error al cambiar el estado del rol.' });
-    }
-}
-
-// Actualizar un rol
-async function updateRole(req, res) {
-    const { id } = req.params;
-    const { name_role, modules_role } = req.body;
-    console.log(modules_role);
-    try {
-        var modules_string = modules_role.join(", ");
-        const role = await Roles.findByPk(id);
-        await role.update({
-            name_role: name_role,
-            modules_rol: modules_string
-        })
-        res.json(role);
-    } catch (error) {
-        res.status(500).json({ error: 'Error al actualizar el rol. ' + error});
     }
 }
 

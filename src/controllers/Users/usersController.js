@@ -60,7 +60,7 @@ async function createUser(req, res) {
 
 
   try {
-    const existingemail = await Usuarios.findOne({ where: { email } });
+    const existingemail = await Users.findOne({ where: { email } });
 
     if (existingemail) {
       return res.status(400).json({ error: "El correo ya está en uso." });

@@ -81,7 +81,7 @@ async function createOrder(req, res) {
 
     res.status(201).json({ newOrder, order_detail });
   } catch (error) {
-    handleError(res, error, 'Error al crear el pedido.');
+    handleError(res, error, 'Error al crear el pedido.' + error);
   }
 }
 
@@ -187,7 +187,7 @@ async function updateDeliveryStatusById(req, res) {
       res.json({ newSale, saleDetailList, updatedOrder });
     }
   } catch (error) {
-    handleError(res, error, 'Error al actualizar el pedido.');
+    res.json('Error al actualizar el pedido.' + error.message);
   }
 }
 
