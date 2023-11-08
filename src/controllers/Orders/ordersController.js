@@ -242,7 +242,7 @@ async function createSaleDetails(sale, order) {
     const newSaleDetail = await Sale_Detail.create({
       id_sale: sale.id_sale,
       id_product: product_id,
-      product_quantity: quantity,
+      quantity: quantity,
       product_price: product_price
     });
 
