@@ -86,19 +86,18 @@ async function createOrder(req, res) {
 }
 
 // Función auxiliar para crear un nuevo pedido
-async function createNewOrder(id_client, id_employee, order_number, order_date, delivery_date, payment_type, order_state, delivery_state, payment_state, total_order) {
+async function createNewOrder(id_client, id_employee, order_number, order_date, payment_type, order_state, delivery_state, payment_state, total_order) {
   try {
     return await Orders.create({
-      id_client,
-      id_employee,
-      order_number,
-      order_date,
-      delivery_date,
-      payment_type,
-      order_state,
-      delivery_state,
-      payment_state,
-      total_order
+      id_client: id_client,
+      id_employee: id_employee,
+      order_number: order_number,
+      order_date: order_date,
+      payment_type: payment_type,
+      order_state: order_state,
+      delivery_state: delivery_state,
+      payment_state: payment_state,
+      total_order: total_order
     });
   } catch (error) {
     throw new Error('Error al crear la nueva orden: ' + error.message);
@@ -201,7 +200,7 @@ async function updateOrderDeliveryStatus(order, newDeliveryStatus) {
     const updatedOrder = await order.update({ delivery_state: newDeliveryStatus });
     return updatedOrder;
   } catch (error) {
-    throw new Error('Error al actualizar el estado del pedido: ' + error.message);
+    throw new Error('Error al actualizar el estado del pedido: ' + error);
   }
 }
 
