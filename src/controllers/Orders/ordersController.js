@@ -187,7 +187,7 @@ async function updateDeliveryStatusById(req, res) {
       res.json({ newSale, saleDetailList, updatedOrder });
     }
   } catch (error) {
-    res.json('Error al actualizar el pedido.' + error.message);
+    res.json('Error al actualizar el pedido.' + error);
   }
 }
 
