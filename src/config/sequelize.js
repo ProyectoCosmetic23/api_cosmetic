@@ -5,7 +5,7 @@ const sequelize = new Sequelize('cosmetic_db_qyvo', 'adminuser', '8OIXi0HzBZ9hdi
   dialect: 'postgres',
   dialectOptions: {
     ssl: {
-      require: true, // Habilita SSL/TLS
+      require: true,
     },
   },
 });
