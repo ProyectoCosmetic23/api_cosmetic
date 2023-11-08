@@ -113,10 +113,10 @@ async function createOrderDetail(id_order, products) {
       const { id_product, product_quantity, product_price } = product;
 
       const order_detail_prod = await Order_Detail.create({
-        id_order,
-        id_product,
-        product_quantity,
-        product_price,
+        id_order: id_order,
+        id_product: id_product,
+        product_quantity: product_quantity,
+        product_price: product_price,
       });
 
       order_detail.push(order_detail_prod);
@@ -181,7 +181,7 @@ async function updateDeliveryStatusById(req, res) {
       const newSaleData = createSaleDataFromOrder(order);
       const { newSale, saleDetailList } = await createSale(newSaleData, order);
 
-      await updateOrderDeliveryStatus(order, "Entregado");
+      const updatedOrder = await updateOrderDeliveryStatus(order, "Entregado");
 
       if (updatedOrder === null || updatedOrder === undefined) {
         res.json({ newSale, saleDetailList });
