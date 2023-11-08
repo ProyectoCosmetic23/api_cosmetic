@@ -184,7 +184,11 @@ async function updateDeliveryStatusById(req, res) {
 
       await updateOrderDeliveryStatus(order, "Entregado");
 
-      res.json({ newSale, saleDetailList, updatedOrder });
+      if (updatedOrder === null || updatedOrder === undefined) {
+        res.json({ newSale, saleDetailList });
+      } else {
+        res.json({ newSale, saleDetailList, updatedOrder });
+      }
     }
   } catch (error) {
     res.json('Error al actualizar el pedido.' + error);
@@ -233,6 +237,8 @@ async function createSaleDetails(sale, order) {
   });
 
   const saleDetailList = [];
+
+  console.log(orderDetail);
 
   for (const product of orderDetail) {
     const product_id = product.id_product;
