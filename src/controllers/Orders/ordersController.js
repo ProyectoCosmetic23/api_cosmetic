@@ -236,7 +236,7 @@ async function createSaleDetails(sale, order) {
 
   for (const product of orderDetail) {
     const product_id = product.id_product;
-    const quantity = product.quantity;
+    const quantity = product.product_quantity;
     const product_price = product.product_price;
 
     const newSaleDetail = await Sale_Detail.create({
