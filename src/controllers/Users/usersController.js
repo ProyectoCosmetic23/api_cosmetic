@@ -1,6 +1,7 @@
 const nodemailer = require ('nodemailer');
 const Users = require ('../../models/users.js');
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
 
 
 //Función para traer todos los usuarios
@@ -34,21 +35,21 @@ async function getUserById(req, res) {
 
 //Función para crear un usuario nuevo
 async function createUser(req, res) {
-  const { id_role , id_employee , username , email , password , observation_user  } = req.body;
+  const { id_role, id_employee, username, email, password, observation_user } = req.body;
 
   // Validar la existencia de los campos requeridos
-  if (!id_role  || !id_employee  || !username  || !email  || !password ) {
+  if (!id_role || !id_employee || !username || !email || !password) {
     return res.status(400).json({ error: "Todos los campos son obligatorios." });
   }
 
   // Validar la longitud de la contraseña
-  if (password .length <= 6) {
+  if (password.length <= 6) {
     return res.status(400).json({ error: "La contraseña debe tener al menos 7 caracteres." });
   }
 
   // Validar que la contraseña contenga al menos una mayúscula, un número y un carácter especial
   const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/;
-  if (!passwordRegex.test(password )) {
+  if (!passwordRegex.test(password)) {
     return res.status(400).json({ error: "La contraseña debe contener al menos una mayúscula, un número y un carácter especial." });
   }
 
@@ -58,28 +59,33 @@ async function createUser(req, res) {
     return res.status(400).json({ error: "El correo electrónico no es válido." });
   }
 
-
   try {
-    const existingemail = await Usuarios.findOne({ where: { email } });
+    const existingEmail = await Users.findOne({ where: { email } });
 
-    if (existingemail) {
+    if (existingEmail) {
       return res.status(400).json({ error: "El correo ya está en uso." });
     }
+
+    const saltRounds = 10;
+    const salt = bcrypt.genSaltSync(saltRounds);
+
+    // Aplica un hash a la contraseña con el salt
+    const hash = bcrypt.hashSync(password, salt);
 
     const user = await Users.create({
       id_role,
       id_employee,
       username,
       email,
-      password,
+      password: hash,
       observation_user
     });
+
     res.status(201).json(user);
   } catch (error) {
     res.status(400).json({ error: 'Error al crear el usuario.' });
   }
 }
-
 
 //Función para editar el usuario
 async function updateUser(req, res) {
@@ -120,7 +126,7 @@ async function updateUser(req, res) {
 }
 
 
-//Metodo para loguearse
+// Método para loguearse
 async function loginUser(req, res) {
   const { email, password } = req.body;
 
@@ -135,21 +141,23 @@ async function loginUser(req, res) {
       return res.status(400).json({ error: 'El usuario está inactivo.' });
     }
 
-    if (user.password !== password) {
+    // Compara la contraseña proporcionada con la contraseña almacenada en la base de datos
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+
+    if (!isPasswordValid) {
       return res.status(401).json({ error: 'Credenciales incorrectas.' });
     }
 
     res.json({
-      message: "Inicio de sesión exitoso.",
+      message: 'Inicio de sesión exitoso.',
       name: user.username
     });
 
   } catch (error) {
-    console.error("Error al iniciar sesión: ", error);
-    res.status(500).json({ error: "Error al iniciar sesión." });
+    console.error('Error al iniciar sesión: ', error);
+    res.status(500).json({ error: 'Error al iniciar sesión.' });
   }
 }
-
 //Metodo para actualizar el estado
 const updateUserState = async (req, res) => {
   const { id } = req.params; // El ID del usuario
