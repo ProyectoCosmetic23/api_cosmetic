@@ -37,11 +37,11 @@ CREATE TABLE clients (
 	id_client  INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 	nit_or_id_client VARCHAR(10) UNIQUE,
 	name_client VARCHAR (100) NOT NULL,
-	last_name_client VARCHAR (100),
+	last_name_client VARCHAR (100) NOT NULL,
 	email_client VARCHAR (100) NOT NULL,
 	phone_client VARCHAR (20) NOT NULL,
 	address_client VARCHAR (100) NOT NULL,
-	state_client CHARACTER VARYING(15) NOT NULL 
+	state_client CHARACTER VARYING(15) 
 );
 
 /* Create the categories table */

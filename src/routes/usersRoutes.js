@@ -12,5 +12,7 @@ router.put('/Users/state/:id', usersController.updateUserState);
 router.post('/Users/login' , usersController.loginUser);
 router.post('/Users/recover', usersController.forgotPassword);
 router.post('/change-password', usersController.changePassword);
+//Ruta para validar email
+router.get('/users-check-email', usersController.checkEmailAvailability);
 
 module.exports = router;
