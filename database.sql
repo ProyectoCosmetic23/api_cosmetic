@@ -17,7 +17,7 @@ CREATE TABLE providers (
 	state_provider CHARACTER VARYING(15),
 	observation_provider VARCHAR (100),
 	name_contact VARCHAR (100) NOT NULL UNIQUE,
-	creation_date_provider TIMESTAMP
+	creation_date_provider DATE NOT NULL DEFAULT CURRENT_DATE
 );
 
 CREATE TABLE employees (
@@ -178,7 +178,7 @@ CREATE TABLE commissions (
 /* Create the commission detail table */
 CREATE TABLE commission_detail (
 	id_commission_detail INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-	month_commission TIMESTAMP UNIQUE,
+	month_commission DATE NOT NULL DEFAULT CURRENT_DATE UNIQUE,
 	commission_percentage INT NOT NULL
 );
 
@@ -187,7 +187,7 @@ CREATE TABLE payments (
 	id_payment INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 	id_sale INT NOT NULL,
 	id_client INT NOT NULL,
-	payment_date TIMESTAMP NOT NULL,
+	payment_date DATE NOT NULL DEFAULT CURRENT_DATE,
 	total_payment NUMERIC NOT NULL,
 	total_remaining NUMERIC NOT NULL
 );
@@ -303,11 +303,9 @@ REFERENCES products(id_product);
 
 
 
-
-
 -- Insert into the 'commission_detail' Table
 INSERT INTO commission_detail (month_commission, commission_percentage)
-VALUES (current_timestamp, 10),
+VALUES ('2023-11-01', 10),
        ('2023-04-01', 5),
        ('2023-05-01', 8);
 
@@ -391,9 +389,9 @@ VALUES (1, 1, 15, 14.00),
 
 -- Insert into the 'commissions' Table
 INSERT INTO commissions(id_employee, total_commission, id_commission_detail, total_sales)
-VALUES(1, 42.00, 1, 1500),
-	  ( 2, 81.00,2, 2500),
-	  (3, 28.00, 3, 3500);
+VALUES(1, 42.00, 4, 1500),
+	  ( 2, 81.00,5, 2500),
+	  (3, 28.00, 6, 3500);
 
 -- Insert into the 'payments' Table
 INSERT INTO payments (id_sale, id_client, payment_date, total_payment, total_remaining)

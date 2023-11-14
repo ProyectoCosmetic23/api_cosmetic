@@ -9,4 +9,5 @@ router.get('/payments/:id/sales', paymentsController.getPaySale);
 router.get('/payments/clients/:id', paymentsController.getPayClien);
 router.get('/payments/:id_client/clients/:id_sale/sales', paymentsController.getPayClienSale);
 
+
 module.exports = router;

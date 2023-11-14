@@ -1,5 +1,6 @@
 const Payments = require('../../models/payments');
 const Sales = require('../../models/sales');
+const Orders = require('../../models/orders');
 
 
 // Obtener todos los pagos
