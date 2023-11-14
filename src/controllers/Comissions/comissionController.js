@@ -145,13 +145,43 @@ async function getComsById(req, res) {
     }
 }
 
+async function getSalesByEmployeeAndMonth(req, res) {
+    const { id_employee, month } = req.params;
+    try {
+        // Obtener el primer y último día del mes
+        const firstDayMonth = new Date(month);
+        const lastDayMonth = new Date(month);
+        lastDayMonth.setMonth(lastDayMonth.getMonth() + 1);
+        lastDayMonth.setDate(0);
 
-// Función para crear una comision
+        // Ajustar las fechas para comparar solo hasta el día (sin hora)
+        firstDayMonth.setHours(0, 0, 0, 0);
+        lastDayMonth.setHours(23, 59, 59, 999);
+
+        // Obtener las ventas del empleado para el mes dado
+        const employeeSales = await Sales.findAll({
+            attributes: ['total_sale'],
+            where: {
+                id_employee,
+                order_date: {
+                    [Op.gte]: firstDayMonth,
+                    [Op.lte]: lastDayMonth,
+                },
+            },
+        });
+
+        res.json(employeeSales);
+    } catch (error) {
+        console.error('Error fetching sales:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+}
 
 module.exports = {
     getAllComs,
     getComsById,
     createComs,
     getComsEmploy,
-    getComsDetailId
+    getComsDetailId,
+    getSalesByEmployeeAndMonth
 };
