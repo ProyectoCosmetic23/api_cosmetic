@@ -183,7 +183,7 @@ async function updateDeliveryStatusById(req, res) {
 
       const updatedOrder = await updateOrderDeliveryStatus(order, "Entregado");
 
-      if (updatedOrder === null || updatedOrder === undefined) {
+      if (updatedOrdernull || updatedOrder === undefined) {
         res.json({ newSale, saleDetailList });
       } else {
         res.json({ newSale, saleDetailList, updatedOrder });

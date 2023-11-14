@@ -87,7 +87,7 @@ async function updateRole(req, res) {
         const role = await Roles.findByPk(id);
         await role.update({
             name_role: name_role,
-            modules_rol: modules_string
+            modules_role: modules_string
         })
         res.json(role);
     } catch (error) {
