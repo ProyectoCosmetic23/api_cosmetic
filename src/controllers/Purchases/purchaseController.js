@@ -46,139 +46,57 @@ async function getShoppingById(req, res) {
 }
 
 // Crear una purchase
+// Crear una compra
 async function createShop(req, res) {
     const {
         id_provider,
         invoice_number,
         purchase_date,
-        state_purchase,
         observation_purchase,
+        total_purchase,
         products
     } = req.body;
-    let menssage = '';
-    let alerts = [];
-    
+
     try {
-        // Validaciones
-        if (isNaN(invoice_number)) {
-            menssage = "El número de factura debe contener solo números";
-        } else if (invoice_number.trim() === '') {
-            menssage = "El número de factura no debe estar vacío";
-        } else {
-            // Verificar que el número de factura no se repita en la base de datos
-            const invoiceExisting = await Purchase.findOne({ where: { invoice_number } });
-            if (invoiceExisting) {
-                menssage = "El número de factura ya existe. Debe ser único.";
-            }
-        }
-        
-        // Validar que la fecha de purchase no sea mayor a la fecha actual
-        const actuallyDate = new Date();
-        const purchaseDateDate = new Date(purchase_date);
-        if (purchaseDateDate > actuallyDate) {
-            menssage = "La fecha de purchase no puede ser mayor a la fecha actual.";
-        }
-
-        if (observation_purchase.length > 100) {
-            menssage = "La observación no puede tener más de 100 caracteres";
-        }
-
-        if (products.length === 0) {
-            menssage = "Debes agregar al menos un product a la purchase.";
-        }
-
-        if (menssage) {
-            return res.status(400).json({ success: false, message: menssage });
-        }
-
-        // Continuar con la creación de la purchase
         const newPurchase = await Purchase.create({
             id_provider,
             invoice_number,
             purchase_date,
-            state_purchase,
             observation_purchase,
-            total_purchase: 0
+            total_purchase,
         });
-    function validateStockMax(productDB,alerts) {
-    if(productDB.quantity >= productDB.stock_maximo){
-        alerts.push(productDB.name_product+ ': Stock maximo alcanzado.');
-    }
-    return alerts;
-}
 
         const id_purchase = newPurchase.id_purchase;
-        let total_purchase = 0;
+        const purchase_detail = [];
 
-        // Iterar a través de los products y crear detalles de purchase
         for (const product of products) {
             const id_product = product.id_product;
-            const quantity_product = product.quantity_product;
+            const id_category = product.id_category;
+            const product_quantity = product.product_quantity;
+            const cost_price = product.cost_price;
+            const selling_price = product.selling_price;
+            const vat = product.vat;
 
-            // Encontrar el product correspondiente en la base de datos
-            const productDB = await Product.findByPk(id_product);
-
-            if (!productDB) {
-                return res.status(404).json({ success: false, message: 'Product no encontrado.' });
-            }
-
-            const categoriaDB = await Categoria.findByPk(productDB.id_categoria);
-
-            if (!categoriaDB) {
-                return res.status(404).json({ success: false, message: 'Categoría no encontrada.' });
-            }
-
-
-            // Actualizar el stock
-            productDB.quantity += quantity_product;
-
-            alerts = validateStockMax(productDB, alerts);
-
-            // Calcular el subtotal y actualizar el precio de costo y precio de venta
-            const subtotal = productDB.cost_price * quantity_product;
-            total_purchase += subtotal;
-
-            // Actualizar precio de costo y precio de venta
-            if (quantity_product <= 0 || productDB.cost_price > productDB.selling_price) {
-                menssage = "La quantity del product debe ser mayor a cero y el precio de costo no puede ser mayor al precio de venta";
-                return res.status(400).json({ success: false, message: menssage });
-            }
-
-            await productDB.save();
-
-            // Crear el detalle de purchase
-            await Detail_purchase.create({
+            const purchase_detail_product = await Detail_purchase.create({
                 id_purchase,
                 id_product,
-                categoria_product: productDB.id_categoria,
-                quantity_product,
-                cost_price: productDB.cost_price,
-                selling_price: productDB.selling_price,
-                subtotal,
+                id_category,
+                product_quantity,
+                cost_price,
+                selling_price,
                 vat
             });
+
+            purchase_detail.push(purchase_detail_product);
         }
 
-        // Actualizar el total de la purchase
-        newPurchase.total_purchase = total_purchase;
-        await newPurchase.save();
-
-        const purchasefinal = { ...newPurchase };
-        purchasefinal.products = products;
-
-        res.status(201).json({
-            success: true,
-            purchase: purchasefinal,
-            result: {
-                menssage: "Purchase creada correctamente",
-                alerts: alerts,
-            }
-        });
+        res.status(201).json({ newPurchase, purchase_detail });
     } catch (error) {
-        console.error('Error al crear la purchase:', error);
-        res.status(500).json({ success: false, message: 'Error al crear la purchase.' });
+        res.status(400).json({ error: 'Error al crear la compra.' });
+        console.log(error.message);
     }
 }
+
 
 
 
