@@ -26,7 +26,8 @@ const PORT = process.env.PORT || 8080;
 const corsOptions = {
   origin: [
     'https://api-cosmetic-w32d.onrender.com',
-    'http://localhost:4200'
+    'http://localhost:4200',
+    'https://cosmetic-proyect-9e0e1.web.app'
   ]
 };
 
