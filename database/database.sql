@@ -110,11 +110,10 @@ CREATE TABLE purchase_detail (
 	id_purchase_detail  INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 	id_purchase INT NOT NULL,
 	id_product INT NOT NULL,
-	product_category  VARCHAR(100),
+	id_category  VARCHAR(100),
 	product_quantity INT NOT NULL,
 	cost_price NUMERIC,
 	selling_price NUMERIC,
-	sub_total NUMERIC,
 	vat NUMERIC
 );
 
