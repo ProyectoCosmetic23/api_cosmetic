@@ -2,10 +2,12 @@ const nodemailer = require ('nodemailer');
 const Users = require ('../../models/users.js');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+const { generarJWT } = require('../../helpers/generar-jwt.js');
 
 
 //Función para traer todos los usuarios
 const getAllUsers = async (req, res) => {
+  
   try {
     const users = await Users.findAll();
     if (users.length === 0) {
@@ -126,7 +128,6 @@ async function updateUser(req, res) {
 }
 
 
-// Método para loguearse
 async function loginUser(req, res) {
   const { email, password } = req.body;
 
@@ -134,30 +135,34 @@ async function loginUser(req, res) {
     const user = await Users.findOne({ where: { email: email } });
 
     if (!user) {
-      return res.status(401).json({ error: 'Credenciales incorrectas.' });
+      return res.status(401).json({ error: 'Correo o Contraseña incorrectas.' });
     }
 
     if (user.state_user === 'inactivo') {
-      return res.status(400).json({ error: 'El usuario está inactivo.' });
+      return res.status(400).json({ error: 'Credenciales incorrectas: El usuario está inactivo.' });
     }
 
     // Compara la contraseña proporcionada con la contraseña almacenada en la base de datos
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (!isPasswordValid) {
-      return res.status(401).json({ error: 'Credenciales incorrectas.' });
+      return  res.status(401).json({ loginError: 'Correo o Contraseña incorrectas.' });
+    
     }
 
+    const token = await generarJWT(user.id);
+
     res.json({
-      message: 'Inicio de sesión exitoso.',
-      name: user.username
+      user,
+      token
     });
 
   } catch (error) {
     console.error('Error al iniciar sesión: ', error);
-    res.status(500).json({ error: 'Error al iniciar sesión.' });
+    res.status(500).json({ error: 'Error interno al iniciar sesión.' });
   }
 }
+
 //Metodo para actualizar el estado
 const updateUserState = async (req, res) => {
   const { id } = req.params; // El ID del usuario
@@ -271,6 +276,7 @@ async function forgotPassword(req, res) {
     res.status(500).json({ error: 'Error al recuperar la contraseña.' });
   }
 }
+
 
 
 // Función para cambiar contraseña

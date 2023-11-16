@@ -1,4 +1,6 @@
 const express = require('express');
+const cors = require('cors'); // Importa el middleware cors
+
 const sequelize = require('./src/config/sequelize');
 const employeesRoutes = require('./src/routes/employeesRoutes');
 const productsRoutes = require('./src/routes/productsRoutes');
@@ -17,20 +19,14 @@ const comissionDetailRoutes = require('./src/routes/comissionDetailRoutes');
 const clientsRoutes = require('./src/routes/clientsRoutes');
 const returnsRoutes = require('./src/routes/returnsRoutes');
 
-const cors= require("cors");
+require('dotenv').config();
 
 const app = express();
 
+// Utiliza el middleware cors para habilitar cors
+app.use(cors());
+
 const PORT = process.env.PORT || 8080;
-
-const corsOptions = {
-  origin: [
-    'https://api-cosmetic-w32d.onrender.com',
-    'http://localhost:4200'
-  ]
-};
-
-app.use(cors(corsOptions));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -61,8 +57,6 @@ app.use('/api', comissionRoutes);
 app.use('/api', clientsRoutes);
 app.use('/api', returnsRoutes);
 
-
 app.listen(PORT, () => {
-
   console.log(`Server is running on port ${PORT}`);
 });
