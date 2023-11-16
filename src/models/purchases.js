@@ -18,7 +18,7 @@ const Purchases = sequelize.define('purchases', {
     }
   },
   invoice_number: {
-    type: DataTypes.STRING(4),
+    type: DataTypes.STRING(20),
     allowNull: true
   },
   purchase_date: {
@@ -37,11 +37,7 @@ const Purchases = sequelize.define('purchases', {
   state_purchase: {
     type: DataTypes.STRING(15),
     allowNull: true,
-    defaultValue: 'Activo'
-  },
-  purchase_photo: {
-    type: DataTypes.BLOB,
-    allowNull: true
+    defaultValue: 'Activo',
   },
   observation_purchase: {
     type: DataTypes.STRING(100),
