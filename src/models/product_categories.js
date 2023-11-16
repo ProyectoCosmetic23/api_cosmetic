@@ -1,4 +1,4 @@
-const { DataTypes } = require('sequelize');
+const { DataTypes, NOW } = require('sequelize');
 const sequelize = require('../config/sequelize');
 
 const Product_Categories = sequelize.define('product_categories', {
@@ -26,7 +26,7 @@ const Product_Categories = sequelize.define('product_categories', {
   creation_date_category: {
     type: DataTypes.DATE,
     allowNull: true,
-    defaultValue: DataTypes.NOW()
+    defaultValue: new NOW()
   }
 }, {
   sequelize,

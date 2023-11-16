@@ -37,7 +37,7 @@ const Purchases = sequelize.define('purchases', {
   state_purchase: {
     type: DataTypes.STRING(15),
     allowNull: true,
-    defaultValue: 'Ativo'
+    defaultValue: 'Activo'
   },
   purchase_photo: {
     type: DataTypes.BLOB,
