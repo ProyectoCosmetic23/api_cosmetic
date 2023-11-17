@@ -1,6 +1,8 @@
 const nodemailer = require("nodemailer");
 const Users = require("../../models/users.js");
 const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
+const { generarJWT } = require("../../helpers/generar-jwt.js");
 
 //Función para traer todos los usuarios
 const getAllUsers = async (req, res) => {
@@ -42,40 +44,62 @@ async function createUser(req, res) {
     req.body;
 
   // Validar la existencia de los campos requeridos
-  if (
-    !id_role ||
-    !id_employee ||
-    !username ||
-    !email ||
-    !password ||
-    !observation_user
-  ) {
-    return res.status(400).json({ error: "Falta campos obligatorios." });
+  if (!id_role || !id_employee || !username || !email || !password) {
+    return res
+      .status(400)
+      .json({ error: "Todos los campos son obligatorios." });
   }
 
   // Validar la longitud de la contraseña
-  if (password.length <= 5) {
+  if (password.length <= 6) {
     return res
       .status(400)
-      .json({ error: "La contraseña debe tener al menos 6 caracteres." });
+      .json({ error: "La contraseña debe tener al menos 7 caracteres." });
   }
 
-  // validacion correo valido
-  if (!isValidEmail(email)) {
-    return res.status(400).json({ error: "El correo no es válido" });
+  // Validar que la contraseña contenga al menos una mayúscula, un número y un carácter especial
+  const passwordRegex =
+    /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/;
+  if (!passwordRegex.test(password)) {
+    return res
+      .status(400)
+      .json({
+        error:
+          "La contraseña debe contener al menos una mayúscula, un número y un carácter especial.",
+      });
+  }
+
+  // Validar el formato del correo electrónico
+  const emailRegex = /^[A-Za-z0-9._%-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$/;
+  if (!emailRegex.test(email)) {
+    return res
+      .status(400)
+      .json({ error: "El correo electrónico no es válido." });
   }
 
   try {
-    const newUser = await Users.create({
+    const existingEmail = await Users.findOne({ where: { email } });
+
+    if (existingEmail) {
+      return res.status(400).json({ error: "El correo ya está en uso." });
+    }
+
+    const saltRounds = 10;
+    const salt = bcrypt.genSaltSync(saltRounds);
+
+    // Aplica un hash a la contraseña con el salt
+    const hash = bcrypt.hashSync(password, salt);
+
+    const user = await Users.create({
       id_role,
       id_employee,
       username,
       email,
-      password,
-      observation_user
+      password: hash,
+      observation_user,
     });
 
-    res.json(newUser);
+    res.status(201).json(user);
   } catch (error) {
     console.error("Error al crear el usuario:", error);
     res
@@ -140,34 +164,46 @@ async function updateUser(req, res) {
 //Metodo para loguearse
 async function loginUser(req, res) {
   const { email, password } = req.body;
-
+  console.log(email, password);
   try {
     const user = await Users.findOne({ where: { email: email } });
+    console.log("Usuario encontrado:", user);
 
     if (!user) {
-      return res.status(401).json({ error: "Credenciales incorrectas." });
+      return res
+        .status(401)
+        .json({ error: "Correo o Contraseña incorrectas." });
     }
 
     if (user.state_user === "inactivo") {
-      return res.status(400).json({ error: "El usuario está inactivo." });
+      return res
+        .status(400)
+        .json({ error: "Credenciales incorrectas: El usuario está inactivo." });
     }
 
-    if (user.password !== password) {
-      return res.status(401).json({ error: "Credenciales incorrectas." });
+    // Compara la contraseña proporcionada con la contraseña almacenada en la base de datos
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+
+    if (!isPasswordValid) {
+      return res
+        .status(401)
+        .json({ loginError: "Correo o Contraseña incorrectas." });
     }
+
+    const token = await generarJWT(user.id);
 
     res.json({
-      message: "Inicio de sesión exitoso.",
-      name: user.username,
+      user,
+      token,
     });
   } catch (error) {
     console.error("Error al iniciar sesión: ", error);
-    res.status(500).json({ error: "Error al iniciar sesión." });
+    res.status(500).json({ error: "Error interno al iniciar sesión." });
   }
 }
 
 //Metodo para actualizar el estado
-async function updateUserState (req, res){
+async function updateUserState(req, res) {
   const { id } = req.params;
 
   let mensaje = "";
@@ -207,7 +243,7 @@ async function updateUserState (req, res){
   res.json({
     msg: mensaje,
   });
-};
+}
 
 //Función para generar token
 function generateResetToken() {

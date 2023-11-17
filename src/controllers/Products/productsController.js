@@ -177,7 +177,7 @@ async function productsChangeStatus(req, res) {
 
   try {
     if (id) {
-      // Buscar el empleado por su ID
+      // Buscar el producto por su ID
       const product = await Product.findByPk(id);
 
       if (product) {
@@ -189,7 +189,7 @@ async function productsChangeStatus(req, res) {
           state_product_new = "Activo";
         }
 
-        // Actualizar el estado del empleado
+        // Actualizar el estado del producto
         product.state_product = state_product_new;
 
         mensaje = "Cambio de estado realizado con éxito.";
@@ -200,7 +200,7 @@ async function productsChangeStatus(req, res) {
       mensaje = "Falta el ID en la solicitud.";
     }
   } catch (error) {
-    console.error("Error al cambiar el estado del empleado:", error);
+    console.error("Error al cambiar el estado del producto:", error);
     mensaje = "Fallo al realizar el cambio de estado: " + error.message;
   }
   res.json({
