@@ -5,7 +5,7 @@ const Category = require ('../../models/product_categories');
 
 const getAllCategories = async (req, res, next) => {
   try {
-    const categories = await Category.findAll();
+    const categories = (await Category.findAll());
     if (categories.length === 0) {
       throw new Error('No se encontraron categorías registradas.');
     }
@@ -148,7 +148,7 @@ const CategoryChangeStatus = async (req, res) => {
     let message = '';
 
     try {
-        if (id && newState) {
+        if (id != null && newState != null) {
             // Buscar la categoría por su ID
             const category = await Category.findByPk(id);
 

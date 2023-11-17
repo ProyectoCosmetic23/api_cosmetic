@@ -68,6 +68,7 @@ async function createShop(req, res) {
 
         const id_purchase = newPurchase.id_purchase;
         const purchase_detail = [];
+        let totalPurchaseAmount = 0;
 
         for (const product of products) {
             const id_product = product.id_product;
@@ -77,18 +78,45 @@ async function createShop(req, res) {
             const selling_price = product.selling_price;
             const vat = product.vat;
 
+            const productDB = await Product.findByPk(id_product);
+
+            if (!productDB) {
+                return res.status(404).json({ success: false, message: 'Producto no encontrado.' });
+            }
+
+            // Agregar la cantidad comprada al stock existente
+            productDB.quantity += product_quantity;
+
+            // Actualizar el precio del producto en el inventario con el precio de la compra
+            productDB.cost_price = cost_price;
+            productDB.selling_price = selling_price;
+
+            // Validar stock máximo
+            if (productDB.quantity >= productDB.stock_maximo) {
+                console.log(productDB.name_product + ': Stock máximo alcanzado.');
+                // Puedes agregar lógica adicional o almacenar alertas en una lista, según tus necesidades.
+            }
+
+            const subtotal = (cost_price + vat) * product_quantity;
+            totalPurchaseAmount += subtotal;
+
+            await productDB.save();
+
             const purchase_detail_product = await Detail_purchase.create({
                 id_purchase,
                 id_product,
                 id_category,
                 product_quantity,
-                cost_price,
-                selling_price,
+                cost_price: productDB.cost_price, // Usar el nuevo precio almacenado en la base de datos
+                selling_price: productDB.selling_price,
                 vat
             });
 
             purchase_detail.push(purchase_detail_product);
         }
+
+        // Actualizar el total_purchase en la compra con el valor correcto
+        await newPurchase.update({ total_purchase: totalPurchaseAmount });
 
         res.status(201).json({ newPurchase, purchase_detail });
     } catch (error) {
@@ -100,10 +128,12 @@ async function createShop(req, res) {
 
 
 
+
+
 // Anular una purchase
 async function anulateShopById(req, res) {
     const { id } = req.params;
-    const state_purchase = "Anulado";
+    const state_purchase = false;
     let menssage = '';
 
     try {
@@ -128,7 +158,7 @@ async function anulateShopById(req, res) {
         let quantityTotalAnulate = 0;
 
         for (const detalle of detail_purchase) {
-            quantityTotalAnulate += detalle.quantity_product;
+            quantityTotalAnulate += detalle.product_quantity;
 
             // Obtener el product asociado a este detalle
             const productDB = await Product.findByPk(detalle.id_product);
@@ -138,7 +168,7 @@ async function anulateShopById(req, res) {
             }
 
             // Actualizar el inventario restando la quantity anulada
-            const nuevoInventario = productDB.quantity - detalle.quantity_product;
+            const nuevoInventario = productDB.quantity - detalle.product_quantity;
 
             // Actualizar el product en la base de datos
             await productDB.update({

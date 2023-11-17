@@ -96,12 +96,11 @@ CREATE TABLE users (
 CREATE TABLE purchases (
 	id_purchase INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 	id_provider INT NOT NULL,
-	invoice_number VARCHAR(4),
+	invoice_number VARCHAR(20),
 	purchase_date TIMESTAMP,
 	record_date_purchase TIMESTAMP,
 	total_purchase NUMERIC,
-	state_purchase CHARACTER VARYING(15),
-	purchase_photo BYTEA,
+	state_purchase BOOLEAN NOT NULL DEFAULT TRUE,
 	observation_purchase VARCHAR (100)
 );
 
