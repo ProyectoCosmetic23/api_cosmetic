@@ -35,9 +35,9 @@ const Purchases = sequelize.define('purchases', {
     allowNull: true
   },
   state_purchase: {
-    type: DataTypes.STRING(15),
+    type: DataTypes.BOOLEAN,
     allowNull: true,
-    defaultValue: 'Activo',
+    defaultValue: true,
   },
   observation_purchase: {
     type: DataTypes.STRING(100),

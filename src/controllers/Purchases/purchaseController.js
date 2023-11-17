@@ -133,7 +133,7 @@ async function createShop(req, res) {
 // Anular una purchase
 async function anulateShopById(req, res) {
     const { id } = req.params;
-    const state_purchase = "Anulado";
+    const state_purchase = false;
     let menssage = '';
 
     try {

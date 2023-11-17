@@ -100,7 +100,7 @@ CREATE TABLE purchases (
 	purchase_date TIMESTAMP,
 	record_date_purchase TIMESTAMP,
 	total_purchase NUMERIC,
-	state_purchase CHARACTER VARYING(15),
+	state_purchase BOOLEAN NOT NULL DEFAULT TRUE,
 	observation_purchase VARCHAR (100)
 );
 
