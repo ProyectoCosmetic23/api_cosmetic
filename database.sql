@@ -48,7 +48,7 @@ CREATE TABLE clients (
 CREATE TABLE product_categories (
 	id_category INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 	name_category VARCHAR(100) UNIQUE,
-	state_category CHARACTER VARYING(15),
+	state_category BOOLEAN NOT NULL DEFAULT TRUE,
 	observation_category VARCHAR (100),
 	creation_date_category TIMESTAMP
 );
