@@ -1,23 +1,30 @@
 //Purchases controller.js
-const Categoria = require('../../models/product_categories');
-const Purchase = require ('../../models/purchases');
-const Detail_purchase = require ('../../models/purchase_detail');
-const Product = require ('../../models/products');
-const Proveedor = require ('../../models/providers');
+const Purchase = require('../../models/purchases');
+const Detail_purchase = require('../../models/purchase_detail');
+const Product = require('../../models/products');
+const Providers = require('../../models/providers');
+const Product_Categories = require('../../models/product_categories');
+const flatted = require('flatted');
+const Purchase_Detail = require('../../models/purchase_detail');
 
 // Obtener todos las purchases
 const getAllShopping = async (req, res, next) => {
     try {
-      const purchases = await Purchase.findAll();
-      if (purchases.length === 0) {
-        throw new Error('No se encontraron compras registradas.');
-      }
-      res.json(purchases);
+        const purchases = await Purchase.findAll({
+            include: [
+                { model: Providers, attributes: ['id_provider', 'name_provider'] }
+            ]
+        });
+
+        if (purchases.length === 0) {
+            throw new Error('No se encontraron compras registradas.');
+        }
+        res.json(purchases);
     } catch (error) {
-      console.error('Error al recuperar las compras:', error);
-      next(error);
+        console.error('Error al recuperar las compras:', error);
+        next(error);
     }
-  };
+};
 ;
 
 // Obtener una purchase por ID este metodo sirve para ver el detalle de la purchase
@@ -25,14 +32,41 @@ const getAllShopping = async (req, res, next) => {
 async function getShoppingById(req, res) {
     const { id } = req.params;
     try {
-        const purchases = await Purchase.findByPk(id);
-        const detail_purchase = await Detail_purchase.findAll({
-            where: { id_purchase: id }
-        });
+        const purchases = await Purchase.findOne({
+            where: { id_purchase: id },
+            include: [
+                { model: Providers, attributes: ['id_provider', 'name_provider'] },
+                { 
+                    model: Purchase_Detail, attributes: ['id_product', 'id_category', 'cost_price', 
+                'selling_price', 'vat', 'product_quantity'], 
+                // include: [
+                //     {
+                //         model: Product, attributes: ['id_product', 'name_product'],
+                //         include: [
+                //             { model: Product_Categories, attributes: ['id_category', 'name_category'] }
+                //         ]
+                //     }
+                // ] 
+            },
+            ]
+        })
+
+        // const detail_purchase = await Detail_purchase.findAll({
+        //     where: { id_purchase: id },
+        //     include: [
+        //         {
+        //             model: Product, attributes: ['id_product', 'name_product'],
+        //             include: [
+        //                 { model: Product_Categories, attributes: ['id_category', 'name_category'] }
+        //             ]
+        //         }
+        //     ]
+        // });
         if (!purchases) {
             return res.status(404).json({ success: false, message: 'Purchase no encontrada.' });
         }
-        res.json({ success: true, data: { purchases, detail_purchase } });
+        // const purchasesData =  flatted.parse(flatted.stringify({...purchases, products: detail_purchase}));
+        res.json(purchases);
     } catch (error) {
         if (error.name === 'SequelizeConnectionError') {
             // Error de conexión a la base de datos
@@ -133,7 +167,7 @@ async function createShop(req, res) {
 // Anular una purchase
 async function anulateShopById(req, res) {
     const { id } = req.params;
-    const state_purchase = false;
+    const { reasonAnulate } = req.body;
     let menssage = '';
 
     try {
@@ -178,44 +212,47 @@ async function anulateShopById(req, res) {
 
         // Actualizar el estado de la purchase
         await purchase.update({
-            state_purchase: state_purchase,
+            reason_anulate: reasonAnulate,
+            state_purchase: false,
         });
 
-        res.json(purchase);
+        res.json({ message: 'Compra anulada exitosamente.' });
     } catch (error) {
-        res.status(500).json({ menssage: 'Error al anular la purchase.' });
+        // Manejo de errores
+        res.status(500).json({ message: 'Error al anular la compra.' });
     }
-}
+};
+
 
 
 
 // Middleware function to validate if a category already exists
 async function validateInvoiceExists(req, res, next) {
     try {
-      const { invoice_number } = req.query;
-  
-      // Check if a category with the same name exists
-      const existingInvoice = await Purchase.findOne({ where: { invoice_number: invoice_number} });
-  
-      if (existingInvoice) {
-        // If a category with the same name exists, return an error response
-        return res.status(400).json(true);
-      }
-  
-      // Check if the category name is empty
-      if (!invoice_number) {
-        // If the category name is empty, return an error response
-        return res.status(400).json(true);
-      }
-  
-      // Continue to the next middleware or route handler
-      return res.status(200).json(false);
+        const { invoice_number } = req.query;
+
+        // Check if a category with the same name exists
+        const existingInvoice = await Purchase.findOne({ where: { invoice_number: invoice_number } });
+
+        if (existingInvoice) {
+            // If a category with the same name exists, return an error response
+            return res.status(400).json(true);
+        }
+
+        // Check if the category name is empty
+        if (!invoice_number) {
+            // If the category name is empty, return an error response
+            return res.status(400).json(true);
+        }
+
+        // Continue to the next middleware or route handler
+        return res.status(200).json(false);
     } catch (error) {
-      // Handle any errors that may occur during the process
-      return res.status(500).json({ message: "Error interno del servidor"});
+        // Handle any errors that may occur during the process
+        return res.status(500).json({ message: "Error interno del servidor" });
     }
-  }
-  
+}
+
 
 //Exportar las funciones del módulo purchases|
 
