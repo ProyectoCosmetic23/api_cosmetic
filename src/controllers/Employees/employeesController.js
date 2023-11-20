@@ -192,7 +192,6 @@ async function employeeChangeStatus(req, res) {
               } else if (employee.state_employee === "Inactivo") {
                   state_employee_new = "Activo";
               }
-
               // Actualizar el estado del empleado
               employee.state_employee = state_employee_new;
 
