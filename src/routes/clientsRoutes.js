@@ -12,7 +12,12 @@ router.delete('/clients/:id', clientsController.customerDelete);
 
 //Ruta para actualizar un cliente por id utilizando put
 router.put('/clients/:id', clientsController.customerPut);
-router.put('/clients/:id/change-status', clientsController.CustomerChangeStatus)
+//Ruta para cambiar el estado
+router.put('/clients/change-status/:id', clientsController.CustomerChangeStatus);
+//Ruta para validar cedula
+router.get('/clients-check-cedula', clientsController.checkCedulaAvailability);
+//Ruta para validar email
+router.get('/clients-check-email', clientsController.checkEmailAvailability);
 
 
 module.exports= router;

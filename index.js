@@ -28,6 +28,16 @@ app.use(cors());
 
 const PORT = process.env.PORT || 8080;
 
+const corsOptions = {
+  origin: [
+    'https://api-cosmetic-w32d.onrender.com',
+    'http://localhost:4200',
+    'https://cosmetic-proyect-9e0e1.web.app'
+  ]
+};
+
+app.use(cors(corsOptions));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

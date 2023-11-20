@@ -15,9 +15,9 @@ const Product_Categories = sequelize.define('product_categories', {
     unique: "product_categories_name_category_key"
   },
   state_category: {
-    type: DataTypes.STRING(15),
+    type: DataTypes.BOOLEAN,
     allowNull: true,
-    defaultValue: "Activo"
+    defaultValue: true
   },
   observation_category: {
     type: DataTypes.STRING(100),
@@ -50,5 +50,6 @@ const Product_Categories = sequelize.define('product_categories', {
     },
   ]
 });
+
 
 module.exports = Product_Categories;

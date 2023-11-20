@@ -7,6 +7,7 @@ router.get('/commissions/:id', comissionController.getComsById);
 router.post('/commissions', comissionController.createComs);
 router.get('/commissions/employee/:id', comissionController.getComsEmploy);
 router.get('/commissions/detail/:id', comissionController.getComsDetailId);
+router.get('/commissions/sales/:id_employee/:month', comissionController.getSalesByEmployeeAndMonth);
 
 
 module.exports = router;

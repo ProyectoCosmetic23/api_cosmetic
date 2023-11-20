@@ -35,7 +35,9 @@ async function createDetaileCom(req, res) {
 
     try {
         const actual_date = new Date();
-        const month_commission = new Date(actual_date.getFullYear(), actual_date.getMonth(), 1);
+        const year = actual_date.getFullYear();
+        const month = actual_date.getMonth() + 1; // Los meses en JavaScript empiezan en 0
+        const month_commission = `${year}-${month < 10 ? '0' + month : month}-01`;
 
         // Verificar si ya existe una comisión para este mes
         const comisionExist = await Comission_Detail.findOne({
