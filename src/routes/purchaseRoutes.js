@@ -6,6 +6,6 @@ router.get('/purchases', purchaseController.getAllShopping);
 router.get('/purchases-validate-invoiceexist', purchaseController.validateInvoiceExists)
 router.get('/purchases/:id', purchaseController.getShoppingById);
 router.post('/purchases', purchaseController.createShop);
-router.put('/purchases/:id', purchaseController.anulateShopById);
+router.put('/purchases/anulate/:id', purchaseController.anulateShopById);
 
 module.exports = router;

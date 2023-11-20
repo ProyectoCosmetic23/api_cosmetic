@@ -51,4 +51,5 @@ const Product_Categories = sequelize.define('product_categories', {
   ]
 });
 
+
 module.exports = Product_Categories;

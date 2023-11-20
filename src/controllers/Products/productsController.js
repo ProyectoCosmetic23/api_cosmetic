@@ -32,6 +32,32 @@ async function getProductsById(req, res) {
   }
 }
 
+// Middleware function to validate if a pruduct already exists
+async function validateProductExists(req, res, next) {
+  try {
+    const { id_category, name_product } = req.query;
+
+
+    const existingProduct = await Product.findOne({ where: { id_category: id_category , name_product: name_product } });
+
+    if (existingProduct) {
+     
+      return res.status(400).json(true);
+    }
+
+    
+    if (!name_product) {
+     
+      return res.status(400).json(true);
+    }
+    return res.status(200).json(false);
+  } catch (error) {
+
+    return res.status(500).json({ message: "Error interno del servidor"});
+  }
+}
+
+
 //Crear un producto
 
 async function createProducts(req, res) {
@@ -46,18 +72,18 @@ async function createProducts(req, res) {
     observation,
   } = req.body;
 
-  // Validación: Verifica que los campos obligatorios no estén vacíos
-  if (!id_category || !name_product || !quantity || !max_stock || !min_stock || !cost_price || !selling_price) {
-    return res.status(400).json({ error: 'Faltan campos obligatorios' });
-  }
-  if (isNaN(quantity) || quantity <= 0) {
-    return res.status(400).json({ error: 'La cantidad debe ser un número mayor que cero' });
-  }
+  // // Validación: Verifica que los campos obligatorios no estén vacíos
+  // if (!id_category || !name_product || !quantity || !max_stock || !min_stock || !cost_price || !selling_price) {
+  //   return res.status(400).json({ error: 'Faltan campos obligatorios' });
+  // }
+  // if (isNaN(quantity) || quantity <= 0) {
+  //   return res.status(400).json({ error: 'La cantidad debe ser un número mayor que cero' });
+  // }
 
-  // Validación: Precio de costo y precio de venta deben ser numéricos y mayores que cero
-  if (isNaN(cost_price) || isNaN(selling_price) || cost_price <= 0 || selling_price <= 0) {
-    return res.status(400).json({ error: 'El precio de costo y el precio de venta deben ser numéricos y mayores que cero' });
-  }
+  // // Validación: Precio de costo y precio de venta deben ser numéricos y mayores que cero
+  // if (isNaN(cost_price) || isNaN(selling_price) || cost_price <= 0 || selling_price <= 0) {
+  //   return res.status(400).json({ error: 'El precio de costo y el precio de venta deben ser numéricos y mayores que cero' });
+  // }
 
   // Validación: Stock máximo y stock mínimo deben ser números enteros y stock máximo debe ser mayor que stock mínimo
   if (!Number.isInteger(max_stock) || !Number.isInteger(min_stock) || max_stock <= min_stock) {
@@ -217,5 +243,6 @@ module.exports = {
   getProductsById,
   createProducts,
   productsPut,
-  productsChangeStatus
+  productsChangeStatus,
+  validateProductExists
 };

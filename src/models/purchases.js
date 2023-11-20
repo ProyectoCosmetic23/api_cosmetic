@@ -1,5 +1,7 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/sequelize');
+const Providers = require('./providers');
+const Purchase_Detail = require('./purchase_detail');
 
 const Purchases = sequelize.define('purchases', {
   id_purchase: {
@@ -43,6 +45,11 @@ const Purchases = sequelize.define('purchases', {
     type: DataTypes.STRING(100),
     allowNull: true
   }
+  ,
+  reason_anulate: {
+    type: DataTypes.STRING(100),
+    allowNull: true
+  }
 }, {
   sequelize,
   tableName: 'purchases',
@@ -59,4 +66,6 @@ const Purchases = sequelize.define('purchases', {
   ]
 });
 
+Purchases.belongsTo(Providers, { foreignKey: 'id_provider' });
+Purchases.hasMany(Purchase_Detail, { foreignKey: 'id_purchase' });
 module.exports = Purchases;
