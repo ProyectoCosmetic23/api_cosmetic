@@ -7,6 +7,7 @@ const getAllCategories = async (req, res, next) => {
   try {
     const categories = (await Category.findAll());
     if (categories.length === 0) {
+      
       throw new Error('No se encontraron categorías registradas.');
     }
     res.json(categories);
