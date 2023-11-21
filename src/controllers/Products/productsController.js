@@ -86,9 +86,7 @@ async function createProducts(req, res) {
   // }
 
   // Validación: Stock máximo y stock mínimo deben ser números enteros y stock máximo debe ser mayor que stock mínimo
-  if (!Number.isInteger(max_stock) || !Number.isInteger(min_stock) || max_stock <= min_stock) {
-    return res.status(400).json({ error: 'El stock máximo y el stock mínimo deben ser números enteros, y el stock máximo debe ser mayor que el stock mínimo' });
-  }
+ 
 
   // Validación: Nombre debe contener solo letras y espacios
   if (!/^[A-Za-z0-9\s]+$/.test(name_product)) {
@@ -115,7 +113,7 @@ async function createProducts(req, res) {
     res.json(newProduct);
   } catch (error) {
     console.error("Error al crear el producto:", error);
-    res.status(400).json({ error: 'Error al crear el producto.' });
+   res.status(500).json({ error: 'Error al crear el empleado. Detalles: ' + error.message });
   }
 }
 
@@ -217,6 +215,9 @@ async function productsChangeStatus(req, res) {
 
         // Actualizar el estado del producto
         product.state_product = state_product_new;
+
+        await product.save();
+
 
         mensaje = "Cambio de estado realizado con éxito.";
       } else {
