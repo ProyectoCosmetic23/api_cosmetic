@@ -10,14 +10,14 @@ const Sale_Detail = require('../../models/sale_detail');
 // Función para obtener el último número de factura de Sales
 async function getLastInvoiceNumber() {
   try {
-    const lastSale = await Sales.findOne({
+    const lastOrder = await Orders.findOne({
       order: [['invoice_number', 'DESC']]
     });
 
-    if (lastSale) {
-      return lastSale.invoice_number;
+    if (lastOrder) {
+      return lastOrder.invoice_number;
     } else {
-      return 0; // Si no hay ventas registradas, empieza desde 1.
+      return 0; // Si no hay pedidos registrados, empieza desde 1.
     }
   } catch (err) {
     console.error(err);
