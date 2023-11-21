@@ -185,7 +185,8 @@ CREATE TABLE commission_detail (
 /* Create the payments table */
 CREATE TABLE payments (
 	id_payment INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-	id_sale INT NOT NULL,
+	id_sale INT NULL,
+	id_order INT NULL,
 	id_client INT NOT NULL,
 	payment_date DATE NOT NULL DEFAULT CURRENT_DATE,
 	total_payment NUMERIC NOT NULL,
@@ -244,6 +245,11 @@ ALTER TABLE payments
 ADD CONSTRAINT fk_paymentsSale
 FOREIGN KEY (id_sale) 
 REFERENCES sales(id_sale);
+
+ALTER TABLE payments
+ADD CONSTRAINT fk_paymentsOrder
+FOREIGN KEY (id_order) 
+REFERENCES orders(id_order);
 
 ALTER TABLE payments
 ADD CONSTRAINT fk_paymentsClient
@@ -389,15 +395,15 @@ VALUES (1, 1, 15, 14.00),
 
 -- Insert into the 'commissions' Table
 INSERT INTO commissions(id_employee, total_commission, id_commission_detail, total_sales)
-VALUES(1, 42.00, 4, 1500),
-	  ( 2, 81.00,5, 2500),
-	  (3, 28.00, 6, 3500);
+VALUES(1, 42.00, 1, 1500),
+	  ( 2, 81.00,2, 2500),
+	  (3, 28.00, 3, 3500);
 
 -- Insert into the 'payments' Table
-INSERT INTO payments (id_sale, id_client, payment_date, total_payment, total_remaining)
-VALUES (1, 1, current_timestamp, 420.00, 0.00),
-       (2, 2, current_timestamp, 675.00, 0.00),
-       (3, 3, current_timestamp, 360.00, 0.00);
+INSERT INTO payments (id_sale, id_order,id_client, payment_date, total_payment, total_remaining)
+VALUES (1,null, 1, current_timestamp, 420.00, 0.00),
+       (null,1, 2, current_timestamp, 1500, 0.00),
+       (3,null, 3, current_timestamp, 360.00, 0.00);
 
 -- Insert into the 'returns' Table
 INSERT INTO returns (id_sale, id_product, return_date, return_quantity, return_value, return_reason)
