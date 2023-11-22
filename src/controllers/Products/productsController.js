@@ -1,5 +1,6 @@
 //ProductosController.js
 const Product = require('../../models/products');
+const DefectiveProducts = require('../../models/defective_products');
 
 //Consultar todos los productos
 
@@ -73,8 +74,8 @@ async function createProducts(req, res) {
   } = req.body;
 
   // // Validación: Verifica que los campos obligatorios no estén vacíos
-  // if (!id_category || !name_product || !quantity || !max_stock || !min_stock || !cost_price || !selling_price) {
-  //   return res.status(400).json({ error: 'Faltan campos obligatorios' });
+  if (!id_category || !name_product || !max_stock || !min_stock ) {
+    return res.status(400).json({ error: 'Faltan campos obligatorios' });
   // }
   // if (isNaN(quantity) || quantity <= 0) {
   //   return res.status(400).json({ error: 'La cantidad debe ser un número mayor que cero' });
@@ -83,10 +84,9 @@ async function createProducts(req, res) {
   // // Validación: Precio de costo y precio de venta deben ser numéricos y mayores que cero
   // if (isNaN(cost_price) || isNaN(selling_price) || cost_price <= 0 || selling_price <= 0) {
   //   return res.status(400).json({ error: 'El precio de costo y el precio de venta deben ser numéricos y mayores que cero' });
-  // }
+  }
 
-  // Validación: Stock máximo y stock mínimo deben ser números enteros y stock máximo debe ser mayor que stock mínimo
- 
+  
 
   // Validación: Nombre debe contener solo letras y espacios
   if (!/^[A-Za-z0-9\s]+$/.test(name_product)) {
@@ -190,8 +190,40 @@ async function productsPut(req, res) {
   });
 }
 
+async function retireProduct(req, res) {
+  const { id } = req.params;
+  const { return_quantity, return_reason, return_value } = req.body;
 
+  try {
+    // Obtener el producto por ID
+    const product = await Product.findByPk(id);  // Aquí está el cambio
 
+    if (!product) {
+      return res.status(404).json({ error: 'Producto no encontrado' });
+    }
+
+    // Crear una entrada en la tabla defective_products
+    await DefectiveProducts.create({
+      id_product: product.id_product,
+      return_reason,
+      return_date: new Date(),
+      return_quantity,
+      return_value,
+    });
+
+    // Actualizar la cantidad y otros detalles del producto
+    product.quantity -= return_quantity;
+    // Actualizar otros detalles según tus necesidades
+
+    // Guardar los cambios en la tabla products
+    await product.save();
+
+    res.json({ msg: 'Producto dado de baja exitosamente' });
+  } catch (error) {
+    console.error('Error al dar de baja el producto:', error);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+}
 
 
 //cambiar estado del producto
@@ -244,6 +276,7 @@ module.exports = {
   getProductsById,
   createProducts,
   productsPut,
+  retireProduct,
   productsChangeStatus,
   validateProductExists
 };
