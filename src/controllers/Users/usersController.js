@@ -1,5 +1,6 @@
 const nodemailer = require("nodemailer");
 const Users = require("../../models/users.js");
+const Employee = require ('../../models/employees');
 const jwt = require("jsonwebtoken");
 
 //Función para traer todos los usuarios
@@ -11,7 +12,7 @@ const getAllUsers = async (req, res) => {
     }
     res.json(users);
   } catch (error) {
-    console.error("Error fetching usuarios:", error);
+    console.error("Error al recuperar usuarios:", error);
     res.status(500).json({ error: "Error interno del servidor" });
   }
 };
@@ -36,15 +37,38 @@ function isValidEmail(email) {
   return emailRegex.test(email);
 }
 
+//Buscar empleado por cedula y retornar el correo del empleado 
+async function employeeByCard(req, res) {
+  const { id_card_employee } = req.params;
+
+  try {
+    if (id_card_employee) {
+      const employee = await Employee.findOne({ where: { id_card_employee } });
+
+      if (!employee) {
+        return res.status(404).json({ message: 'Empleado no encontrado.' });
+      }
+
+      // Retorna el correo del empleado si se encuentra
+      res.json({ email: employee.email }); 
+    } else {
+      return res.status(400).json({ message: 'Falta el ID de la cédula en la solicitud.' });
+    }
+  } catch (error) {
+    console.error('Error al buscar el empleado por cédula:', error);
+    res.status(500).json({ error: 'Error al buscar el empleado por cédula.' });
+  }
+}
+
 //Función para crear un usuario nuevo
 async function createUser(req, res) {
-  const { id_role, id_employee, username, email, password, observation_user } =
+  const { name_role, id_card_employee, username, email, password, observation_user } =
     req.body;
 
   // Validar la existencia de los campos requeridos
   if (
-    !id_role ||
-    !id_employee ||
+    !name_role ||
+    !id_card_employee ||
     !username ||
     !email ||
     !password ||
@@ -61,14 +85,14 @@ async function createUser(req, res) {
   }
 
   // validacion correo valido
-  if (!isValidEmail(email)) {
-    return res.status(400).json({ error: "El correo no es válido" });
-  }
+  // if (!isValidEmail(email)) {
+  //   return res.status(400).json({ error: "El correo no es válido" });
+  // }
 
   try {
     const newUser = await Users.create({
-      id_role,
-      id_employee,
+      name_role,
+      id_card_employee,
       username,
       email,
       password,
@@ -84,21 +108,24 @@ async function createUser(req, res) {
   }
 }
 
-async function checkEmailAvailability(req, res) {
-  const { email } = req.query;
-  try {
-    const existingEmail = await Client.findOne({ where: { email } });
-    res.json(!existingEmail);
-  } catch (error) {
-    console.error("Error al verificar el correo:", error);
-    res.status(500).json({ error: "Error al verificar el correo." });
-  }
-}
+// async function checkEmailAvailability(req, res) {
+//   const { email } = req.query;
+//   try {
+//     const existingEmail = await Client.findOne({ where: { email } });
+//     res.json(!existingEmail);
+//   } catch (error) {
+//     console.error("Error al verificar el correo:", error);
+//     res.status(500).json({ error: "Error al verificar el correo." });
+//   }
+// }
+
+
+
 
 //Función para editar el usuario
 async function updateUser(req, res) {
   const { id } = req.params;
-  const { id_role, id_employee, username, email, observation_user } = req.body;
+  const { name_role, id_card_employee, username, email, observation_user } = req.body;
 
   try {
     const user = await Users.findByPk(id);
@@ -115,17 +142,17 @@ async function updateUser(req, res) {
         .json({ error: "El correo electrónico no es válido." });
     }
 
-    // Validar si el correo ya está en uso por otro usuario
-    const existingUser = await Users.findOne({ where: { email } });
-    if (existingUser && existingUser.id !== id) {
-      return res
-        .status(400)
-        .json({ error: "El correo ya está en uso por otro usuario." });
-    }
+    // // Validar si el correo ya está en uso por otro usuario 
+    // const existingUser = await Users.findOne({ where: { email } });
+    // if (existingUser && existingUser.id !== id) {
+    //   return res
+    //     .status(400)
+    //     .json({ error: "El correo ya está en uso por otro usuario." });
+    // }
 
     await user.update({
-      id_role,
-      id_employee,
+      name_role,
+      id_card_employee,
       username,
       email,
       observation_user,
@@ -325,5 +352,7 @@ module.exports = {
   updateUserState,
   forgotPassword,
   changePassword,
-  checkEmailAvailability,
+  employeeByCard
+  
+
 };

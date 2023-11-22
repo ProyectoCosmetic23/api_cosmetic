@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const usersController = require('../controllers/Users/usersController');
 
+
 // Rutas de autenticación
 
 router.get('/Users', usersController.getAllUsers);
@@ -13,6 +14,12 @@ router.post('/Users/login' , usersController.loginUser);
 router.post('/Users/recover', usersController.forgotPassword);
 router.post('/change-password', usersController.changePassword);
 //Ruta para validar email
-router.get('/users-check-email', usersController.checkEmailAvailability);
+// router.get('/users-check-email', usersController.checkEmailAvailability);
+//Ruta para buscar el empleado y obtener su correo
+router.get('/Users/employeeByCard/:id_card_employee', usersController.employeeByCard);
+
+
+
+
 
 module.exports = router;
