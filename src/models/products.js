@@ -60,7 +60,7 @@ const Products = sequelize.define('products', {
   observation: {
     type: DataTypes.STRING(100),
     allowNull: true
-  }
+  },
 }, {
   sequelize,
   tableName: 'products',
