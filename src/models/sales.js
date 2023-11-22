@@ -37,7 +37,7 @@ const Sales = sequelize.define('sales', {
     type: DataTypes.INTEGER,
     allowNull: false
   },
-  sale_date: {
+  order_date: {
     type: DataTypes.DATE,
     allowNull: false
   },

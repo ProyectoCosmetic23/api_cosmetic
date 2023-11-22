@@ -5,8 +5,9 @@ const Category = require ('../../models/product_categories');
 
 const getAllCategories = async (req, res, next) => {
   try {
-    const categories = await Category.findAll();
+    const categories = (await Category.findAll());
     if (categories.length === 0) {
+      
       throw new Error('No se encontraron categorías registradas.');
     }
     res.json(categories);
@@ -15,7 +16,32 @@ const getAllCategories = async (req, res, next) => {
     next(error);
   }
 };
+// Middleware function to validate if a category already exists
+async function validateCategoryExists(req, res, next) {
+  try {
+    const { name_category } = req.query;
 
+    // Check if a category with the same name exists
+    const existingCategory = await Category.findOne({ where: { name_category: name_category} });
+
+    if (existingCategory) {
+      // If a category with the same name exists, return an error response
+      return res.status(400).json(true);
+    }
+
+    // Check if the category name is empty
+    if (!name_category) {
+      // If the category name is empty, return an error response
+      return res.status(400).json(true);
+    }
+
+    // Continue to the next middleware or route handler
+    return res.status(200).json(false);
+  } catch (error) {
+    // Handle any errors that may occur during the process
+    return res.status(500).json({ message: "Error interno del servidor"});
+  }
+}
 
 // Obtener el id de una  category
 
@@ -38,18 +64,14 @@ async function createCategory(req, res, next) {
   const { name_category, observation_category } = req.body;
   
   try {
-    if (/^[A-Za-záéíóúÁÉÍÓÚüÜ\s]+$/.test(name_category)) {
-      throw new Error("El nombre de la category solo debe contener letras y espacios");
-    }
+    if (name_category && typeof name_category === 'string' && !name_category.match(/^[a-zA-ZáéíóúñÑ ]+$/)) {
+      throw new Error("El nombre de la categoría solo debe contener letras y espacios");
+      } 
+    
     else if (!name_category) {
       throw new Error("Falta el nombre de la category");
     }
-    
-    const category = await Category.findOne({ where: { name_category } });
-    if (category) {
-      throw new Error("Ya existe una category con ese nombre");
-    }
-    
+   
     if (observation_category.length > 100) {
       throw new Error("La observación no puede tener más de 100 caracteres");
     }
@@ -127,7 +149,7 @@ const CategoryChangeStatus = async (req, res) => {
     let message = '';
 
     try {
-        if (id && newState) {
+        if (id != null && newState != null) {
             // Buscar la categoría por su ID
             const category = await Category.findByPk(id);
 
@@ -162,7 +184,7 @@ module.exports = {
   getCategoryById,
   createCategory,
   categoryPut,
-
+  validateCategoryExists,
   CategoryChangeStatus
 };
 

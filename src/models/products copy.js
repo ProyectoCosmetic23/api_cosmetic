@@ -1,6 +1,5 @@
 const { DataTypes, NOW } = require('sequelize');
 const sequelize = require('../config/sequelize');
-const Product_Categories = require('./product_categories');
 
 const Products = sequelize.define('products', {
   id_product: {
@@ -51,7 +50,6 @@ const Products = sequelize.define('products', {
     allowNull: true,
     defaultValue: new NOW()
   },
-  
   state_product: {
     type: DataTypes.STRING(15),
     allowNull: true,
@@ -60,7 +58,7 @@ const Products = sequelize.define('products', {
   observation: {
     type: DataTypes.STRING(100),
     allowNull: true
-  },
+  }
 }, {
   sequelize,
   tableName: 'products',
@@ -77,5 +75,4 @@ const Products = sequelize.define('products', {
   ]
 });
 
-Products.belongsTo(Product_Categories, { foreignKey: 'id_category' });
 module.exports = Products;

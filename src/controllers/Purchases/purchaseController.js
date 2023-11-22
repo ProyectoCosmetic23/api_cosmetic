@@ -1,21 +1,28 @@
 //Purchases controller.js
-const Categoria = require('../../models/product_categories');
-const Purchase = require ('../../models/purchases');
-const Detail_purchase = require ('../../models/purchase_detail');
-const Product = require ('../../models/products');
-const Proveedor = require ('../../models/providers');
+const Purchase = require('../../models/purchases');
+const Detail_purchase = require('../../models/purchase_detail');
+const Product = require('../../models/products');
+const Providers = require('../../models/providers');
+const Product_Categories = require('../../models/product_categories');
+const flatted = require('flatted');
+const Purchase_Detail = require('../../models/purchase_detail');
 
 // Obtener todos las purchases
-const getAllShopping = async (req, res) => {
+const getAllShopping = async (req, res, next) => {
     try {
-        const purchases = await Purchase.findAll();
+        const purchases = await Purchase.findAll({
+            include: [
+                { model: Providers, attributes: ['id_provider', 'name_provider'] }
+            ]
+        });
+
         if (purchases.length === 0) {
-            return res.status(404).json({ success: false, message: "No hay purchases registradas" });
+            throw new Error('No se encontraron compras registradas.');
         }
-        res.json({ success: true, data: purchases });
+        res.json(purchases);
     } catch (error) {
-        console.error('Error al obtener las purchases:', error);
-        res.status(500).json({ success: false, message: 'Error interno del servidor' });
+        console.error('Error al recuperar las compras:', error);
+        next(error);
     }
 };
 ;
@@ -25,14 +32,41 @@ const getAllShopping = async (req, res) => {
 async function getShoppingById(req, res) {
     const { id } = req.params;
     try {
-        const purchases = await Purchase.findByPk(id);
-        const detail_purchase = await Detail_purchase.findAll({
-            where: { id_purchase: id }
-        });
+        const purchases = await Purchase.findOne({
+            where: { id_purchase: id },
+            include: [
+                { model: Providers, attributes: ['id_provider', 'name_provider'] },
+                { 
+                    model: Purchase_Detail, attributes: ['id_product', 'id_category', 'cost_price', 
+                'selling_price', 'vat', 'product_quantity'], 
+                // include: [
+                //     {
+                //         model: Product, attributes: ['id_product', 'name_product'],
+                //         include: [
+                //             { model: Product_Categories, attributes: ['id_category', 'name_category'] }
+                //         ]
+                //     }
+                // ] 
+            },
+            ]
+        })
+
+        // const detail_purchase = await Detail_purchase.findAll({
+        //     where: { id_purchase: id },
+        //     include: [
+        //         {
+        //             model: Product, attributes: ['id_product', 'name_product'],
+        //             include: [
+        //                 { model: Product_Categories, attributes: ['id_category', 'name_category'] }
+        //             ]
+        //         }
+        //     ]
+        // });
         if (!purchases) {
             return res.status(404).json({ success: false, message: 'Purchase no encontrada.' });
         }
-        res.json({ success: true, data: { purchases, detail_purchase } });
+        // const purchasesData =  flatted.parse(flatted.stringify({...purchases, products: detail_purchase}));
+        res.json(purchases);
     } catch (error) {
         if (error.name === 'SequelizeConnectionError') {
             // Error de conexión a la base de datos
@@ -46,145 +80,94 @@ async function getShoppingById(req, res) {
 }
 
 // Crear una purchase
+// Crear una compra
 async function createShop(req, res) {
     const {
         id_provider,
         invoice_number,
         purchase_date,
-        state_purchase,
         observation_purchase,
+        total_purchase,
         products
     } = req.body;
-    let menssage = '';
-    let alerts = [];
-    
+
     try {
-        // Validaciones
-        if (isNaN(invoice_number)) {
-            menssage = "El número de factura debe contener solo números";
-        } else if (invoice_number.trim() === '') {
-            menssage = "El número de factura no debe estar vacío";
-        } else {
-            // Verificar que el número de factura no se repita en la base de datos
-            const invoiceExisting = await Purchase.findOne({ where: { invoice_number } });
-            if (invoiceExisting) {
-                menssage = "El número de factura ya existe. Debe ser único.";
-            }
-        }
-        
-        // Validar que la fecha de purchase no sea mayor a la fecha actual
-        const actuallyDate = new Date();
-        const purchaseDateDate = new Date(purchase_date);
-        if (purchaseDateDate > actuallyDate) {
-            menssage = "La fecha de purchase no puede ser mayor a la fecha actual.";
-        }
-
-        if (observation_purchase.length > 100) {
-            menssage = "La observación no puede tener más de 100 caracteres";
-        }
-
-        if (products.length === 0) {
-            menssage = "Debes agregar al menos un product a la purchase.";
-        }
-
-        if (menssage) {
-            return res.status(400).json({ success: false, message: menssage });
-        }
-
-        // Continuar con la creación de la purchase
         const newPurchase = await Purchase.create({
             id_provider,
             invoice_number,
             purchase_date,
-            state_purchase,
             observation_purchase,
-            total_purchase: 0
+            total_purchase,
         });
-    function validateStockMax(productDB,alerts) {
-    if(productDB.quantity >= productDB.stock_maximo){
-        alerts.push(productDB.name_product+ ': Stock maximo alcanzado.');
-    }
-    return alerts;
-}
 
         const id_purchase = newPurchase.id_purchase;
-        let total_purchase = 0;
+        const purchase_detail = [];
+        let totalPurchaseAmount = 0;
 
-        // Iterar a través de los products y crear detalles de purchase
         for (const product of products) {
             const id_product = product.id_product;
-            const quantity_product = product.quantity_product;
+            const id_category = product.id_category;
+            const product_quantity = product.product_quantity;
+            const cost_price = product.cost_price;
+            const selling_price = product.selling_price;
+            const vat = product.vat;
 
-            // Encontrar el product correspondiente en la base de datos
             const productDB = await Product.findByPk(id_product);
 
             if (!productDB) {
-                return res.status(404).json({ success: false, message: 'Product no encontrado.' });
+                return res.status(404).json({ success: false, message: 'Producto no encontrado.' });
             }
 
-            const categoriaDB = await Categoria.findByPk(productDB.id_categoria);
+            // Agregar la cantidad comprada al stock existente
+            productDB.quantity += product_quantity;
 
-            if (!categoriaDB) {
-                return res.status(404).json({ success: false, message: 'Categoría no encontrada.' });
+            // Actualizar el precio del producto en el inventario con el precio de la compra
+            productDB.cost_price = cost_price;
+            productDB.selling_price = selling_price;
+
+            // Validar stock máximo
+            if (productDB.quantity >= productDB.stock_maximo) {
+                console.log(productDB.name_product + ': Stock máximo alcanzado.');
+                // Puedes agregar lógica adicional o almacenar alertas en una lista, según tus necesidades.
             }
 
-
-            // Actualizar el stock
-            productDB.quantity += quantity_product;
-
-            alerts = validateStockMax(productDB, alerts);
-
-            // Calcular el subtotal y actualizar el precio de costo y precio de venta
-            const subtotal = productDB.cost_price * quantity_product;
-            total_purchase += subtotal;
-
-            // Actualizar precio de costo y precio de venta
-            if (quantity_product <= 0 || productDB.cost_price > productDB.selling_price) {
-                menssage = "La quantity del product debe ser mayor a cero y el precio de costo no puede ser mayor al precio de venta";
-                return res.status(400).json({ success: false, message: menssage });
-            }
+            const subtotal = (cost_price + vat) * product_quantity;
+            totalPurchaseAmount += subtotal;
 
             await productDB.save();
 
-            // Crear el detalle de purchase
-            await Detail_purchase.create({
+            const purchase_detail_product = await Detail_purchase.create({
                 id_purchase,
                 id_product,
-                categoria_product: productDB.id_categoria,
-                quantity_product,
-                cost_price: productDB.cost_price,
+                id_category,
+                product_quantity,
+                cost_price: productDB.cost_price, // Usar el nuevo precio almacenado en la base de datos
                 selling_price: productDB.selling_price,
-                subtotal,
+                vat
             });
+
+            purchase_detail.push(purchase_detail_product);
         }
 
-        // Actualizar el total de la purchase
-        newPurchase.total_purchase = total_purchase;
-        await newPurchase.save();
+        // Actualizar el total_purchase en la compra con el valor correcto
+        await newPurchase.update({ total_purchase: totalPurchaseAmount });
 
-        const purchasefinal = { ...newPurchase };
-        purchasefinal.products = products;
-
-        res.status(201).json({
-            success: true,
-            purchase: purchasefinal,
-            result: {
-                menssage: "Purchase creada correctamente",
-                alerts: alerts,
-            }
-        });
+        res.status(201).json({ newPurchase, purchase_detail });
     } catch (error) {
-        console.error('Error al crear la purchase:', error);
-        res.status(500).json({ success: false, message: 'Error al crear la purchase.' });
+        res.status(400).json({ error: 'Error al crear la compra.' });
+        console.log(error.message);
     }
 }
+
+
+
 
 
 
 // Anular una purchase
 async function anulateShopById(req, res) {
     const { id } = req.params;
-    const state_purchase = "Anulado";
+    const { reasonAnulate } = req.body;
     let menssage = '';
 
     try {
@@ -209,7 +192,7 @@ async function anulateShopById(req, res) {
         let quantityTotalAnulate = 0;
 
         for (const detalle of detail_purchase) {
-            quantityTotalAnulate += detalle.quantity_product;
+            quantityTotalAnulate += detalle.product_quantity;
 
             // Obtener el product asociado a este detalle
             const productDB = await Product.findByPk(detalle.id_product);
@@ -219,7 +202,7 @@ async function anulateShopById(req, res) {
             }
 
             // Actualizar el inventario restando la quantity anulada
-            const nuevoInventario = productDB.quantity - detalle.quantity_product;
+            const nuevoInventario = productDB.quantity - detalle.product_quantity;
 
             // Actualizar el product en la base de datos
             await productDB.update({
@@ -229,12 +212,44 @@ async function anulateShopById(req, res) {
 
         // Actualizar el estado de la purchase
         await purchase.update({
-            state_purchase: state_purchase,
+            reason_anulate: reasonAnulate,
+            state_purchase: false,
         });
 
-        res.json(purchase);
+        res.json({ message: 'Compra anulada exitosamente.' });
     } catch (error) {
-        res.status(500).json({ menssage: 'Error al anular la purchase.' });
+        // Manejo de errores
+        res.status(500).json({ message: 'Error al anular la compra.' });
+    }
+};
+
+
+
+
+// Middleware function to validate if a category already exists
+async function validateInvoiceExists(req, res, next) {
+    try {
+        const { invoice_number } = req.query;
+
+        // Check if a category with the same name exists
+        const existingInvoice = await Purchase.findOne({ where: { invoice_number: invoice_number } });
+
+        if (existingInvoice) {
+            // If a category with the same name exists, return an error response
+            return res.status(400).json(true);
+        }
+
+        // Check if the category name is empty
+        if (!invoice_number) {
+            // If the category name is empty, return an error response
+            return res.status(400).json(true);
+        }
+
+        // Continue to the next middleware or route handler
+        return res.status(200).json(false);
+    } catch (error) {
+        // Handle any errors that may occur during the process
+        return res.status(500).json({ message: "Error interno del servidor" });
     }
 }
 
@@ -246,4 +261,5 @@ module.exports = {
     getShoppingById,
     createShop,
     anulateShopById,
+    validateInvoiceExists
 };

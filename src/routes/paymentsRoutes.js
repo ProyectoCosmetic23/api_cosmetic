@@ -2,11 +2,14 @@ const express = require('express');
 const router = express.Router();
 const paymentsController = require ('../controllers/Payments/paymentsController');
 
-router.get('/pagos', paymentsController.getAllPay);
-router.get('/pagos/:id', paymentsController.getPayById);
-router.post('/pagos', paymentsController.createPay);
-router.get('/pagos/:id/ventas', paymentsController.getPaySale);
-router.get('/pagos/:id/clientes', paymentsController.getPayClien);
-router.get('/pagos/:id/clientes/:id/ventas', paymentsController.getPayClienSale);
+router.get('/payments', paymentsController.getAllPay);
+router.get('/payments/:id', paymentsController.getPayById);
+router.post('/payments', paymentsController.createPay);
+router.get('/payments/sales/:id', paymentsController.getPaySale);
+router.get('/payments/orders/:id', paymentsController.getPayOrder);
+router.get('/payments/clients/:id', paymentsController.getPayClien);
+router.get('/payments/clients/:id_client/sales/:id_sale', paymentsController.getPayClienSale);
+router.get('/payments/clients/:id_client/orders/:id_order', paymentsController.getPayClienOrder);
+
 
 module.exports = router;

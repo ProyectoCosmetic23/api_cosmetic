@@ -4,6 +4,7 @@ const Employee = require ('../../models/employees');
 //Consultar todas los empleados
 const getAllEmployees = async (req, res) => {
   try {
+
     const employees = await Employee.findAll();
     if (employees.length === 0) {
       return res.status(404).json({ message: "No hay empleados registrados" })
@@ -172,10 +173,10 @@ async function employeePut(req, res) {
 
 
 
-//cambiar estado del empleado
-const employeeChangeStatus = async (req, res) => {
-  const { id } = req.params; // El ID del empleado
-  const { state_employee } = req.body;
+// Cambiar estado del empleado
+async function employeeChangeStatus(req, res) {
+  const { id } = req.params;
+ 
   let mensaje = '';
 
   try {
@@ -184,29 +185,39 @@ const employeeChangeStatus = async (req, res) => {
           const employee = await Employee.findByPk(id);
 
           if (employee) {
-              // Actualizar los campos del empleado
-              employee.state_employee = state_employee;
-              
+              var state_employee_new = "";
+
+              if (employee.state_employee === "Activo") {
+                  state_employee_new = "Inactivo";
+              } else if (employee.state_employee === "Inactivo") {
+                  state_employee_new = "Activo";
+              }
+              // Actualizar el estado del empleado
+              employee.state_employee = state_employee_new;
 
               // Guardar los cambios en la base de datos
               await employee.save();
 
-              mensaje = "Se cambio el estado correctamente";
+              mensaje = "Cambio de estado realizado con éxito.";
           } else {
-              mensaje = "El empleado no fue encontrado";
+              mensaje = "El empleado no fue encontrado.";
           }
       } else {
-          mensaje = "Falta el ID en la solicitud";
+          mensaje = "Falta el ID en la solicitud.";
       }
   } catch (error) {
-    console.error("Error al guardar el empleado:", error);
-    mensaje = "Ocurrió un error al actualizar el empleado: " + error.message;
-}
+      console.error("Error al cambiar el estado del empleado:", error);
+      mensaje = "Fallo al realizar el cambio de estado: " + error.message;
+  }
 
   res.json({
       msg: mensaje
   });
-};
+
+
+  
+}
+
 
 module.exports= {
   getAllEmployees,

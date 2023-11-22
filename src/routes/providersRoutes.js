@@ -2,10 +2,10 @@ const express = require('express');
 const router = express.Router();
 const providersController = require ('../controllers/Providers/providersController');
 
-router.get('/proveedores', providersController.getAllProv);
-router.get('/proveedores/:id', providersController.getProvById);
-router.put('/proveedores/:id', providersController.updateProv);
-router.post('/proveedores', providersController.createProv);
-router.put('/proveedores/:id/estado', providersController.updateState);
+router.get('/providers', providersController.getAllProv);
+router.get('/providers/:id', providersController.getProvById);
+router.put('/providers/:id', providersController.updateProv);
+router.post('/providers', providersController.createProv);
+router.put('/providers/state/:id', providersController.updateState);
 
 module.exports = router;

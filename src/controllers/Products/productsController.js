@@ -1,5 +1,6 @@
 //ProductosController.js
 const Product = require('../../models/products');
+const DefectiveProducts = require('../../models/defective_products');
 
 //Consultar todos los productos
 
@@ -20,8 +21,9 @@ const getAllProducts = async (req, res) => {
 
 async function getProductsById(req, res) {
   const { id } = req.params;
+  console.log('ID ', id)
   try {
-    const products = await Products.findByPk(id);
+    const products = await Product.findByPk(id);
     if (!products) {
       return res.status(404).json({ error: 'Producto no encontrado.' });
     }
@@ -30,6 +32,32 @@ async function getProductsById(req, res) {
     res.status(500).json({ error: 'Error al obtener el producto.' });
   }
 }
+
+// Middleware function to validate if a pruduct already exists
+async function validateProductExists(req, res, next) {
+  try {
+    const { id_category, name_product } = req.query;
+
+
+    const existingProduct = await Product.findOne({ where: { id_category: id_category , name_product: name_product } });
+
+    if (existingProduct) {
+     
+      return res.status(400).json(true);
+    }
+
+    
+    if (!name_product) {
+     
+      return res.status(400).json(true);
+    }
+    return res.status(200).json(false);
+  } catch (error) {
+
+    return res.status(500).json({ message: "Error interno del servidor"});
+  }
+}
+
 
 //Crear un producto
 
@@ -45,23 +73,20 @@ async function createProducts(req, res) {
     observation,
   } = req.body;
 
-  // Validación: Verifica que los campos obligatorios no estén vacíos
-  if (!id_category || !name_product || !quantity || !max_stock || !min_stock || !cost_price || !selling_price) {
+  // // Validación: Verifica que los campos obligatorios no estén vacíos
+  if (!id_category || !name_product || !max_stock || !min_stock ) {
     return res.status(400).json({ error: 'Faltan campos obligatorios' });
-  }
-  if (isNaN(quantity) || quantity <= 0) {
-    return res.status(400).json({ error: 'La cantidad debe ser un número mayor que cero' });
+  // }
+  // if (isNaN(quantity) || quantity <= 0) {
+  //   return res.status(400).json({ error: 'La cantidad debe ser un número mayor que cero' });
+  // }
+
+  // // Validación: Precio de costo y precio de venta deben ser numéricos y mayores que cero
+  // if (isNaN(cost_price) || isNaN(selling_price) || cost_price <= 0 || selling_price <= 0) {
+  //   return res.status(400).json({ error: 'El precio de costo y el precio de venta deben ser numéricos y mayores que cero' });
   }
 
-  // Validación: Precio de costo y precio de venta deben ser numéricos y mayores que cero
-  if (isNaN(cost_price) || isNaN(selling_price) || cost_price <= 0 || selling_price <= 0) {
-    return res.status(400).json({ error: 'El precio de costo y el precio de venta deben ser numéricos y mayores que cero' });
-  }
-
-  // Validación: Stock máximo y stock mínimo deben ser números enteros y stock máximo debe ser mayor que stock mínimo
-  if (!Number.isInteger(max_stock) || !Number.isInteger(min_stock) || max_stock <= min_stock) {
-    return res.status(400).json({ error: 'El stock máximo y el stock mínimo deben ser números enteros, y el stock máximo debe ser mayor que el stock mínimo' });
-  }
+  
 
   // Validación: Nombre debe contener solo letras y espacios
   if (!/^[A-Za-z0-9\s]+$/.test(name_product)) {
@@ -88,7 +113,7 @@ async function createProducts(req, res) {
     res.json(newProduct);
   } catch (error) {
     console.error("Error al crear el producto:", error);
-    res.status(400).json({ error: 'Error al crear el producto.' });
+   res.status(500).json({ error: 'Error al crear el empleado. Detalles: ' + error.message });
   }
 }
 
@@ -165,14 +190,45 @@ async function productsPut(req, res) {
   });
 }
 
+async function retireProduct(req, res) {
+  const { id } = req.params;
+  const { return_quantity, return_reason, return_value } = req.body;
 
+  try {
+    // Obtener el producto por ID
+    const product = await Product.findByPk(id);  // Aquí está el cambio
 
+    if (!product) {
+      return res.status(404).json({ error: 'Producto no encontrado' });
+    }
+
+    // Crear una entrada en la tabla defective_products
+    await DefectiveProducts.create({
+      id_product: product.id_product,
+      return_reason,
+      return_date: new Date(),
+      return_quantity,
+      return_value,
+    });
+
+    // Actualizar la cantidad y otros detalles del producto
+    product.quantity -= return_quantity;
+    // Actualizar otros detalles según tus necesidades
+
+    // Guardar los cambios en la tabla products
+    await product.save();
+
+    res.json({ msg: 'Producto dado de baja exitosamente' });
+  } catch (error) {
+    console.error('Error al dar de baja el producto:', error);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+}
 
 
 //cambiar estado del producto
-const productsChangeStatus = async (req, res) => {
-  const { id } = req.params; // El ID del producto
-  const { state_product } = req.body;
+async function productsChangeStatus(req, res) {
+  const { id } = req.params;
   let mensaje = '';
 
   try {
@@ -180,30 +236,36 @@ const productsChangeStatus = async (req, res) => {
       // Buscar el producto por su ID
       const product = await Product.findByPk(id);
 
-      if (producto) {
-        // Actualizar los campos del producto
-        product.state_product = state_product;
+      if (product) {
+        var state_product_new = "";
 
+        if (product.state_product === "Activo") {
+          state_product_new = "Inactivo";
+        } else if (product.state_product === "Inactivo") {
+          state_product_new = "Activo";
+        }
 
-        // Guardar los cambios en la base de datos
+        // Actualizar el estado del producto
+        product.state_product = state_product_new;
+
         await product.save();
 
-        mensaje = "Se cambio el estado correctamente";
+
+        mensaje = "Cambio de estado realizado con éxito.";
       } else {
-        mensaje = "El producto no fue encontrado";
+        mensaje = "El producto no fue encontrado.";
       }
     } else {
-      mensaje = "Falta el ID en la solicitud";
+      mensaje = "Falta el ID en la solicitud.";
     }
   } catch (error) {
-    console.error("Error al guardar el producto:", error);
-    mensaje = "Ocurrió un error al actualizar el producto: " + error.message;
+    console.error("Error al cambiar el estado del producto:", error);
+    mensaje = "Fallo al realizar el cambio de estado: " + error.message;
   }
-
   res.json({
     msg: mensaje
   });
-};
+}
 
 
 
@@ -214,5 +276,7 @@ module.exports = {
   getProductsById,
   createProducts,
   productsPut,
-  productsChangeStatus
+  retireProduct,
+  productsChangeStatus,
+  validateProductExists
 };

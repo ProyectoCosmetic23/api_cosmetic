@@ -10,14 +10,14 @@ const Sale_Detail = require('../../models/sale_detail');
 // Función para obtener el último número de factura de Sales
 async function getLastInvoiceNumber() {
   try {
-    const lastSale = await Sales.findOne({
-      order: [['invoice_number', 'DESC']]
+    const lastOrder = await Orders.findOne({
+      order: [['order_number', 'DESC']]
     });
 
-    if (lastSale) {
-      return lastSale.invoice_number;
+    if (lastOrder) {
+      return lastOrder.order_number;
     } else {
-      return 0; // Si no hay ventas registradas, empieza desde 1.
+      return 0; // Si no hay pedidos registrados, empieza desde 1.
     }
   } catch (err) {
     console.error(err);
@@ -81,24 +81,23 @@ async function createOrder(req, res) {
 
     res.status(201).json({ newOrder, order_detail });
   } catch (error) {
-    handleError(res, error, 'Error al crear el pedido.');
+    handleError(res, error, 'Error al crear el pedido.' + error);
   }
 }
 
 // Función auxiliar para crear un nuevo pedido
-async function createNewOrder(id_client, id_employee, order_number, order_date, delivery_date, payment_type, order_state, delivery_state, payment_state, total_order) {
+async function createNewOrder(id_client, id_employee, order_number, order_date, payment_type, order_state, delivery_state, payment_state, total_order) {
   try {
     return await Orders.create({
-      id_client,
-      id_employee,
-      order_number,
-      order_date,
-      delivery_date,
-      payment_type,
-      order_state,
-      delivery_state,
-      payment_state,
-      total_order
+      id_client: id_client,
+      id_employee: id_employee,
+      order_number: order_number,
+      order_date: order_date,
+      payment_type: payment_type,
+      order_state: order_state,
+      delivery_state: delivery_state,
+      payment_state: payment_state,
+      total_order: total_order
     });
   } catch (error) {
     throw new Error('Error al crear la nueva orden: ' + error.message);
@@ -114,10 +113,10 @@ async function createOrderDetail(id_order, products) {
       const { id_product, product_quantity, product_price } = product;
 
       const order_detail_prod = await Order_Detail.create({
-        id_order,
-        id_product,
-        product_quantity,
-        product_price,
+        id_order: id_order,
+        id_product: id_product,
+        product_quantity: product_quantity,
+        product_price: product_price,
       });
 
       order_detail.push(order_detail_prod);
@@ -182,12 +181,16 @@ async function updateDeliveryStatusById(req, res) {
       const newSaleData = createSaleDataFromOrder(order);
       const { newSale, saleDetailList } = await createSale(newSaleData, order);
 
-      await updateOrderDeliveryStatus(order, "Entregado");
+      const updatedOrder = await updateOrderDeliveryStatus(order, "Entregado");
 
-      res.json({ newSale, saleDetailList, updatedOrder });
+      if (updatedOrdernull || updatedOrder === undefined) {
+        res.json({ newSale, saleDetailList });
+      } else {
+        res.json({ newSale, saleDetailList, updatedOrder });
+      }
     }
   } catch (error) {
-    handleError(res, error, 'Error al actualizar el pedido.');
+    res.json('Error al actualizar el pedido.' + error);
   }
 }
 
@@ -197,7 +200,7 @@ async function updateOrderDeliveryStatus(order, newDeliveryStatus) {
     const updatedOrder = await order.update({ delivery_state: newDeliveryStatus });
     return updatedOrder;
   } catch (error) {
-    throw new Error('Error al actualizar el estado del pedido: ' + error.message);
+    throw new Error('Error al actualizar el estado del pedido: ' + error);
   }
 }
 
@@ -234,15 +237,17 @@ async function createSaleDetails(sale, order) {
 
   const saleDetailList = [];
 
+  console.log(orderDetail);
+
   for (const product of orderDetail) {
     const product_id = product.id_product;
     const quantity = product.product_quantity;
     const product_price = product.product_price;
 
     const newSaleDetail = await Sale_Detail.create({
-      id_sale: sale.id,
+      id_sale: sale.id_sale,
       id_product: product_id,
-      product_quantity: quantity,
+      quantity: quantity,
       product_price: product_price
     });
 

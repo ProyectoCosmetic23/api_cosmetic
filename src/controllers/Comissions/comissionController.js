@@ -1,8 +1,8 @@
 const Comissions = require('../../models/commissions');
 const Comission_Detail = require('../../models/commission_detail');
 const Sales = require('../../models/sales');
+const Employee = require('../../models/employees');
 const { Op } = require('sequelize'); // Importa Sequelize.Op para los operadores
-
 
 async function createComs(req, res) {
     const {
@@ -43,7 +43,7 @@ async function createComs(req, res) {
         let employeeSales = await Sales.sum('total_sale', {
             where: {
                 id_employee,
-                sale_date: {
+                order_date: {
                     [Op.gte]: firstDayMonth,
                     [Op.lte]: lastDayMonth,
                 },
@@ -62,6 +62,7 @@ async function createComs(req, res) {
             id_employee,
             total_commission,
             id_commission_detail,
+            total_sales: employeeSales, // Asignar el valor de total_sales
         });
 
         res.status(201).json(newComs);
@@ -74,18 +75,27 @@ async function createComs(req, res) {
 
 
 // Obtener todos las comisiones
-const getAllComs = async (req, res) => {
+async function getAllComs(req, res) {
     try {
         const comissions = await Comissions.findAll();
         if (comissions.length === 0) {
-            return res.status(404).json({ message: "No hay comisiones registradas" })
+            return res.status(404).json({ message: "No hay comisiones registradas" });
         }
+
+        // Itera a través de las comisiones y agrega el nombre del empleado
+        for (const comission of comissions) {
+            const employee = await Employee.findByPk(comission.id_employee);
+            comission.employee_name = employee ? employee.name_employee : '';
+        }
+
         res.json(comissions);
+
     } catch (error) {
-        console.error('Error fetching products:', error);
+        console.error('Error fetching comissions:', error);
         res.status(500).json({ error: 'Internal Server Error' });
     }
-};
+}
+
 //Obtener comision por id de empleado
 async function getComsEmploy(req, res) {
     const id_employee = req.params.id;
@@ -99,6 +109,23 @@ async function getComsEmploy(req, res) {
             return res.status(404).json({ message: "No hay comisiones para este empleado" })
         }
         res.json(comsEmployee);
+    } catch (error) {
+        console.error('Error fetching payments:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+}
+async function getComsDetailId(req, res) {
+    const id_commission_detail = req.params.id;
+
+    try {
+        const comsDetailComs = await Comissions.findAll({
+            where: { id_commission_detail },
+        });
+
+        if (comsDetailComs.length === 0) {
+            return res.status(404).json({ message: "No hay comisiones para este detalle" })
+        }
+        res.json(comsDetailComs);
     } catch (error) {
         console.error('Error fetching payments:', error);
         res.status(500).json({ error: 'Internal Server Error' });
@@ -118,11 +145,77 @@ async function getComsById(req, res) {
     }
 }
 
-// Función para crear una comision
+async function getSalesByEmployeeAndMonth(req, res) {
+    const { id_employee, month } = req.params;
+    try {
+        // Obtener el primer y último día del mes
+        const firstDayMonth = new Date(month);
+        const lastDayMonth = new Date(month);
+        lastDayMonth.setMonth(lastDayMonth.getMonth() + 1);
+        lastDayMonth.setDate(0);
+
+        // Ajustar las fechas para comparar solo hasta el día (sin hora)
+        firstDayMonth.setHours(0, 0, 0, 0);
+        lastDayMonth.setHours(23, 59, 59, 999);
+
+        // Obtener las ventas del empleado para el mes dado
+        const employeeSales = await Sales.findAll({
+            attributes: ['total_sale'],
+            where: {
+                id_employee,
+                order_date: {
+                    [Op.gte]: firstDayMonth,
+                    [Op.lte]: lastDayMonth,
+                },
+            },
+        });
+
+        res.json(employeeSales);
+    } catch (error) {
+        console.error('Error fetching sales:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+}
+const updateComissionsFromSales = async (month) => {
+    try {
+        const comissions = await Comissions.findAll({
+            where: {
+                month_commission: month,
+            },
+        });
+
+        for (const comission of comissions) {
+            const { id_employee } = comission;
+            
+            // Obtener ventas para este empleado y mes
+            const employeeSales = await Sales.sum('total_sale', {
+                where: {
+                    id_employee,
+                    order_date: {
+                        [Op.gte]: new Date(month),
+                    },
+                },
+            });
+
+            // Actualizar la comisión con las nuevas ventas
+            await comission.update({
+                total_sales: employeeSales || 0,
+                total_commission: (employeeSales * comission.commission_percentage) / 100,
+            });
+        }
+
+        console.log('Comisiones actualizadas correctamente.');
+    } catch (error) {
+        console.error('Error al actualizar comisiones:', error);
+    }
+};
 
 module.exports = {
     getAllComs,
     getComsById,
     createComs,
     getComsEmploy,
+    getComsDetailId,
+    getSalesByEmployeeAndMonth,
+    updateComissionsFromSales
 };

@@ -46,7 +46,7 @@ const Users = sequelize.define('users', {
   state_user: {
     type: DataTypes.STRING(15),
     allowNull: true,
-    defaultValue: "Activo"
+    defaultValue: "Activo",
   },
   observation_user: {
     type: DataTypes.STRING(100),

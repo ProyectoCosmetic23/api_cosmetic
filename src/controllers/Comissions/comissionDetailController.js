@@ -29,14 +29,13 @@ async function getDetailComsById(req, res) {
         res.status(500).json({ error: 'Error al obtener la comisión.' });
     }
 }
-// Crear un detalle de comisión
+// Crear un detalle de comisión 
 async function createDetaileCom(req, res) {
-    const { commission_percentage } = req.body;
+    const { commission_percentage, month_commission,
+    } = req.body;
 
     try {
-        const actual_date = new Date();
-        const month_commission = new Date(actual_date.getFullYear(), actual_date.getMonth(), 1);
-
+        console.log(month_commission)
         // Verificar si ya existe una comisión para este mes
         const comisionExist = await Comission_Detail.findOne({
             where: { month_commission }
