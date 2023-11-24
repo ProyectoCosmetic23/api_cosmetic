@@ -11,11 +11,11 @@ const Sale_Detail = require('../../models/sale_detail');
 async function getLastInvoiceNumber() {
   try {
     const lastOrder = await Orders.findOne({
-      order: [['invoice_number', 'DESC']]
+      order: [['order_number', 'DESC']]
     });
 
     if (lastOrder) {
-      return lastOrder.invoice_number;
+      return lastOrder.order_number;
     } else {
       return 0; // Si no hay pedidos registrados, empieza desde 1.
     }

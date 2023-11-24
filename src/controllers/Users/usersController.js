@@ -59,7 +59,7 @@ async function createUser(req, res) {
 
   // Validar que la contraseña contenga al menos una mayúscula, un número y un carácter especial
   const passwordRegex =
-    /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/;
+    /^(?=.[A-Z])(?=.\d)(?=.[@$!%?&])[A-Za-z\d@$!%*?&]+$/;
   if (!passwordRegex.test(password)) {
     return res
       .status(400)
@@ -198,7 +198,7 @@ async function loginUser(req, res) {
     });
   } catch (error) {
     console.error("Error al iniciar sesión: ", error);
-    res.status(500).json({ error: "Error interno al iniciar sesión." });
+    res.status(500).json({ error: "Error interno al iniciar sesión.", error});
   }
 }
 
