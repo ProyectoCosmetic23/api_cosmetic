@@ -35,6 +35,16 @@ async function createDetaileCom(req, res) {
     } = req.body;
 
     try {
+        if (!commission_percentage || !month_commission) {
+            return res.status(400).json({ error: 'Todos los campos requeridos deben estar presentes.' });
+        }
+        if (!/^([1-9]|10)$/.test(commission_percentage)) {
+            return res.status(400).json({ error: 'El porcentaje de comisión debe ser un número entero entre 1 y 10.' });
+        }
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(month_commission)) {
+            return res.status(400).json({ error: 'El campo month_commission debe tener el formato aaaa-mm-dd.' });
+        }
+        
         console.log(month_commission)
         // Verificar si ya existe una comisión para este mes
         const comisionExist = await Comission_Detail.findOne({
