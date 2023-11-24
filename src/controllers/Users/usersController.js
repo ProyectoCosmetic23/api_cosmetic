@@ -68,22 +68,10 @@ async function createUser(req, res) {
     req.body;
 
   // Validar la existencia de los campos requeridos
-<<<<<<< HEAD
-  if (
-    !name_role ||
-    !id_card_employee ||
-    !username ||
-    !email ||
-    !password ||
-    !observation_user
-  ) {
-    return res.status(400).json({ error: "Falta campos obligatorios." });
-=======
   if (!id_role || !id_employee || !username || !email || !password) {
     return res
       .status(400)
       .json({ error: "Todos los campos son obligatorios." });
->>>>>>> d091e2b0713ecc91c4991d421b9f5f37a533a0af
   }
 
   // Validar la longitud de la contraseña
@@ -93,17 +81,6 @@ async function createUser(req, res) {
       .json({ error: "La contraseña debe tener al menos 7 caracteres." });
   }
 
-<<<<<<< HEAD
-  // validacion correo valido
-  // if (!isValidEmail(email)) {
-  //   return res.status(400).json({ error: "El correo no es válido" });
-  // }
-
-  try {
-    const newUser = await Users.create({
-      name_role,
-      id_card_employee,
-=======
   // Validar que la contraseña contenga al menos una mayúscula, un número y un carácter especial
   const passwordRegex =
     /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/;
@@ -140,7 +117,6 @@ async function createUser(req, res) {
     const user = await Users.create({
       id_role,
       id_employee,
->>>>>>> d091e2b0713ecc91c4991d421b9f5f37a533a0af
       username,
       email,
       password: hash,
