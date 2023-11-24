@@ -198,7 +198,7 @@ async function loginUser(req, res) {
     });
   } catch (error) {
     console.error("Error al iniciar sesión: ", error);
-    res.status(500).json({ error: "Error interno al iniciar sesión." });
+    res.status(500).json({ error: "Error interno al iniciar sesión.", error});
   }
 }
 
