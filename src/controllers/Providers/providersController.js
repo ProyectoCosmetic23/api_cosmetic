@@ -53,7 +53,10 @@ async function getProvById(req, res) {
         res.status(500).json({ error: 'Error al obtener el proveedor.' });
     }
 }
-
+function isValidEmail(email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+}
 // Función para crear un proveedor
 async function createProv(req, res) {
     const {
@@ -68,9 +71,28 @@ async function createProv(req, res) {
 
     try {
         // Validar que los campos requeridos no estén vacíos
-        if (!nit_cedula || !name_provider || !email_provider || !address_provider || !phone_provider || !name_contact ) {
+        if (!nit_cedula || !name_provider || !email_provider || !address_provider || !phone_provider || !name_contact) {
             return res.status(400).json({ error: 'Todos los campos requeridos deben estar presentes.' });
         }
+        if (!/^\d{7,10}$/.test(nit_cedula)) {
+            return res.status(400).json({ error: 'La cédula debe ser numérica y tener entre 7 y 10 dígitos' });
+        }
+        // Validación: Nombre debe contener letras, números, espacios y el símbolo "~" para la "ñ"
+        if (!/^[A-Za-z0-9\s~ñÑ]+$/.test(name_contact)) {
+            return res.status(400).json({ error: 'El nombre debe contener letras, números, espacios y el símbolo "~" para la "ñ"' });
+        }
+
+        // Validación: Correo debe ser válido
+        if (!isValidEmail(email_provider)) {
+            return res.status(400).json({ error: 'El correo no es válido' });
+        }
+
+        // Validación: Teléfono debe ser numérico
+        if (!/^[0-9+ ]+$/.test(phone_provider)) {
+            return res.status(400).json({ error: 'El teléfono debe contener solo números, el símbolo + y espacios.' });
+        }
+
+
 
         // Validar la unicidad de campos únicos
         const providerExist = await Providers.findOne({
@@ -103,7 +125,7 @@ async function createProv(req, res) {
         res.status(201).json(newProvider);
     } catch (error) {
         // En caso de error, devuelve un mensaje de error
-        res.status(400).json({ error: 'Error al crear el proveedor123.' });
+        res.status(400).json({ error: 'Error al crear el proveedor.' });
         console.log(error.message);
     }
 }
@@ -126,6 +148,9 @@ async function updateProv(req, res) {
         }
 
         if (updatedData.email_provider !== undefined) {
+            if (!isValidEmail(updatedData.email_provider)) {
+                return res.status(400).json({ error: 'El correo no es válido' });
+            }
             provider.email_provider = updatedData.email_provider;
         }
 
@@ -133,14 +158,20 @@ async function updateProv(req, res) {
             provider.address_provider = updatedData.address_provider;
         }
 
-        if (updatedData.phone_provider  !== undefined) {
-            provider.phone_provider  = updatedData.phone_provider ;
+        if (updatedData.phone_provider !== undefined) {
+            if (!/^[0-9+ ]+$/.test(updatedData.phone_provider)) {
+                return res.status(400).json({ error: 'El teléfono debe contener solo números, el símbolo + y espacios.' });
+            }
+            provider.phone_provider = updatedData.phone_provider;
         }
-        if (updatedData.observation_provider  !== undefined) {
-            provider.observation_provider  = updatedData.observation_provider ;
+        if (updatedData.observation_provider !== undefined) {
+            provider.observation_provider = updatedData.observation_provider;
         }
-        if (updatedData.name_contact  !== undefined) {
-            provider.name_contact  = updatedData.name_contact ;
+        if (updatedData.name_contact !== undefined) {
+            if (!/^[A-Za-z0-9\s~ñÑ]+$/.test(updatedData.name_contact)) {
+                return res.status(400).json({ error: 'El nombre debe contener letras, números, espacios y el símbolo "~" para la "ñ"' });
+            }
+            provider.name_contact = updatedData.name_contact;
         }
 
         // Guardar el proveedor actualizado
