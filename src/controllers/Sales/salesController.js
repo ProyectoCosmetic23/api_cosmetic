@@ -11,7 +11,7 @@ const getAllSales = async (req, res) => {
         }
         res.json(sales);
     } catch (error) {
-        console.error('Error fetching sales:', error);
+        console.error('Error interno sales:', error);
         res.status(500).json({ error: 'Internal Server Error' });
     }
 };
