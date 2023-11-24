@@ -9,15 +9,22 @@ const Users = sequelize.define('users', {
     allowNull: false,
     primaryKey: true
   },
-  name_role: {
-    type: DataTypes.STRING(100),
-    allowNull: false
+  id_role: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references:{
+      model:'roles',
+      key: 'id_role',
+    }
     
   },
-  id_card_employee: {
-    type: DataTypes.STRING(10),
-    allowNull: true,
-    //unique: "employees_id_card_employee_key"
+  id_employee: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: 'employees',
+      key: 'id_employee'
+    },
   },
   creation_date_user: {
     type: DataTypes.DATE,
