@@ -43,7 +43,7 @@ async function createComs(req, res) {
         let employeeSales = await Sales.sum('total_sale', {
             where: {
                 id_employee,
-                sale_date: {
+                order_date: {
                     [Op.gte]: firstDayMonth,
                     [Op.lte]: lastDayMonth,
                 },
@@ -145,13 +145,77 @@ async function getComsById(req, res) {
     }
 }
 
+async function getSalesByEmployeeAndMonth(req, res) {
+    const { id_employee, month } = req.params;
+    try {
+        // Obtener el primer y último día del mes
+        const firstDayMonth = new Date(month);
+        const lastDayMonth = new Date(month);
+        lastDayMonth.setMonth(lastDayMonth.getMonth() + 1);
+        lastDayMonth.setDate(0);
 
-// Función para crear una comision
+        // Ajustar las fechas para comparar solo hasta el día (sin hora)
+        firstDayMonth.setHours(0, 0, 0, 0);
+        lastDayMonth.setHours(23, 59, 59, 999);
+
+        // Obtener las ventas del empleado para el mes dado
+        const employeeSales = await Sales.findAll({
+            attributes: ['total_sale'],
+            where: {
+                id_employee,
+                order_date: {
+                    [Op.gte]: firstDayMonth,
+                    [Op.lte]: lastDayMonth,
+                },
+            },
+        });
+
+        res.json(employeeSales);
+    } catch (error) {
+        console.error('Error fetching sales:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+}
+const updateComissionsFromSales = async (month) => {
+    try {
+        const comissions = await Comissions.findAll({
+            where: {
+                month_commission: month,
+            },
+        });
+
+        for (const comission of comissions) {
+            const { id_employee } = comission;
+            
+            // Obtener ventas para este empleado y mes
+            const employeeSales = await Sales.sum('total_sale', {
+                where: {
+                    id_employee,
+                    order_date: {
+                        [Op.gte]: new Date(month),
+                    },
+                },
+            });
+
+            // Actualizar la comisión con las nuevas ventas
+            await comission.update({
+                total_sales: employeeSales || 0,
+                total_commission: (employeeSales * comission.commission_percentage) / 100,
+            });
+        }
+
+        console.log('Comisiones actualizadas correctamente.');
+    } catch (error) {
+        console.error('Error al actualizar comisiones:', error);
+    }
+};
 
 module.exports = {
     getAllComs,
     getComsById,
     createComs,
     getComsEmploy,
-    getComsDetailId
+    getComsDetailId,
+    getSalesByEmployeeAndMonth,
+    updateComissionsFromSales
 };

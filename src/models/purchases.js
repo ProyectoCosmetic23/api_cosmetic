@@ -1,5 +1,7 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/sequelize');
+const Providers = require('./providers');
+const Purchase_Detail = require('./purchase_detail');
 
 const Purchases = sequelize.define('purchases', {
   id_purchase: {
@@ -18,7 +20,7 @@ const Purchases = sequelize.define('purchases', {
     }
   },
   invoice_number: {
-    type: DataTypes.STRING(4),
+    type: DataTypes.STRING(20),
     allowNull: true
   },
   purchase_date: {
@@ -35,15 +37,16 @@ const Purchases = sequelize.define('purchases', {
     allowNull: true
   },
   state_purchase: {
-    type: DataTypes.STRING(15),
+    type: DataTypes.BOOLEAN,
     allowNull: true,
-    defaultValue: 'Ativo'
-  },
-  purchase_photo: {
-    type: DataTypes.BLOB,
-    allowNull: true
+    defaultValue: true,
   },
   observation_purchase: {
+    type: DataTypes.STRING(100),
+    allowNull: true
+  }
+  ,
+  reason_anulate: {
     type: DataTypes.STRING(100),
     allowNull: true
   }
@@ -63,4 +66,6 @@ const Purchases = sequelize.define('purchases', {
   ]
 });
 
+Purchases.belongsTo(Providers, { foreignKey: 'id_provider' });
+Purchases.hasMany(Purchase_Detail, { foreignKey: 'id_purchase' });
 module.exports = Purchases;

@@ -1,5 +1,6 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/sequelize');
+const Products = require('./products');
 
 const Purchase_Detail = sequelize.define('purchase_detail', {
   id_purchase_detail: {
@@ -25,8 +26,8 @@ const Purchase_Detail = sequelize.define('purchase_detail', {
       key: 'id_product'
     }
   },
-  product_category: {
-    type: DataTypes.STRING(100),
+  id_category: {
+    type: DataTypes.INTEGER,
     allowNull: true
   },
   product_quantity: {
@@ -40,11 +41,8 @@ const Purchase_Detail = sequelize.define('purchase_detail', {
   selling_price: {
     type: DataTypes.DECIMAL,
     allowNull: true
-  },
-  sub_total: {
-    type: DataTypes.DECIMAL,
-    allowNull: true
-  },
+  }
+  ,
   vat: {
     type: DataTypes.DECIMAL,
     allowNull: true
@@ -66,4 +64,5 @@ const Purchase_Detail = sequelize.define('purchase_detail', {
   ]
 });
 
+Purchase_Detail.belongsTo(Products, { foreignKey: 'id_product' });
 module.exports = Purchase_Detail;

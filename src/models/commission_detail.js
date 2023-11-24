@@ -10,7 +10,7 @@ const Comission_Detail = sequelize.define('commission_detail', {
     primaryKey: true
   },
   month_commission: {
-    type: DataTypes.DATE,
+    type: DataTypes.DATEONLY,
     allowNull: true,
     unique: "commission_detail_month_commission_key"
   },

@@ -1,4 +1,4 @@
-const { DataTypes } = require('sequelize');
+const { DataTypes, NOW } = require('sequelize');
 const sequelize = require('../config/sequelize');
 
 const Product_Categories = sequelize.define('product_categories', {
@@ -15,9 +15,9 @@ const Product_Categories = sequelize.define('product_categories', {
     unique: "product_categories_name_category_key"
   },
   state_category: {
-    type: DataTypes.STRING(15),
+    type: DataTypes.BOOLEAN,
     allowNull: true,
-    defaultValue: "Activo"
+    defaultValue: true
   },
   observation_category: {
     type: DataTypes.STRING(100),
@@ -26,7 +26,7 @@ const Product_Categories = sequelize.define('product_categories', {
   creation_date_category: {
     type: DataTypes.DATE,
     allowNull: true,
-    defaultValue: DataTypes.NOW()
+    defaultValue: new NOW()
   }
 }, {
   sequelize,
@@ -50,5 +50,6 @@ const Product_Categories = sequelize.define('product_categories', {
     },
   ]
 });
+
 
 module.exports = Product_Categories;
