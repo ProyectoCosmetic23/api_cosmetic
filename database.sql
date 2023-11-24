@@ -82,8 +82,8 @@ CREATE TABLE defective_products (
 /* Create the users table */
 CREATE TABLE users (
 	id_user INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-	id_role INT NOT NULL,
-	id_employee INT NOT NULL,
+	id_card_employee VARCHAR(10),
+	name_role VARCHAR (100) NOT NULL,
 	creation_date_user TIMESTAMP,
 	username VARCHAR (100) NOT NULL UNIQUE,
 	email VARCHAR (100) NOT NULL,
@@ -285,13 +285,13 @@ REFERENCES products(id_product);
 /* Foreign Keys for the 'users' Table */
 ALTER TABLE users
 ADD CONSTRAINT fk_usersRole
-FOREIGN KEY (id_role)
-REFERENCES roles(id_role);
+FOREIGN KEY (name_role)
+REFERENCES roles(name_role);
 
-ALTER TABLE users
-ADD CONSTRAINT fk_usersEmployee
-FOREIGN KEY (id_employee) 
-REFERENCES employees(id_employee);
+-- ALTER TABLE users
+-- ADD CONSTRAINT fk_usersEmployee
+-- FOREIGN KEY (id_card_employee) 
+-- REFERENCES employees(id_card_employee);
 
 /* Foreign Keys for the 'products' Table */
 ALTER TABLE products
@@ -355,10 +355,10 @@ VALUES (1, 'Product 1', 100, 200, 50, 10.00, 15.00, 5.00, current_timestamp, 'Ac
        (3, 'Product 3', 75, 100, 25, 8.00, 14.00, 6.00, current_timestamp, 'Inactive', 'Observation 3');
 
 -- Insert into the 'users' Table
-INSERT INTO users (id_role, id_employee, creation_date_user, username, email, password, state_user, observation_user)
-VALUES (1, 1, current_timestamp, 'admin', 'admin@email.com', 'password_admin', 'Active', 'Observation 1'),
-       (2, 2, current_timestamp, 'manager', 'manager@email.com', 'password_manager', 'Active', 'Observation 2'),
-       (3, 3, current_timestamp, 'employee', 'employee@email.com', 'password_employee', 'Inactive', 'Observation 3');
+INSERT INTO users (name_role, id_card_employee, creation_date_user, username, email, password, state_user, observation_user)
+VALUES ('Administrator', '1111111111', current_timestamp, 'admin', 'employee1@email.com', 'password_admin', 'Active', 'Observation 1'),
+       ('Employee', '2222222222', current_timestamp, 'manager', 'employee2@email.com', 'password_manager', 'Active', 'Observation 2'),
+       ('Manager', '3333333333', current_timestamp, 'employee', 'employee3@email.com', 'password_employee', 'Inactive', 'Observation 3');
 
 -- Insert into the 'purchases' Table
 INSERT INTO purchases (id_provider, invoice_number, purchase_date, record_date_purchase, total_purchase, state_purchase, purchase_photo, observation_purchase)

@@ -3,6 +3,7 @@ const router = express.Router();
 const usersController = require('../controllers/Users/usersController');
 const { validarJWT } = require('../middlewares/validar-jwt');
 
+
 // Rutas de autenticación
 router.get('/ruta-protegida', validarJWT, (req, res) => {
     // Lógica para la ruta protegida

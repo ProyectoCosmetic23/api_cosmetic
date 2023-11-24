@@ -17,6 +17,7 @@ const Defective_Products = sequelize.define('defective_products', {
       key: 'id_product'
     }
   },
+
   return_reason: {
     type: DataTypes.STRING(100),
     allowNull: false
