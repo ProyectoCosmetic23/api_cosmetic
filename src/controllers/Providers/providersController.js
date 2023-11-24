@@ -75,7 +75,7 @@ async function createProv(req, res) {
             return res.status(400).json({ error: 'Todos los campos requeridos deben estar presentes.' });
         }
         if (!/^\d{7,10}$/.test(nit_cedula)) {
-            return res.status(400).json({ error: 'La cédula debe ser numérica y tener entre 7 y 10 dígitos' });
+            return res.status(400).json({ error: 'La cédula debe ser un número positivo y tener entre 7 y 10 dígitos' });
         }
         // Validación: Nombre debe contener letras, números, espacios y el símbolo "~" para la "ñ"
         if (!/^[A-Za-z0-9\s~ñÑ]+$/.test(name_contact)) {

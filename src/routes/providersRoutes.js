@@ -4,9 +4,9 @@ const providersController = require ('../controllers/Providers/providersControll
 const { validarJWT } = require('../middlewares/validar-jwt');
 
 router.get('/providers',validarJWT, providersController.getAllProv);
-router.get('/providers/:id',validarJWT, providersController.getProvById);
-router.put('/providers/:id',validarJWT, providersController.updateProv);
-router.post('/providers',validarJWT, providersController.createProv);
-router.put('/providers/state/:id',validarJWT, providersController.updateState);
+router.get('/providers/:id', providersController.getProvById);
+router.put('/providers/:id', providersController.updateProv);
+router.post('/providers', providersController.createProv);
+router.put('/providers/state/:id', providersController.updateState);
 
-module.exports = router;
+module.exports = router;    
