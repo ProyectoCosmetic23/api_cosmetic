@@ -112,10 +112,10 @@ async function updateProductQuantities(products) {
       const existingProduct = await Products.findByPk(id_product);
 
       // Verificar si el producto existe y la cantidad es suficiente
-      if (existingProduct && existingProduct.product_quantity >= product_quantity) {
+      if (existingProduct && existingProduct.quantity >= product_quantity) {
         // Actualizar la cantidad del producto
         await Products.update(
-          { product_quantity: existingProduct.product_quantity - product_quantity },
+          { quantity: existingProduct.quantity - product_quantity },
           { where: { id_product: id_product } }
         );
       } else {
