@@ -3,6 +3,7 @@ const Orders = require('../../models/orders');
 const Order_Detail = require('../../models/order_detail');
 const Sales = require('../../models/sales');
 const Sale_Detail = require('../../models/sale_detail');
+const Products = require('../../models/products');
 
 
 // -------------- INICIO: Función para para obtener último N°Pedido -------------- // 
@@ -72,16 +73,57 @@ async function createOrder(req, res) {
   const payment_state = "Por pagar";
 
   try {
+    // Obtener el último número de factura
     const lastInvoiceNumber = await getLastInvoiceNumber();
     const newInvoiceNumber = lastInvoiceNumber + 1;
 
-    const newOrder = await createNewOrder(id_client, id_employee, newInvoiceNumber, order_date, payment_type, order_state, delivery_state, payment_state, total_order);
+    // Crear una nueva orden
+    const newOrder = await createNewOrder(
+      id_client,
+      id_employee,
+      newInvoiceNumber,
+      order_date,
+      payment_type,
+      order_state,
+      delivery_state,
+      payment_state,
+      total_order
+    );
 
+    // Crear el detalle de la orden
     const order_detail = await createOrderDetail(newOrder.id_order, products);
+
+    // Actualizar las cantidades de los productos
+    await updateProductQuantities(products);
 
     res.status(201).json({ newOrder, order_detail });
   } catch (error) {
     handleError(res, error, 'Error al crear el pedido.' + error);
+  }
+}
+
+// Función para actualizar las cantidades de los productos
+async function updateProductQuantities(products) {
+  try {
+    for (const product of products) {
+      const { id_product, product_quantity } = product;
+
+      // Obtener el producto de la base de datos
+      const existingProduct = await Products.findByPk(id_product);
+
+      // Verificar si el producto existe y la cantidad es suficiente
+      if (existingProduct && existingProduct.product_quantity >= product_quantity) {
+        // Actualizar la cantidad del producto
+        await Products.update(
+          { product_quantity: existingProduct.product_quantity - product_quantity },
+          { where: { id_product: id_product } }
+        );
+      } else {
+        throw new Error(`Producto no encontrado o cantidad insuficiente para el producto con ID ${id_product}`);
+      }
+    }
+  } catch (error) {
+    throw new Error('Error al actualizar las cantidades de los productos: ' + error.message);
   }
 }
 
