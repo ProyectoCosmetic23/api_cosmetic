@@ -34,9 +34,6 @@ async function getLastInvoiceNumber() {
 const getAllOrders = async (req, res) => {
   try {
     const orders = await Orders.findAll();
-    if (orders.length === 0) {
-      return res.status(404).json({ message: "No hay pedidos registrados" });
-    }
     res.json(orders);
   } catch (error) {
     console.error("Error al obtener Pedidos:", error);
@@ -54,11 +51,6 @@ const getAllProcessingOrders = async (req, res) => {
         },
       },
     });
-
-    if (orders.length === 0) {
-      return res.status(404).json({ message: "No hay pedidos registrados" });
-    }
-
     res.json(orders);
   } catch (error) {
     console.error("Error al obtener Pedidos:", error);
@@ -74,9 +66,6 @@ const getAllDeliveredOrders = async (req, res) => {
         delivery_state: "Entregado",
       },
     });
-    if (orders.length === 0) {
-      return res.status(404).json({ message: "No hay pedidos registrados" });
-    }
     res.json(orders);
   } catch (error) {
     console.error("Error al obtener Pedidos:", error);
@@ -92,9 +81,6 @@ const getAllAnulatedOrders = async (req, res) => {
         order_state: "Anulado",
       },
     });
-    if (orders.length === 0) {
-      return res.status(404).json({ message: "No hay pedidos registrados" });
-    }
     res.json(orders);
   } catch (error) {
     console.error("Error al obtener Pedidos:", error);
@@ -110,9 +96,6 @@ const getAllUnpaidOrders = async (req, res) => {
         payment_state: "Por pagar",
       },
     });
-    if (orders.length === 0) {
-      return res.status(404).json({ message: "No hay pedidos registrados" });
-    }
     res.json(orders);
   } catch (error) {
     console.error("Error al obtener Pedidos:", error);
@@ -128,9 +111,6 @@ const getAllPaidOrders = async (req, res) => {
         payment_state: "Pagado",
       },
     });
-    if (orders.length === 0) {
-      return res.status(404).json({ message: "No hay pedidos registrados" });
-    }
     res.json(orders);
   } catch (error) {
     console.error("Error al obtener Pedidos:", error);
