@@ -97,7 +97,13 @@ async function createPay(req, res) {
 
         // Calcula el total restante restando el total pagado del total de la venta
         const payRest = sale.total_sale - totalPay;
-
+        if(payRest <  0){
+            return res.status(400).json({ error: 'El total del pago no puede ser mayor al total restante del último pago' });
+        }
+        // console.log(lastPay)
+        // if (lastPay != null) {
+        //     console.log(lastPay)
+        // }
 
         // Actualiza el estado de la venta
         if (payRest == 0) {
@@ -164,7 +170,9 @@ async function createPay(req, res) {
 
         // Calcula el total restante restando el total pagado del total de la venta
         const payRest = order.total_order - totalPay;
-
+        if(payRest <  0){
+            return res.status(400).json({ error: 'El total del pago no puede ser mayor al total restante del último pago' });
+        }
 
         // Actualiza el estado de la venta
         if (payRest == 0) {
