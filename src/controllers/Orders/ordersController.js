@@ -44,6 +44,48 @@ const getAllOrders = async (req, res) => {
   }
 };
 
+// Obtener todos los pedidos en proceso o por entregar
+const getAllProcessingOrders = async (req, res) => {
+  try {
+    const orders = await Orders.find({ delivery_state: { $in: ['En proceso', 'Por entregar'] } });
+    if (orders.length === 0) {
+      return res.status(404).json({ message: "No hay pedidos registrados" });
+    }
+    res.json(orders);
+  } catch (error) {
+    console.error('Error al obtener Pedidos:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
+
+// Obtener todos los pedidos entregados
+const getAllDeliveredOrders = async (req, res) => {
+  try {
+    const orders = await Orders.find({ delivery_state: 'Entregado' });
+    if (orders.length === 0) {
+      return res.status(404).json({ message: "No hay pedidos registrados" })
+    }
+    res.json(orders);
+  } catch (error) {
+    console.error('Error al obtener Pedidos:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
+
+// Obtener todos los pedidos entregados
+const getAllAnulatedOrders = async (req, res) => {
+  try {
+    const orders = await Orders.find({ order_state: 'Anulado' });
+    if (orders.length === 0) {
+      return res.status(404).json({ message: "No hay pedidos registrados" })
+    }
+    res.json(orders);
+  } catch (error) {
+    console.error('Error al obtener Pedidos:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
+
 // Obtener un pedido por ID
 async function getOrderById(req, res) {
   const { id } = req.params;
@@ -311,6 +353,9 @@ function handleError(res, error, errorMessage) {
 // Exportar las funciones del módulo
 module.exports = {
   getAllOrders,
+  getAllProcessingOrders,
+  getAllDeliveredOrders,
+  getAllAnulatedOrders,
   getOrderById,
   createOrder,
   anulateOrderById,
