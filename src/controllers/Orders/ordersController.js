@@ -89,7 +89,7 @@ const getAllAnulatedOrders = async (req, res) => {
   try {
     const orders = await Orders.findAll({
       where: {
-        delivery_state: "Anulado",
+        order_state: "Anulado",
       },
     });
     if (orders.length === 0) {
@@ -125,7 +125,7 @@ const getAllPaidOrders = async (req, res) => {
   try {
     const orders = await Orders.findAll({
       where: {
-        payment_state: "Por pagar",
+        payment_state: "Pagado",
       },
     });
     if (orders.length === 0) {
