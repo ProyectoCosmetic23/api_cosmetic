@@ -1,4 +1,5 @@
 // pedidosController.js
+const { Op } = require('sequelize');
 const Orders = require('../../models/orders');
 const Order_Detail = require('../../models/order_detail');
 const Sales = require('../../models/sales');
@@ -47,10 +48,18 @@ const getAllOrders = async (req, res) => {
 // Obtener todos los pedidos en proceso o por entregar
 const getAllProcessingOrders = async (req, res) => {
   try {
-    const orders = await Orders.find({ delivery_state: { $in: ['En proceso', 'Por entregar'] } });
+    const orders = await Orders.findAll({
+      where: {
+        delivery_state: {
+          [Op.in]: ['En proceso', 'Por entregar']
+        }
+      }
+    });
+
     if (orders.length === 0) {
       return res.status(404).json({ message: "No hay pedidos registrados" });
     }
+
     res.json(orders);
   } catch (error) {
     console.error('Error al obtener Pedidos:', error);
@@ -76,6 +85,34 @@ const getAllDeliveredOrders = async (req, res) => {
 const getAllAnulatedOrders = async (req, res) => {
   try {
     const orders = await Orders.find({ order_state: 'Anulado' });
+    if (orders.length === 0) {
+      return res.status(404).json({ message: "No hay pedidos registrados" })
+    }
+    res.json(orders);
+  } catch (error) {
+    console.error('Error al obtener Pedidos:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
+
+// Obtener todos los pedidos entregados
+const getAllUnpaidOrders = async (req, res) => {
+  try {
+    const orders = await Orders.find({ payment_state: 'Por pagar' });
+    if (orders.length === 0) {
+      return res.status(404).json({ message: "No hay pedidos registrados" })
+    }
+    res.json(orders);
+  } catch (error) {
+    console.error('Error al obtener Pedidos:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
+
+// Obtener todos los pedidos entregados
+const getAllPaidOrders = async (req, res) => {
+  try {
+    const orders = await Orders.find({ payment_state: 'Pagado' });
     if (orders.length === 0) {
       return res.status(404).json({ message: "No hay pedidos registrados" })
     }
@@ -356,6 +393,8 @@ module.exports = {
   getAllProcessingOrders,
   getAllDeliveredOrders,
   getAllAnulatedOrders,
+  getAllUnpaidOrders,
+  getAllPaidOrders,
   getOrderById,
   createOrder,
   anulateOrderById,
