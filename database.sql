@@ -307,11 +307,6 @@ REFERENCES products(id_product);
 
 
 
-<<<<<<< HEAD:database/database.sql
-
-
-=======
->>>>>>> b3d05fee0041b74606ac5a54be4086694ad19f7b:database.sql
 -- Insert into the 'commission_detail' Table
 INSERT INTO commission_detail (month_commission, commission_percentage)
 VALUES ('2023-11-01', 10),
