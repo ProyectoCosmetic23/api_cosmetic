@@ -1,6 +1,6 @@
 const Comissions = require('../../models/commissions');
 const Comission_Detail = require('../../models/commission_detail');
-const Sales = require('../../models/sales');
+const Orders = require('../../models/orders');
 const Employee = require('../../models/employees');
 const { Op } = require('sequelize'); // Importa Sequelize.Op para los operadores
 
@@ -40,7 +40,7 @@ async function createComs(req, res) {
         lastDayMonth.setHours(23, 59, 59, 999);
 
         // Calcular el total de ventas del empleado durante ese mes
-        let employeeSales = await Sales.sum('total_sale', {
+        let employeeSales = await Orders.sum('total_order', {
             where: {
                 id_employee,
                 order_date: {
@@ -159,7 +159,7 @@ async function getSalesByEmployeeAndMonth(req, res) {
         lastDayMonth.setHours(23, 59, 59, 999);
 
         // Obtener las ventas del empleado para el mes dado
-        const employeeSales = await Sales.findAll({
+        const employeeSales = await Orders.findAll({
             attributes: ['total_sale'],
             where: {
                 id_employee,
@@ -188,7 +188,7 @@ const updateComissionsFromSales = async (month) => {
             const { id_employee } = comission;
             
             // Obtener ventas para este empleado y mes
-            const employeeSales = await Sales.sum('total_sale', {
+            const employeeSales = await Orders.sum('total_order', {
                 where: {
                     id_employee,
                     order_date: {
