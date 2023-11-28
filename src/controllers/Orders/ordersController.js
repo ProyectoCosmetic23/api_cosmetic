@@ -7,7 +7,6 @@ const Sale_Detail = require("../../models/sale_detail");
 const Products = require("../../models/products");
 const { updateComissionsFromSales } = require ('../Comissions/comissionController');
 
-
 // -------------- INICIO: Función para para obtener último N°Pedido -------------- //
 
 // Función para obtener el último número de factura de Sales
