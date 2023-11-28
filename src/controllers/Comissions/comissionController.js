@@ -74,6 +74,8 @@ async function createComs(req, res) {
 
 
 
+
+
 // Obtener todos las comisiones
 async function getAllComs(req, res) {
     try {
@@ -177,31 +179,39 @@ async function getSalesByEmployeeAndMonth(req, res) {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 }
+
+
 const updateComissionsFromSales = async (month) => {
     try {
         const comissions = await Comissions.findAll({
-            where: {
-                month_commission: month,
-            },
+            include: [
+                {
+                    model: Comission_Detail,
+                    attributes: ['month_commission', 'commission_percentage'],
+                    where: {
+                        month_commission: month,
+                    },
+                },
+            ],
         });
 
         for (const comission of comissions) {
-            const { id_employee } = comission;
-            
+            const { id_employee, commission_detail } = comission;
+        
             // Obtener ventas para este empleado y mes
             const employeeSales = await Orders.sum('total_order', {
                 where: {
                     id_employee,
                     order_date: {
-                        [Op.gte]: new Date(month),
+                        [Op.gte]: new Date(commission_detail.month_commission),
                     },
                 },
             });
-
+        
             // Actualizar la comisión con las nuevas ventas
             await comission.update({
                 total_sales: employeeSales || 0,
-                total_commission: (employeeSales * comission.commission_percentage) / 100,
+                total_commission: (employeeSales * commission_detail.commission_percentage) / 100,
             });
         }
 
@@ -210,6 +220,7 @@ const updateComissionsFromSales = async (month) => {
         console.error('Error al actualizar comisiones:', error);
     }
 };
+
 
 module.exports = {
     getAllComs,
