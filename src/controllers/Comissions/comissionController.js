@@ -1,8 +1,8 @@
-const Comissions = require('../../models/commissions');
+const { Op } = require('sequelize');
 const Comission_Detail = require('../../models/commission_detail');
+const Comissions = require('../../models/commissions');
 const Orders = require('../../models/orders');
 const Employee = require('../../models/employees');
-const { Op } = require('sequelize'); // Importa Sequelize.Op para los operadores
 
 async function createComs(req, res) {
     const {
