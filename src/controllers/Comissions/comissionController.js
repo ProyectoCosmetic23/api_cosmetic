@@ -160,7 +160,7 @@ async function getSalesByEmployeeAndMonth(req, res) {
 
         // Obtener las ventas del empleado para el mes dado
         const employeeSales = await Orders.findAll({
-            attributes: ['total_sale'],
+            attributes: ['total_order'],
             where: {
                 id_employee,
                 order_date: {
