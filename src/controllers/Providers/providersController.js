@@ -217,7 +217,7 @@ async function updateState(req, res) {
 async function checkCedulaAvailability(req, res) {
     const { cedula } = req.query;
     try {
-      const existingCedula = await Providers.findOne({ where: { id_card_employee: cedula } });
+      const existingCedula = await Providers.findOne({ where: { nit_cedula: cedula } });
       res.json(!existingCedula);
     } catch (error) {
         console.log(cedula)
