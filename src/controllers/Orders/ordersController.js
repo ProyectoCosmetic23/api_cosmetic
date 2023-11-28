@@ -5,6 +5,7 @@ const Order_Detail = require("../../models/order_detail");
 const Sales = require("../../models/sales");
 const Sale_Detail = require("../../models/sale_detail");
 const Products = require("../../models/products");
+const Comissions = require("../../models/commissions");
 
 // -------------- INICIO: Función para para obtener último N°Pedido -------------- //
 
@@ -176,6 +177,9 @@ async function createOrder(req, res) {
 
     // Actualizar las cantidades de los productos
     await updateProductQuantities(products);
+
+    // Actualizar las comisiones
+    await updateComissionsFromSales(new Date(order_date));
 
     res.status(201).json({ newOrder, order_detail });
   } catch (error) {
