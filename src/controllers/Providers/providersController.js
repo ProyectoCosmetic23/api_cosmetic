@@ -220,9 +220,10 @@ async function checkCedulaAvailability(req, res) {
       const existingCedula = await Providers.findOne({ where: { id_card_employee: cedula } });
       res.json(!existingCedula);
     } catch (error) {
-      console.error('Error al verificar la cédula:', error);
-      res.status(500).json({ error: 'Error al verificar la cédula.' });
-    }
+        console.log(cedula)
+        console.error('Error al verificar la cédula:', error);
+        res.status(500).json({ error: 'Error al verificar la cédula.', details: error.message });
+      }
   }
 
   async function checkEmailAvailability(req, res) {
