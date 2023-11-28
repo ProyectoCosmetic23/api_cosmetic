@@ -214,6 +214,28 @@ async function updateState(req, res) {
         console.log(error.message);
     }
 }
+async function checkCedulaAvailability(req, res) {
+    const { cedula } = req.query;
+    try {
+      const existingCedula = await Providers.findOne({ where: { nit_cedula: cedula } });
+      res.json(!existingCedula);
+    } catch (error) {
+        console.log(cedula)
+        console.error('Error al verificar la cédula:', error);
+        res.status(500).json({ error: 'Error al verificar la cédula.', details: error.message });
+      }
+  }
+
+  async function checkEmailAvailability(req, res) {
+    const { email } = req.query;
+    try {
+      const existingEmail = await Providers.findOne({ where: { email } });
+      res.json(!existingEmail);
+    } catch (error) {
+      console.error('Error al verificar el correo:', error);
+      res.status(500).json({ error: 'Error al verificar el correo.' });
+    }
+  }
 
 // Exportar las funciones del módulo
 
@@ -223,4 +245,6 @@ module.exports = {
     createProv,
     updateProv,
     updateState,
+    checkCedulaAvailability,
+    checkEmailAvailability
 };

@@ -278,6 +278,7 @@ function handleError(res, error, errorMessage) {
 // Función para anular pedidos por ID
 async function anulateOrderById(req, res) {
   const { id } = req.params;
+  const { observation } = req.body;
   var order_state = "Anulado";
   try {
     const order = await Orders.findByPk(id);
@@ -286,6 +287,7 @@ async function anulateOrderById(req, res) {
     }
     await order.update({
       order_state: order_state,
+      observation_return: observation
     });
     res.json(order);
   } catch (error) {
