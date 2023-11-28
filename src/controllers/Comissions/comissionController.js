@@ -146,6 +146,7 @@ async function getComsById(req, res) {
 }
 
 async function getSalesByEmployeeAndMonth(req, res) {
+    console.log('actualizar comision llamada');
     const { id_employee, month } = req.params;
     try {
         // Obtener el primer y último día del mes
