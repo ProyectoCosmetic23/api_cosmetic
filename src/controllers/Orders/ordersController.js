@@ -5,7 +5,8 @@ const Order_Detail = require("../../models/order_detail");
 const Sales = require("../../models/sales");
 const Sale_Detail = require("../../models/sale_detail");
 const Products = require("../../models/products");
-const Comissions = require("../../models/commissions");
+const { updateComissionsFromSales } = require ('../controllers/Comissions/comissionController');
+
 
 // -------------- INICIO: Función para para obtener último N°Pedido -------------- //
 
