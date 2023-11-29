@@ -34,7 +34,9 @@ async function getLastInvoiceNumber() {
 // Obtener todos los pedidos
 const getAllOrders = async (req, res) => {
   try {
-    const orders = await Orders.findAll();
+    const orders = await Orders.findAll({
+      order: [['order_number', 'DESC']],
+    });
     res.json(orders);
   } catch (error) {
     console.error("Error al obtener Pedidos:", error);
@@ -51,6 +53,7 @@ const getAllProcessingOrders = async (req, res) => {
           [Op.in]: ["En proceso", "Por entregar"],
         },
       },
+      order: [['order_number', 'DESC']],
     });
     res.json(orders);
   } catch (error) {
@@ -66,6 +69,7 @@ const getAllDeliveredOrders = async (req, res) => {
       where: {
         delivery_state: "Entregado",
       },
+      order: [['order_number', 'DESC']],
     });
     res.json(orders);
   } catch (error) {
@@ -74,13 +78,14 @@ const getAllDeliveredOrders = async (req, res) => {
   }
 };
 
-// Obtener todos los pedidos entregados
+// Obtener todos los pedidos anulados
 const getAllAnulatedOrders = async (req, res) => {
   try {
     const orders = await Orders.findAll({
       where: {
         order_state: "Anulado",
       },
+      order: [['order_number', 'DESC']],
     });
     res.json(orders);
   } catch (error) {
@@ -89,13 +94,14 @@ const getAllAnulatedOrders = async (req, res) => {
   }
 };
 
-// Obtener todos los pedidos entregados
+// Obtener todos los pedidos no pagados
 const getAllUnpaidOrders = async (req, res) => {
   try {
     const orders = await Orders.findAll({
       where: {
         payment_state: "Por pagar",
       },
+      order: [['order_number', 'DESC']],
     });
     res.json(orders);
   } catch (error) {
@@ -104,13 +110,14 @@ const getAllUnpaidOrders = async (req, res) => {
   }
 };
 
-// Obtener todos los pedidos entregados
+// Obtener todos los pedidos pagados
 const getAllPaidOrders = async (req, res) => {
   try {
     const orders = await Orders.findAll({
       where: {
         payment_state: "Pagado",
       },
+      order: [['order_number', 'DESC']],
     });
     res.json(orders);
   } catch (error) {
@@ -119,7 +126,7 @@ const getAllPaidOrders = async (req, res) => {
   }
 };
 
-// Obtener todas las ventas
+// Obtener todas las ventas pagadas y entregadas
 const getAllSales = async (req, res) => {
   try {
     const orders = await Orders.findAll({
@@ -127,6 +134,7 @@ const getAllSales = async (req, res) => {
         payment_state: "Pagado",
         delivery_state: "Entregado",
       },
+      order: [['order_number', 'DESC']],
     });
     res.json(orders);
   } catch (error) {
