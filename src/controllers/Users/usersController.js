@@ -270,12 +270,13 @@ async function updateUserState(req, res) {
 }
 
 //Función para generar token
+const crypto = require('crypto');
+
 function generateResetToken() {
-  const token =
-    Math.random().toString(36).substring(2, 12) +
-    Math.random().toString(36).substring(2, 12);
+  const token = crypto.randomBytes(20).toString('hex');
   return token;
 }
+
 
 const transporter = nodemailer.createTransport({
   service: "gmail",
@@ -323,26 +324,24 @@ async function forgotPassword(req, res) {
       return res.status(404).json({ error: "Usuario no encontrado." });
     }
 
-    // Genera un token único para el restablecimiento de contraseña
     const resetToken = generateResetToken();
-
-    // Almacena el token en la variable temporal
-    resetTokens[resetToken] = user;
+    resetTokens[email] = { token: resetToken };
 
     // Construye el objeto mailOptions con la información necesaria, incluyendo el token en el enlace
     const mailOptions = {
       from: "julianctsistemas@gmail.com",
       to: email,
       subject: "Recuperación de Contraseña",
-      text: `Haga clic en el siguiente enlace para restablecer su contraseña: https://api-cosmetic-qqce.onrender.com/api/change-password?token=${resetToken}`,
+      text: `Haga clic en el siguiente enlace para restablecer su contraseña: https://api-cosmetic-qqce.onrender.com/api/change-password?token=${encodeURIComponent(resetToken)}`,
     };
+    console.log("Token generado:", resetToken);
+
 
     // Enviar correo con el enlace de restablecimiento de contraseña
     await sendEmail(email, mailOptions);
 
     res.json({
-      message:
-        "Se ha enviado un enlace para restablecer la contraseña por correo electrónico.",
+      message: "Se ha enviado un enlace para restablecer la contraseña por correo electrónico.",
     });
   } catch (error) {
     console.error("Error al recuperar la contraseña:", error);
@@ -350,24 +349,47 @@ async function forgotPassword(req, res) {
   }
 }
 
-// Función para cambiar contraseña
+
+
+// Dentro de la función changePassword
 async function changePassword(req, res) {
   const { token, newPassword } = req.body;
+  console.log("Token recibido en la solicitud:", token);
 
   try {
-    // Busca al usuario por el token de reseteo
-    const user = resetTokens[token];
+    // Extrae el token sin el prefijo "token="
+    const incomingToken = token.replace('token=', '');
+
+    // Utiliza Object.values para obtener un array de tokens y encontrar el correo electrónico correspondiente
+    const email = Object.keys(resetTokens).find((key) => {
+      const storedTokenBuffer = Buffer.from(resetTokens[key].token, 'hex');
+      const incomingTokenBuffer = Buffer.from(incomingToken, 'hex');
+      return crypto.timingSafeEqual(storedTokenBuffer, incomingTokenBuffer);
+    });
+
+    if (!email) {
+      console.error("Correo electrónico no encontrado para el token:", token);
+      return res.status(404).json({ error: "Correo electrónico no encontrado para el token." });
+    }
+
+    const user = await Users.findOne({ where: { email: email } });
 
     if (!user) {
+      console.error("Usuario no encontrado. Correo electrónico:", email);
       return res.status(404).json({ error: "Usuario no encontrado." });
     }
 
     // Actualiza la contraseña
-    user.password = newPassword;
+    const saltRounds = 10;
+    const salt = bcrypt.genSaltSync(saltRounds);
+    const hashedPassword = bcrypt.hashSync(newPassword, salt);
+    user.password = hashedPassword;
+
+    // Guarda los cambios en la base de datos
     await user.save();
 
     // Elimina el token de la memoria
-    delete resetTokens[token];
+    delete resetTokens[email];
 
     res.json({ message: "Contraseña actualizada exitosamente." });
   } catch (error) {
