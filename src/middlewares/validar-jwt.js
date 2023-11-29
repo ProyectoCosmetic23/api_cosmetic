@@ -13,6 +13,7 @@ const validarJWT = (req = request, res = response, next) => {
     }
 
     try {
+        
         console.log('Token recibido:', token);
         const { uid } = jwt.verify(token, process.env.SECRETORPRIVATEKEY);
         console.log('Token válido para el usuario con ID:', uid);

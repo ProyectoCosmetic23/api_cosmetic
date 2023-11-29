@@ -18,6 +18,7 @@ const comissionRoutes = require('./src/routes/comissionRoutes');
 const comissionDetailRoutes = require('./src/routes/comissionDetailRoutes');
 const clientsRoutes = require('./src/routes/clientsRoutes');
 const returnsRoutes = require('./src/routes/returnsRoutes');
+const dashboardRoutes = require('./src/routes/dashboardRoutes');
 
 require('dotenv').config();
 
@@ -30,7 +31,7 @@ const PORT = process.env.PORT || 8080;
 
 const corsOptions = {
   origin: [
-    'https://api-cosmetic-w32d.onrender.com',
+    'https://api-cosmetic-qqce.onrender.com',
     'http://localhost:4200',
     'https://cosmetic-proyect-9e0e1.web.app'
   ]
@@ -66,6 +67,7 @@ app.use('/api', comissionDetailRoutes);
 app.use('/api', comissionRoutes);
 app.use('/api', clientsRoutes);
 app.use('/api', returnsRoutes);
+app.use('/api', dashboardRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

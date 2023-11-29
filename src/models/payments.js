@@ -11,10 +11,18 @@ const Payments = sequelize.define('payments', {
   },
   id_sale: {
     type: DataTypes.INTEGER,
-    allowNull: false,
+    allowNull: true,
     references: {
       model: 'sales',
       key: 'id_sale'
+    }
+  },
+  id_order: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    references: {
+      model: 'orders',
+      key: 'id_order'
     }
   },
   id_client: {
@@ -46,9 +54,16 @@ const Payments = sequelize.define('payments', {
   indexes: [
     {
       name: "payments_pkey",
-      unique: true,
+      unique: false,
       fields: [
         { name: "id_payment" },
+      ]
+    },
+    {
+      name: "orders_pkey",
+      unique: false,
+      fields: [
+        { name: "id_order" },
       ]
     },
   ]
