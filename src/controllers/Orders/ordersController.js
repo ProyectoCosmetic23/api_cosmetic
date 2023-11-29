@@ -213,10 +213,12 @@ async function createOrder(req, res) {
     // Actualizar las comisiones
     await updateComissionsFromSales(new Date(order_date));
 
+    let newPay;
+
     if (payment_type == "Contado") {
       try {
-        const newPay = await Payments.create({
-          id_order: id_order,
+        newPay = await Payments.create({
+          id_order: newOrder.id_order,
           id_client: id_client,
           total_payment: total_order,
           total_remaining: 0,
@@ -226,8 +228,11 @@ async function createOrder(req, res) {
         handleError(res, error, "Error al crear el pedido." + error);
       }
     }
-    
-    res.status(201).json({ newOrder, order_detail, newPay });
+    if (payment_type == 'Contado') {
+      res.status(201).json({ newOrder, order_detail, newPay });
+    } else {
+      res.status(201).json({ newOrder, order_detail });
+    }
   } catch (error) {
     handleError(res, error, "Error al crear el pedido." + error);
   }
