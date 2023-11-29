@@ -118,6 +118,23 @@ const getAllPaidOrders = async (req, res) => {
   }
 };
 
+// Obtener todas las ventas
+const getAllSales = async (req, res) => {
+  try {
+    const orders = await Orders.findAll({
+      where: {
+        payment_state: "Pagado",
+        delivery_state: "Entregado",
+      },
+    });
+    res.json(orders);
+  } catch (error) {
+    console.error("Error al obtener Pedidos:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+
 // Obtener un pedido por ID
 async function getOrderById(req, res) {
   const { id } = req.params;
@@ -414,6 +431,7 @@ module.exports = {
   getAllAnulatedOrders,
   getAllUnpaidOrders,
   getAllPaidOrders,
+  getAllSales,
   getOrderById,
   createOrder,
   anulateOrderById,
