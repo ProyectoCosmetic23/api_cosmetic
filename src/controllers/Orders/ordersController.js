@@ -2,9 +2,8 @@
 const { Op } = require("sequelize");
 const Orders = require("../../models/orders");
 const Order_Detail = require("../../models/order_detail");
-const Sales = require("../../models/sales");
-const Sale_Detail = require("../../models/sale_detail");
 const Products = require("../../models/products");
+const Payments = require("../../models/payments");
 const {
   updateComissionsFromSales,
 } = require("../Comissions/comissionController");
@@ -176,10 +175,16 @@ async function createOrder(req, res) {
     payment_type,
     total_order,
     products,
+    directSale,
   } = req.body;
   const order_state = "Activo";
-  const delivery_state = "En proceso";
-  const payment_state = "Por pagar";
+  let delivery_state;
+  let payment_state;
+  if (directSale == false) {
+    delivery_state = "En proceso";
+  } else {
+    delivery_state = "Entregado";
+  }
 
   try {
     // Obtener el último número de factura
@@ -208,7 +213,21 @@ async function createOrder(req, res) {
     // Actualizar las comisiones
     await updateComissionsFromSales(new Date(order_date));
 
-    res.status(201).json({ newOrder, order_detail });
+    if (payment_type == "Contado") {
+      try {
+        const newPay = await Payments.create({
+          id_order: id_order,
+          id_client: id_client,
+          total_payment: total_order,
+          total_remaining: 0,
+        });
+      } catch (error) {
+        console.log(error);
+        handleError(res, error, "Error al crear el pedido." + error);
+      }
+    }
+    
+    res.status(201).json({ newOrder, order_detail, newPay });
   } catch (error) {
     handleError(res, error, "Error al crear el pedido." + error);
   }
@@ -356,10 +375,7 @@ async function updateDeliveryStatusById(req, res) {
 
       res.json({ updatedOrder });
     } else if (order.delivery_state === "Por entregar") {
-      const updatedOrder = await updateOrderDeliveryStatus(
-        order, 
-        "Entregado"
-      );
+      const updatedOrder = await updateOrderDeliveryStatus(order, "Entregado");
 
       res.json({ updatedOrder });
     }
