@@ -13,11 +13,11 @@ async function createComs(req, res) {
     try {
         // Obtener el detalle de comisión para el mes correspondiente
         const comissionDetail = await Comission_Detail.findByPk(id_commission_detail);
-        
+
         if (!comissionDetail) {
             return res.status(400).json({ error: 'Detalle de comisión no encontrado.' });
         }
-        
+
         const comissionExist = await Comissions.findOne({
             where: {
                 id_employee,
@@ -183,13 +183,15 @@ async function getSalesByEmployeeAndMonth(req, res) {
 
 const updateComissionsFromSales = async (month) => {
     try {
+        const adjustedMonth = `${new Date(month).getFullYear()}-${('0' + (new Date(month).getMonth() + 1)).slice(-2)}-01`;
+        console.log(adjustedMonth);
         const comissions = await Comissions.findAll({
             include: [
                 {
                     model: Comission_Detail,
                     attributes: ['month_commission', 'commission_percentage'],
                     where: {
-                        month_commission: month,
+                        month_commission: adjustedMonth,
                     },
                 },
             ],
@@ -197,7 +199,7 @@ const updateComissionsFromSales = async (month) => {
 
         for (const comission of comissions) {
             const { id_employee, commission_detail } = comission;
-        
+
             // Obtener ventas para este empleado y mes
             const employeeSales = await Orders.sum('total_order', {
                 where: {
@@ -207,14 +209,14 @@ const updateComissionsFromSales = async (month) => {
                     },
                 },
             });
-        
+
             // Actualizar la comisión con las nuevas ventas
             await comission.update({
                 total_sales: employeeSales || 0,
                 total_commission: (employeeSales * commission_detail.commission_percentage) / 100,
             });
         }
-
+        await t.commit();
         console.log('Comisiones actualizadas correctamente.');
     } catch (error) {
         console.error('Error al actualizar comisiones:', error);
