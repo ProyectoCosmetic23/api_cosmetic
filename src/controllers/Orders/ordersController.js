@@ -318,6 +318,8 @@ async function anulateOrderById(req, res) {
     }
     await order.update({
       order_state: order_state,
+      delivery_state: order_state,
+      payment_state: order_state,
       observation_return: observation,
     });
     res.json(order);
