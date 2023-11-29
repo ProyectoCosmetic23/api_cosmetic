@@ -3,7 +3,7 @@ const Users = require("../../models/users.js");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const { generarJWT } = require("../../helpers/generar-jwt.js");
-const Employee = require ('../../models/employees');
+const Employee = require('../../models/employees');
 
 //Buscar empleado por cedula y retornar el correo del empleado 
 async function employeeByCard(req, res) {
@@ -18,7 +18,7 @@ async function employeeByCard(req, res) {
       }
 
       // Retorna el correo del empleado si se encuentra
-      res.json({ email: employee.email, id_employee: employee.id_employee }); 
+      res.json({ email: employee.email, id_employee: employee.id_employee });
     } else {
       return res.status(400).json({ message: 'Falta el ID de la cédula en la solicitud.' });
     }
@@ -222,7 +222,7 @@ async function loginUser(req, res) {
     });
   } catch (error) {
     console.error("Error al iniciar sesión: ", error);
-    res.status(500).json({ error: "Error interno al iniciar sesión.", error});
+    res.status(500).json({ error: "Error interno al iniciar sesión.", error });
   }
 }
 
@@ -332,7 +332,12 @@ async function forgotPassword(req, res) {
       from: "julianctsistemas@gmail.com",
       to: email,
       subject: "Recuperación de Contraseña",
-      text: `Haga clic en el siguiente enlace para restablecer su contraseña: https://api-cosmetic-qqce.onrender.com/sessions/signup/${encodeURIComponent(resetToken)}`,
+      text: `Haga clic en el siguiente enlace para restablecer su contraseña: https://api-cosmetic-qqce.onrender.com/sessions/signup/${resetToken}`,
+
+
+      
+
+    };
     console.log("Token generado:", resetToken);
 
 
@@ -396,6 +401,13 @@ async function changePassword(req, res) {
     res.status(500).json({ error: "Error al cambiar la contraseña." });
   }
 }
+
+
+
+
+
+
+
 
 module.exports = {
   getAllUsers,
