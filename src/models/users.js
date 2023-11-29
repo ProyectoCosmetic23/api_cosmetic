@@ -12,10 +12,11 @@ const Users = sequelize.define('users', {
   id_role: {
     type: DataTypes.INTEGER,
     allowNull: false,
-    references: {
-      model: 'roles',
-      key: 'id_role'
+    references:{
+      model:'roles',
+      key: 'id_role',
     }
+    
   },
   id_employee: {
     type: DataTypes.INTEGER,
@@ -23,7 +24,7 @@ const Users = sequelize.define('users', {
     references: {
       model: 'employees',
       key: 'id_employee'
-    }
+    },
   },
   creation_date_user: {
     type: DataTypes.DATE,

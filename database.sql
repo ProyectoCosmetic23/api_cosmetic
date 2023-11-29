@@ -82,8 +82,8 @@ CREATE TABLE defective_products (
 /* Create the users table */
 CREATE TABLE users (
 	id_user INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-	id_role INT NOT NULL,
-	id_employee INT NOT NULL,
+	id_card_employee VARCHAR(10),
+	name_role VARCHAR (100) NOT NULL,
 	creation_date_user TIMESTAMP,
 	username VARCHAR (100) NOT NULL UNIQUE,
 	email VARCHAR (100) NOT NULL,
@@ -183,7 +183,8 @@ CREATE TABLE commission_detail (
 /* Create the payments table */
 CREATE TABLE payments (
 	id_payment INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-	id_sale INT NOT NULL,
+	id_sale INT NULL,
+	id_order INT NULL,
 	id_client INT NOT NULL,
 	payment_date DATE NOT NULL DEFAULT CURRENT_DATE,
 	total_payment NUMERIC NOT NULL,
@@ -244,6 +245,11 @@ FOREIGN KEY (id_sale)
 REFERENCES sales(id_sale);
 
 ALTER TABLE payments
+ADD CONSTRAINT fk_paymentsOrder
+FOREIGN KEY (id_order) 
+REFERENCES orders(id_order);
+
+ALTER TABLE payments
 ADD CONSTRAINT fk_paymentsClient
 FOREIGN KEY (id_client) 
 REFERENCES clients(id_client);
@@ -279,13 +285,13 @@ REFERENCES products(id_product);
 /* Foreign Keys for the 'users' Table */
 ALTER TABLE users
 ADD CONSTRAINT fk_usersRole
-FOREIGN KEY (id_role)
-REFERENCES roles(id_role);
+FOREIGN KEY (name_role)
+REFERENCES roles(name_role);
 
-ALTER TABLE users
-ADD CONSTRAINT fk_usersEmployee
-FOREIGN KEY (id_employee) 
-REFERENCES employees(id_employee);
+-- ALTER TABLE users
+-- ADD CONSTRAINT fk_usersEmployee
+-- FOREIGN KEY (id_card_employee) 
+-- REFERENCES employees(id_card_employee);
 
 /* Foreign Keys for the 'products' Table */
 ALTER TABLE products
@@ -344,10 +350,10 @@ VALUES (1, 'Product 1', 100, 200, 50, 10.00, 15.00, 5.00, current_timestamp, 'Ac
        (3, 'Product 3', 75, 100, 25, 8.00, 14.00, 6.00, current_timestamp, 'Inactive', 'Observation 3');
 
 -- Insert into the 'users' Table
-INSERT INTO users (id_role, id_employee, creation_date_user, username, email, password, state_user, observation_user)
-VALUES (1, 1, current_timestamp, 'admin', 'admin@email.com', 'password_admin', 'Active', 'Observation 1'),
-       (2, 2, current_timestamp, 'manager', 'manager@email.com', 'password_manager', 'Active', 'Observation 2'),
-       (3, 3, current_timestamp, 'employee', 'employee@email.com', 'password_employee', 'Inactive', 'Observation 3');
+INSERT INTO users (name_role, id_card_employee, creation_date_user, username, email, password, state_user, observation_user)
+VALUES ('Administrator', '1111111111', current_timestamp, 'admin', 'employee1@email.com', 'password_admin', 'Active', 'Observation 1'),
+       ('Employee', '2222222222', current_timestamp, 'manager', 'employee2@email.com', 'password_manager', 'Active', 'Observation 2'),
+       ('Manager', '3333333333', current_timestamp, 'employee', 'employee3@email.com', 'password_employee', 'Inactive', 'Observation 3');
 
 -- Insert into the 'purchases' Table
 INSERT INTO purchases (id_provider, invoice_number, purchase_date, record_date_purchase, total_purchase, state_purchase, purchase_photo, observation_purchase)
@@ -363,9 +369,15 @@ VALUES (1, 1, 'Category 1', 50, 9.00, 14.00, 700.00),
 
 -- Insert into the 'orders' Table
 INSERT INTO orders (id_client, id_employee, order_number, order_date, payment_type, order_state, delivery_state, payment_state, total_order)
+<<<<<<< HEAD:database/database.sql
+VALUES (1, 1, 1001, current_timestamp, 'Cash', 'Active', 'In Progress', 'To be paid', 1500.00),
+       (2, 2, 1002, current_timestamp, 'Credit Card', 'Active', 'To be delivered', 'To be paid', 1200.00),
+       (3, 3, 1003, current_timestamp, 'Check', 'Active', 'Delivered', 'To be paid', 1800.00);
+=======
 VALUES (1, 1, 1001, current_timestamp, 'Contado', 'Activo', 'En proceso', 'Por pagar', 1500.00),
        (2, 2, 1002, current_timestamp, 'Credito', 'Activo', 'Por entregar', 'Por pagar', 1200.00),
        (3, 3, 1003, current_timestamp, 'Contado', 'Activo', 'Por entregar', 'Por pagar', 1800.00);
+>>>>>>> b3d05fee0041b74606ac5a54be4086694ad19f7b:database.sql
 
 -- Insert into the 'order_detail' Table
 INSERT INTO order_detail (id_order, id_product, product_quantity, product_price)
@@ -375,9 +387,15 @@ VALUES (1, 1, 30, 14.00),
 
 -- Insert into the 'sales' Table
 INSERT INTO sales (id_order, id_client, id_employee, invoice_number, order_date, sale_state, payment_state, payment_type, total_sale)
+<<<<<<< HEAD:database/database.sql
+VALUES (1, 1, 1, 5001, current_timestamp, 'Active', 'To be paid', 'Cash', 420.00),
+       (2, 2, 2, 5002, current_timestamp, 'Active', 'To be paid', 'Credit Card', 675.00),
+       (3, 3, 3, 5003, current_timestamp, 'Active', 'Paid', 'Check', 360.00);
+=======
 VALUES (1, 1, 1, 5001, current_timestamp, 'Activa', 'Por pagar', 'Contado', 420.00),
        (2, 2, 2, 5002, current_timestamp, 'Activa', 'Por pagar', 'Crédito', 675.00),
        (3, 3, 3, 5003, current_timestamp, 'Activa', 'Pagado', 'Contado', 360.00);
+>>>>>>> b3d05fee0041b74606ac5a54be4086694ad19f7b:database.sql
 
 -- Insert into the 'sale_detail' Table
 INSERT INTO sale_detail (id_sale, id_product, quantity, product_price)
@@ -386,16 +404,20 @@ VALUES (1, 1, 15, 14.00),
        (3, 3, 12, 12.00);
 
 -- Insert into the 'commissions' Table
+<<<<<<< HEAD:database/database.sql
+
+=======
 INSERT INTO commissions(id_employee, total_commission, id_commission_detail, total_sales)
-VALUES(1, 42.00, 4, 1500),
-	  ( 2, 81.00,5, 2500),
-	  (3, 28.00, 6, 3500);
+VALUES(1, 42.00, 1, 1500),
+	  ( 2, 81.00,2, 2500),
+	  (3, 28.00, 3, 3500);
+>>>>>>> b3d05fee0041b74606ac5a54be4086694ad19f7b:database.sql
 
 -- Insert into the 'payments' Table
-INSERT INTO payments (id_sale, id_client, payment_date, total_payment, total_remaining)
-VALUES (1, 1, current_timestamp, 420.00, 0.00),
-       (2, 2, current_timestamp, 675.00, 0.00),
-       (3, 3, current_timestamp, 360.00, 0.00);
+INSERT INTO payments (id_sale, id_order,id_client, payment_date, total_payment, total_remaining)
+VALUES (1,null, 1, current_timestamp, 420.00, 0.00),
+       (null,1, 2, current_timestamp, 1500, 0.00),
+       (3,null, 3, current_timestamp, 360.00, 0.00);
 
 -- Insert into the 'returns' Table
 INSERT INTO returns (id_sale, id_product, return_date, return_quantity, return_value, return_reason)

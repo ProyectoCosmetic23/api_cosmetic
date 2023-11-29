@@ -1,5 +1,6 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/sequelize');
+const Comission_Detail = require('./commission_detail');
 
 const Comissions = sequelize.define('commissions', {
     id_commission: {
@@ -49,5 +50,6 @@ const Comissions = sequelize.define('commissions', {
     ]
   });
 
+Comissions.belongsTo(Comission_Detail, { foreignKey: 'id_commission_detail' });
 
 module.exports = Comissions;
