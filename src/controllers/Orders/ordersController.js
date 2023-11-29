@@ -380,59 +380,6 @@ async function updateOrderDeliveryStatus(order, newDeliveryStatus) {
   }
 }
 
-// Función para crear datos de venta a partir de un pedido
-function createSaleDataFromOrder(order) {
-  const delivery_date = new Date();
-  return {
-    id_order: order.id_order,
-    id_client: order.id_client,
-    id_employee: order.id_employee,
-    invoice_number: order.order_number,
-    order_date: order.order_date,
-    delivery_date: delivery_date,
-    payment_state: order.payment_state,
-    sale_state: "Activo",
-    payment_type: order.payment_type,
-    total_sale: order.total_order,
-  };
-}
-
-// Función para crear una nueva venta
-async function createSale(saleData, order) {
-  const newSale = await Sales.create(saleData);
-  const saleDetailList = await createSaleDetails(newSale, order);
-
-  return { newSale, saleDetailList };
-}
-
-// Función para crear los detalles de una venta
-async function createSaleDetails(sale, order) {
-  const orderDetail = await Order_Detail.findAll({
-    where: { id_order: order.id_order },
-  });
-
-  const saleDetailList = [];
-
-  console.log(orderDetail);
-
-  for (const product of orderDetail) {
-    const product_id = product.id_product;
-    const quantity = product.product_quantity;
-    const product_price = product.product_price;
-
-    const newSaleDetail = await Sale_Detail.create({
-      id_sale: sale.id_sale,
-      id_product: product_id,
-      quantity: quantity,
-      product_price: product_price,
-    });
-
-    saleDetailList.push(newSaleDetail);
-  }
-
-  return saleDetailList;
-}
-
 // Función para manejar errores y enviar una respuesta de error
 function handleError(res, error, errorMessage) {
   console.error(error);
