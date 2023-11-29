@@ -334,7 +334,7 @@ async function forgotPassword(req, res) {
       from: "julianctsistemas@gmail.com",
       to: email,
       subject: "Recuperación de Contraseña",
-      text: `Haga clic en el siguiente enlace para restablecer su contraseña: https://localhost:8080/api/change-password?token=${resetToken}`,
+      text: `Haga clic en el siguiente enlace para restablecer su contraseña: https://api-cosmetic-qqce.onrender.com/api/change-password?token=${resetToken}`,
     };
 
     // Enviar correo con el enlace de restablecimiento de contraseña
