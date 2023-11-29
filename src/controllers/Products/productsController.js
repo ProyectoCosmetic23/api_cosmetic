@@ -121,7 +121,7 @@ async function createProducts(req, res) {
 //Modificar un producto
 async function productsPut(req, res) {
   const { id } = req.params; // El ID del producto
-  const { id_category, name_product, max_stock, min_stock, selling_price, observation } = req.body;
+ const { id_category, name_product, quantity,max_stock, min_stock,cost_price,selling_price, observation } = req.body;
   let mensaje = '';
 
 
@@ -155,11 +155,13 @@ async function productsPut(req, res) {
         const cost_price_original = product.cost_price;
 
         // Actualizar los campos del producto
-        product.id_category = id_category;
+       product.id_category = id_category;
         product.name_product = name_product;
         product.max_stock = max_stock;
         product.min_stock = min_stock;
+        product.cost_price=cost_price;
         product.selling_price = selling_price;
+        product.quantity = quantity;
         product.observation = observation;
 
         // Validación: Precio de venta debe ser numérico y mayor que cero
