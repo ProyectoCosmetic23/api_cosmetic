@@ -5,7 +5,10 @@ const Order_Detail = require("../../models/order_detail");
 const Sales = require("../../models/sales");
 const Sale_Detail = require("../../models/sale_detail");
 const Products = require("../../models/products");
-const { updateComissionsFromSales } = require ('../Comissions/comissionController');
+const {
+  updateComissionsFromSales,
+} = require("../Comissions/comissionController");
+const { response } = require("express");
 
 // -------------- INICIO: Función para para obtener último N°Pedido -------------- //
 
@@ -35,7 +38,7 @@ async function getLastInvoiceNumber() {
 const getAllOrders = async (req, res) => {
   try {
     const orders = await Orders.findAll({
-      order: [['order_number', 'DESC']],
+      order: [["order_number", "DESC"]],
     });
     res.json(orders);
   } catch (error) {
@@ -53,7 +56,7 @@ const getAllProcessingOrders = async (req, res) => {
           [Op.in]: ["En proceso", "Por entregar"],
         },
       },
-      order: [['order_number', 'DESC']],
+      order: [["order_number", "DESC"]],
     });
     res.json(orders);
   } catch (error) {
@@ -69,7 +72,7 @@ const getAllDeliveredOrders = async (req, res) => {
       where: {
         delivery_state: "Entregado",
       },
-      order: [['order_number', 'DESC']],
+      order: [["order_number", "DESC"]],
     });
     res.json(orders);
   } catch (error) {
@@ -85,7 +88,7 @@ const getAllAnulatedOrders = async (req, res) => {
       where: {
         order_state: "Anulado",
       },
-      order: [['order_number', 'DESC']],
+      order: [["order_number", "DESC"]],
     });
     res.json(orders);
   } catch (error) {
@@ -101,7 +104,7 @@ const getAllUnpaidOrders = async (req, res) => {
       where: {
         payment_state: "Por pagar",
       },
-      order: [['order_number', 'DESC']],
+      order: [["order_number", "DESC"]],
     });
     res.json(orders);
   } catch (error) {
@@ -117,7 +120,7 @@ const getAllPaidOrders = async (req, res) => {
       where: {
         payment_state: "Pagado",
       },
-      order: [['order_number', 'DESC']],
+      order: [["order_number", "DESC"]],
     });
     res.json(orders);
   } catch (error) {
@@ -134,7 +137,7 @@ const getAllSales = async (req, res) => {
         payment_state: "Pagado",
         delivery_state: "Entregado",
       },
-      order: [['order_number', 'DESC']],
+      order: [["order_number", "DESC"]],
     });
     res.json(orders);
   } catch (error) {
@@ -142,7 +145,6 @@ const getAllSales = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
-
 
 // Obtener un pedido por ID
 async function getOrderById(req, res) {
@@ -316,7 +318,7 @@ async function anulateOrderById(req, res) {
     }
     await order.update({
       order_state: order_state,
-      observation_return: observation
+      observation_return: observation,
     });
     res.json(order);
   } catch (error) {
@@ -344,18 +346,19 @@ async function updateDeliveryStatusById(req, res) {
     }
 
     if (order.delivery_state === "En proceso") {
-      await updateOrderDeliveryStatus(order, "Por entregar");
+      const updatedOrder = await updateOrderDeliveryStatus(
+        order,
+        "Por entregar"
+      );
+
+      res.json({ updatedOrder });
     } else if (order.delivery_state === "Por entregar") {
-      const newSaleData = createSaleDataFromOrder(order);
-      const { newSale, saleDetailList } = await createSale(newSaleData, order);
+      const updatedOrder = await updateOrderDeliveryStatus(
+        order, 
+        "Entregado"
+      );
 
-      const updatedOrder = await updateOrderDeliveryStatus(order, "Entregado");
-
-      if (updatedOrdernull || updatedOrder === undefined) {
-        res.json({ newSale, saleDetailList });
-      } else {
-        res.json({ newSale, saleDetailList, updatedOrder });
-      }
+      res.json({ updatedOrder });
     }
   } catch (error) {
     res.json("Error al actualizar el pedido." + error);
