@@ -334,6 +334,8 @@ async function forgotPassword(req, res) {
       subject: "Recuperación de Contraseña",
       text: `Haga clic en el siguiente enlace para restablecer su contraseña: https://localhost:8080/api/change-password?token=${encodeURIComponent(resetToken)}`,
     };
+    console.log("Token generado:", resetToken);
+
 
     // Enviar correo con el enlace de restablecimiento de contraseña
     await sendEmail(email, mailOptions);
@@ -349,34 +351,33 @@ async function forgotPassword(req, res) {
 
 
 
-// Función para cambiar contraseña
+// Dentro de la función changePassword
 async function changePassword(req, res) {
   const { token, newPassword } = req.body;
   console.log("Token recibido en la solicitud:", token);
 
   try {
-    console.log("resetTokens antes de la búsqueda:", resetTokens);
-    const email = Object.keys(resetTokens).find((key) => resetTokens[key].token === token);
-    console.log("resetTokens después de la búsqueda:", resetTokens);
+    // Extrae el token sin el prefijo "token="
+    const incomingToken = token.replace('token=', '');
 
-    // Verifica si el correo electrónico fue encontrado
+    // Utiliza Object.values para obtener un array de tokens y encontrar el correo electrónico correspondiente
+    const email = Object.keys(resetTokens).find((key) => {
+      const storedTokenBuffer = Buffer.from(resetTokens[key].token, 'hex');
+      const incomingTokenBuffer = Buffer.from(incomingToken, 'hex');
+      return crypto.timingSafeEqual(storedTokenBuffer, incomingTokenBuffer);
+    });
+
     if (!email) {
       console.error("Correo electrónico no encontrado para el token:", token);
       return res.status(404).json({ error: "Correo electrónico no encontrado para el token." });
     }
 
-    console.log("Correo electrónico encontrado:", email);
-
-    // Busca al usuario por el correo electrónico
     const user = await Users.findOne({ where: { email: email } });
 
-    // Verifica si el usuario fue encontrado
     if (!user) {
       console.error("Usuario no encontrado. Correo electrónico:", email);
       return res.status(404).json({ error: "Usuario no encontrado." });
     }
-
-    console.log("Usuario antes de actualizar la contraseña:", user);
 
     // Actualiza la contraseña
     const saltRounds = 10;
@@ -384,17 +385,11 @@ async function changePassword(req, res) {
     const hashedPassword = bcrypt.hashSync(newPassword, salt);
     user.password = hashedPassword;
 
-    console.log("Usuario después de actualizar la contraseña:", user);
-
     // Guarda los cambios en la base de datos
     await user.save();
 
-    console.log("Usuario después de guardar en la base de datos:", user);
-
     // Elimina el token de la memoria
     delete resetTokens[email];
-
-    console.log("resetTokens después de la eliminación:", resetTokens);
 
     res.json({ message: "Contraseña actualizada exitosamente." });
   } catch (error) {
@@ -402,6 +397,9 @@ async function changePassword(req, res) {
     res.status(500).json({ error: "Error al cambiar la contraseña." });
   }
 }
+
+
+
 
 
 
