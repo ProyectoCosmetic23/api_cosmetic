@@ -48,7 +48,7 @@ const Orders = sequelize.define(
       allowNull: true,
     },
     observation_return: {
-      type: DataTypes.STRING(250),
+      type: DataTypes.STRING(500),
       allowNull: true,
     },
   },
