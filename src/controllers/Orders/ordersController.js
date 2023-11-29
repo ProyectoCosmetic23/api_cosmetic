@@ -180,6 +180,13 @@ async function createOrder(req, res) {
   const order_state = "Activo";
   let delivery_state;
   let payment_state;
+  
+  if (payment_type == "Contado") {
+    payment_state = "Pagado"
+  } else {
+    payment_state = "Por pagar"
+  }
+  
   if (directSale == false) {
     delivery_state = "En proceso";
   } else {
