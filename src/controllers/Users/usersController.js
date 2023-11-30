@@ -3,7 +3,7 @@ const Users = require("../../models/users.js");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const { generarJWT } = require("../../helpers/generar-jwt.js");
-const Employee = require ('../../models/employees');
+const Employee = require('../../models/employees');
 
 //Buscar empleado por cedula y retornar el correo del empleado 
 async function employeeByCard(req, res) {
@@ -18,7 +18,7 @@ async function employeeByCard(req, res) {
       }
 
       // Retorna el correo del empleado si se encuentra
-      res.json({ email: employee.email, id_employee: employee.id_employee }); 
+      res.json({ email: employee.email, id_employee: employee.id_employee });
     } else {
       return res.status(400).json({ message: 'Falta el ID de la cédula en la solicitud.' });
     }
@@ -222,7 +222,7 @@ async function loginUser(req, res) {
     });
   } catch (error) {
     console.error("Error al iniciar sesión: ", error);
-    res.status(500).json({ error: "Error interno al iniciar sesión.", error});
+    res.status(500).json({ error: "Error interno al iniciar sesión.", error });
   }
 }
 
@@ -270,12 +270,13 @@ async function updateUserState(req, res) {
 }
 
 //Función para generar token
+const crypto = require('crypto');
+
 function generateResetToken() {
-  const token =
-    Math.random().toString(36).substring(2, 12) +
-    Math.random().toString(36).substring(2, 12);
+  const token = crypto.randomBytes(20).toString('hex');
   return token;
 }
+
 
 const transporter = nodemailer.createTransport({
   service: "gmail",
@@ -323,26 +324,28 @@ async function forgotPassword(req, res) {
       return res.status(404).json({ error: "Usuario no encontrado." });
     }
 
-    // Genera un token único para el restablecimiento de contraseña
     const resetToken = generateResetToken();
-
-    // Almacena el token en la variable temporal
-    resetTokens[resetToken] = user;
+    resetTokens[email] = { token: resetToken };
 
     // Construye el objeto mailOptions con la información necesaria, incluyendo el token en el enlace
     const mailOptions = {
       from: "julianctsistemas@gmail.com",
       to: email,
       subject: "Recuperación de Contraseña",
-      text: `Haga clic en el siguiente enlace para restablecer su contraseña: https://localhost:8080/api/change-password?token=${resetToken}`,
+      text: `Haga clic en el siguiente enlace para restablecer su contraseña: http://localhost:4200/sessions/signup/${resetToken}`,
+
+
+      
+
     };
+    console.log("Token generado:", resetToken);
+
 
     // Enviar correo con el enlace de restablecimiento de contraseña
     await sendEmail(email, mailOptions);
 
     res.json({
-      message:
-        "Se ha enviado un enlace para restablecer la contraseña por correo electrónico.",
+      message: "Se ha enviado un enlace para restablecer la contraseña por correo electrónico.",
     });
   } catch (error) {
     console.error("Error al recuperar la contraseña:", error);
@@ -350,24 +353,63 @@ async function forgotPassword(req, res) {
   }
 }
 
-// Función para cambiar contraseña
+
+
+// Dentro de la función changePassword
 async function changePassword(req, res) {
-  const { token, newPassword } = req.body;
+  const { token} = req.params;
+  const { newPassword } = req.body;
+  console.log("Token recibido en la solicitud:", token);
 
   try {
-    // Busca al usuario por el token de reseteo
-    const user = resetTokens[token];
+    // Extrae el token sin el prefijo "token="
+    const incomingToken = token.replace('token=', '');
+
+    // Utiliza Object.values para obtener un array de tokens y encontrar el correo electrónico correspondiente
+    const email = Object.keys(resetTokens).find((key) => {
+      const storedTokenBuffer = resetTokens[key] ? Buffer.from(resetTokens[key].token, 'hex') : null;
+      const incomingTokenBuffer = incomingToken ? Buffer.from(incomingToken, 'hex') : null;
+
+      if (storedTokenBuffer && incomingTokenBuffer && storedTokenBuffer.length === incomingTokenBuffer.length) {
+        const tokensAreEqual = crypto.timingSafeEqual(storedTokenBuffer, incomingTokenBuffer);
+
+        if (tokensAreEqual) {
+          return resetTokens[key].token === incomingToken;
+        } else {
+          // La comparación de tokens falló
+          console.error("La comparación de tokens falló.");
+          return false;
+        }
+      } else {
+        // Manejar el caso de búferes nulos o de longitudes diferentes
+        console.error("Búferes nulos o de longitudes diferentes.");
+        return false;
+      }
+    });
+
+    if (!email) {
+      console.error("Correo electrónico no encontrado para el token:", token);
+      return res.status(404).json({ error: "Correo electrónico no encontrado para el token." });
+    }
+
+    const user = await Users.findOne({ where: { email: email } });
 
     if (!user) {
+      console.error("Usuario no encontrado. Correo electrónico:", email);
       return res.status(404).json({ error: "Usuario no encontrado." });
     }
 
     // Actualiza la contraseña
-    user.password = newPassword;
+    const saltRounds = 10;
+    const salt = bcrypt.genSaltSync(saltRounds);
+    const hashedPassword = bcrypt.hashSync(newPassword, salt);
+    user.password = hashedPassword;
+
+    // Guarda los cambios en la base de datos
     await user.save();
 
     // Elimina el token de la memoria
-    delete resetTokens[token];
+    delete resetTokens[email];
 
     res.json({ message: "Contraseña actualizada exitosamente." });
   } catch (error) {
@@ -375,7 +417,6 @@ async function changePassword(req, res) {
     res.status(500).json({ error: "Error al cambiar la contraseña." });
   }
 }
-
 module.exports = {
   getAllUsers,
   getUserById,

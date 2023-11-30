@@ -27,7 +27,13 @@ const Product_Categories = sequelize.define('product_categories', {
     type: DataTypes.DATE,
     allowNull: true,
     defaultValue: new NOW()
+  },
+  reason_anulate: {
+    type: DataTypes.STRING(100),
+    allowNull: true,
+
   }
+
 }, {
   sequelize,
   tableName: 'product_categories',
