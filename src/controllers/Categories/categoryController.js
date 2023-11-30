@@ -145,7 +145,7 @@ const categoryPut = async (req, res, next) => {
 
 const CategoryChangeStatus = async (req, res) => {
     const { id } = req.params; // El ID de la categoría se obtiene de los parámetros de la URL
-    const { newState } = req.body; // El nuevo estado se obtiene del cuerpo de la solicitud
+    const {  reasonAnulate ,newState} = req.body; // El nuevo estado se obtiene del cuerpo de la solicitud
     let message = '';
 
     try {
@@ -155,7 +155,14 @@ const CategoryChangeStatus = async (req, res) => {
 
             if (category) {
                 // Actualizar el estado de la categoría
-                category.state_category = newState;
+
+                category.update({
+                  reason_anulate: reasonAnulate,
+                  state_category: newState
+              });
+             
+                
+               
                 await category.save();
 
                 message = "El estado de la categoría se actualizó correctamente.";
