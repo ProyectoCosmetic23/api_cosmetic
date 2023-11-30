@@ -360,8 +360,13 @@ async function changePassword(req, res) {
   console.log("Token recibido en la solicitud:", token);
 
   try {
-    // Extrae el token sin el prefijo "token="
-    const incomingToken = token.replace('token=', '');
+    // Verifica si el token está presente y contiene 'token=' antes de extraer
+    const incomingToken = (token && token.includes('token=')) ? token.replace('token=', '') : '';
+
+    if (!incomingToken) {
+      console.error("Token no válido:", token);
+      return res.status(400).json({ error: "Token no válido." });
+    }
 
     // Utiliza Object.values para obtener un array de tokens y encontrar el correo electrónico correspondiente
     const email = Object.keys(resetTokens).find((key) => {
