@@ -332,7 +332,7 @@ async function forgotPassword(req, res) {
       from: "julianctsistemas@gmail.com",
       to: email,
       subject: "Recuperación de Contraseña",
-      text: `Haga clic en el siguiente enlace para restablecer su contraseña:http://localhost:4200//sessions/signup/${resetToken}`,
+      text: `Haga clic en el siguiente enlace para restablecer su contraseña:http://localhost:4200/sessions/signup/${resetToken}`,
 
       
 
