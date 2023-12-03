@@ -61,6 +61,10 @@ const Products = sequelize.define('products', {
     type: DataTypes.STRING(100),
     allowNull: true
   },
+  reason_anulate: {
+    type: DataTypes.STRING(100),
+    allowNull: true
+  }
 }, {
   sequelize,
   tableName: 'products',
