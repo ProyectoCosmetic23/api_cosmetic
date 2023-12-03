@@ -192,12 +192,18 @@ async function updateProv(req, res) {
 
 async function updateState(req, res) {
     const { id } = req.params;
+    const { reason_anulate } = req.body; // Extrae la razón del cuerpo de la solicitud
 
     try {
         const provider = await Providers.findByPk(id);
 
         if (!provider) {
             return res.status(404).json({ error: 'Proveedor no encontrado.' });
+        }
+
+        // Guarda la razón del cambio de estado si está presente
+        if (reason_anulate) {
+            provider.reason_anulate = reason_anulate;
         }
 
         if (provider.state_provider === 'Activo') {
@@ -214,6 +220,7 @@ async function updateState(req, res) {
         console.log(error.message);
     }
 }
+
 async function checkCedulaAvailability(req, res) {
     const { cedula } = req.query;
     try {
