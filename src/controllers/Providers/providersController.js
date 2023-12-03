@@ -210,7 +210,7 @@ async function updateState(req, res) {
         provider.reason_anulate = reason_anulate;
 
         await provider.save();
-
+        console.log("estado", provider.reason_anulate)
         res.json(provider);
     } catch (error) {
         res.status(500).json({ error: 'Error al actualizar el estado del proveedor.' });
