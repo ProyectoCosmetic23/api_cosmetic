@@ -192,7 +192,7 @@ async function updateProv(req, res) {
 
 async function updateState(req, res) {
     const { id } = req.params;
-    const { reason_anulate } = req.body;
+    const { motivo } = req.body; // Cambia a la clave correcta que estás enviando desde el frontend
 
     try {
         const provider = await Providers.findByPk(id);
@@ -201,9 +201,9 @@ async function updateState(req, res) {
             return res.status(404).json({ error: 'Proveedor no encontrado.' });
         }
 
-        // Guarda la razón del cambio de estado si está presente
-        if (reason_anulate) {
-            provider.reason_anulate = reason_anulate;
+        // Guarda el motivo del cambio de estado si está presente
+        if (motivo) {
+            provider.reason_anulate = motivo;
         }
 
         if (provider.state_provider === 'Activo') {
@@ -212,7 +212,6 @@ async function updateState(req, res) {
             provider.state_provider = 'Activo';
         }
 
-        // Aquí actualizamos el campo `reason_anulate` en la base de datos
         await provider.save();
 
         res.json(provider);
@@ -221,6 +220,7 @@ async function updateState(req, res) {
         console.log(error.message);
     }
 }
+
 
 async function checkCedulaAvailability(req, res) {
     const { cedula } = req.query;
