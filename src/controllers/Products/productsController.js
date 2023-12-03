@@ -89,9 +89,10 @@ async function createProducts(req, res) {
   
 
   // Validación: Nombre debe contener solo letras y espacios
-  if (!/^[A-Za-z0-9\s]+$/.test(name_product)) {
+  if (!/^[A-Za-z0-9\sñÑ]+$/.test(name_product)) {
     return res.status(400).json({ error: 'El nombre debe contener letras, números y espacios' });
-  }
+}
+
 
   // Calcular la ganancia
   const profit = selling_price - cost_price;
@@ -121,14 +122,15 @@ async function createProducts(req, res) {
 //Modificar un producto
 async function productsPut(req, res) {
   const { id } = req.params; // El ID del producto
- const { id_category, name_product, quantity,max_stock, min_stock,cost_price,selling_price, observation } = req.body;
+  const { id_category, name_product, quantity,max_stock, min_stock,cost_price,selling_price, observation } = req.body;
   let mensaje = '';
 
 
   // Validación: Nombre debe contener letras, números y espacios
-  if (!/^[A-Za-z0-9\s]+$/.test(name_product)) {
+ if (!/^[A-Za-z0-9\sñÑ]+$/.test(name_product)) {
     return res.status(400).json({ error: 'El nombre debe contener letras, números y espacios' });
-  }
+}
+
 
   // Validación: Verifica que los campos obligatorios no estén vacíos
   if (!id_category || !name_product || !max_stock || !min_stock || !selling_price) {
@@ -155,7 +157,7 @@ async function productsPut(req, res) {
         const cost_price_original = product.cost_price;
 
         // Actualizar los campos del producto
-       product.id_category = id_category;
+        product.id_category = id_category;
         product.name_product = name_product;
         product.max_stock = max_stock;
         product.min_stock = min_stock;
@@ -231,7 +233,6 @@ async function retireProduct(req, res) {
 //cambiar estado del producto
 async function productsChangeStatus(req, res) {
   const { id } = req.params;
-  const { reason_anulate } = req.body; 
   let mensaje = '';
 
   try {
@@ -250,7 +251,6 @@ async function productsChangeStatus(req, res) {
 
         // Actualizar el estado del producto
         product.state_product = state_product_new;
-        product.reason_anulate = reason_anulate;
 
         await product.save();
 
