@@ -192,7 +192,7 @@ async function updateProv(req, res) {
 
 async function updateState(req, res) {
     const { id } = req.params;
-    const { reason_anulate } = req.body; // Extrae la razón del cuerpo de la solicitud
+    const { reason_anulate } = req.body;
 
     try {
         const provider = await Providers.findByPk(id);
@@ -212,6 +212,7 @@ async function updateState(req, res) {
             provider.state_provider = 'Activo';
         }
 
+        // Aquí actualizamos el campo `reason_anulate` en la base de datos
         await provider.save();
 
         res.json(provider);
