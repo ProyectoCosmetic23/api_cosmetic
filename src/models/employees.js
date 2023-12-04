@@ -43,6 +43,10 @@ const Employees = sequelize.define('employees', {
     type: DataTypes.DATE,
     allowNull: true,
     defaultValue: new NOW()
+  },
+  reason_anulate: {
+    type: DataTypes.STRING(100),
+    allowNull: true
   }
 }, {
   sequelize,

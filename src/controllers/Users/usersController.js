@@ -332,7 +332,11 @@ async function forgotPassword(req, res) {
       from: "julianctsistemas@gmail.com",
       to: email,
       subject: "Recuperación de Contraseña",
-      text: `Haga clic en el siguiente enlace para restablecer su contraseña: https://localhost:8080/api/change-password?token=${encodeURIComponent(resetToken)}`,
+      text: `Haga clic en el siguiente enlace para restablecer su contraseña:https://cosmetic-ce180.web.app/sessions/signup/${resetToken}`,
+
+
+      
+
     };
     console.log("Token generado:", resetToken);
 
@@ -353,7 +357,8 @@ async function forgotPassword(req, res) {
 
 // Dentro de la función changePassword
 async function changePassword(req, res) {
-  const { token, newPassword } = req.body;
+  const { token} = req.params;
+  const {  newPassword } = req.body;
   console.log("Token recibido en la solicitud:", token);
 
   try {
@@ -362,9 +367,24 @@ async function changePassword(req, res) {
 
     // Utiliza Object.values para obtener un array de tokens y encontrar el correo electrónico correspondiente
     const email = Object.keys(resetTokens).find((key) => {
-      const storedTokenBuffer = Buffer.from(resetTokens[key].token, 'hex');
-      const incomingTokenBuffer = Buffer.from(incomingToken, 'hex');
-      return crypto.timingSafeEqual(storedTokenBuffer, incomingTokenBuffer);
+      const storedTokenBuffer = resetTokens[key] ? Buffer.from(resetTokens[key].token, 'hex') : null;
+      const incomingTokenBuffer = incomingToken ? Buffer.from(incomingToken, 'hex') : null;
+
+      if (storedTokenBuffer && incomingTokenBuffer && storedTokenBuffer.length === incomingTokenBuffer.length) {
+        const tokensAreEqual = crypto.timingSafeEqual(storedTokenBuffer, incomingTokenBuffer);
+
+        if (tokensAreEqual) {
+          return resetTokens[key].token === incomingToken;
+        } else {
+          // La comparación de tokens falló
+          console.error("La comparación de tokens falló.");
+          return false;
+        }
+      } else {
+        // Manejar el caso de búferes nulos o de longitudes diferentes
+        console.error("Búferes nulos o de longitudes diferentes.");
+        return false;
+      }
     });
 
     if (!email) {
@@ -397,13 +417,6 @@ async function changePassword(req, res) {
     res.status(500).json({ error: "Error al cambiar la contraseña." });
   }
 }
-
-
-
-
-
-
-
 
 module.exports = {
   getAllUsers,

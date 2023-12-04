@@ -231,6 +231,7 @@ async function retireProduct(req, res) {
 //cambiar estado del producto
 async function productsChangeStatus(req, res) {
   const { id } = req.params;
+  const { reason_anulate } = req.body; 
   let mensaje = '';
 
   try {
@@ -249,6 +250,7 @@ async function productsChangeStatus(req, res) {
 
         // Actualizar el estado del producto
         product.state_product = state_product_new;
+        product.reason_anulate = reason_anulate;
 
         await product.save();
 
