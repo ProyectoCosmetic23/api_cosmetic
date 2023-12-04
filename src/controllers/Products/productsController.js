@@ -89,9 +89,10 @@ async function createProducts(req, res) {
   
 
   // Validación: Nombre debe contener solo letras y espacios
-  if (!/^[A-Za-z0-9\s]+$/.test(name_product)) {
+  if (!/^[A-Za-z0-9\sñÑ]+$/.test(name_product)) {
     return res.status(400).json({ error: 'El nombre debe contener letras, números y espacios' });
-  }
+}
+
 
   // Calcular la ganancia
   const profit = selling_price - cost_price;
@@ -126,9 +127,10 @@ async function productsPut(req, res) {
 
 
   // Validación: Nombre debe contener letras, números y espacios
-  if (!/^[A-Za-z0-9\s]+$/.test(name_product)) {
+ if (!/^[A-Za-z0-9\sñÑ]+$/.test(name_product)) {
     return res.status(400).json({ error: 'El nombre debe contener letras, números y espacios' });
-  }
+}
+
 
   // Validación: Verifica que los campos obligatorios no estén vacíos
   if (!id_category || !name_product || !max_stock || !min_stock || !selling_price) {
