@@ -34,7 +34,8 @@ async function getProvById(req, res) {
             state_provider,
             observation_provider,
             name_contact,
-            creation_date_provider
+            creation_date_provider,
+            reason_anulate
         } = provider;
 
         res.json({
@@ -46,7 +47,8 @@ async function getProvById(req, res) {
             state_provider,
             observation_provider,
             name_contact,
-            creation_date_provider
+            creation_date_provider,
+            reason_anulate
         });
     } catch (error) {
         console.error('Error al obtener el proveedor:', error);
