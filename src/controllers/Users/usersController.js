@@ -18,7 +18,7 @@ async function employeeByCard(req, res) {
       }
 
       // Retorna el correo del empleado si se encuentra
-      res.json({ email: employee.email, id_employee: employee.id_employee });
+      res.json({ email: employee.email, id_employee: employee.id_employee, name_employee: employee.name_employee });
     } else {
       return res.status(400).json({ message: 'Falta el ID de la cédula en la solicitud.' });
     }
