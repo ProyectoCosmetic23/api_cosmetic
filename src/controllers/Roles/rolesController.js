@@ -90,7 +90,7 @@ async function validateRoleName(req, res) {
 
 // Crear un rol
 async function createRole(req, res) {
-  const { name_role, modules_role } = req.body;
+  const { name_role, modules_role, observation_status } = req.body;
   state_role = "Activo";
   modules_string = modules_role.join(", ");
   try {
@@ -98,7 +98,7 @@ async function createRole(req, res) {
       name_role: name_role,
       state_role: state_role,
       modules_role: modules_string,
-      observation_status: ""
+      observation_status: observation_status
     });
     res.status(201).json({ nuevo_rol });
   } catch (error) {
