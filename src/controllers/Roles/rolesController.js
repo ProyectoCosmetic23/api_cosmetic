@@ -127,6 +127,7 @@ async function updateRole(req, res) {
 // Cambiar el estado de un rol
 async function updateRoleStatus(req, res) {
   const { id } = req.params;
+  const data = req.body;
   try {
     const role = await Roles.findByPk(id);
     var state_role = "";
@@ -142,6 +143,7 @@ async function updateRoleStatus(req, res) {
 
     await role.update({
       state_role: state_role,
+      observation_status: data.observation
     });
     res.json(role);
   } catch (error) {
