@@ -34,7 +34,8 @@ async function getProvById(req, res) {
             state_provider,
             observation_provider,
             name_contact,
-            creation_date_provider
+            creation_date_provider,
+            reason_anulate
         } = provider;
 
         res.json({
@@ -46,7 +47,8 @@ async function getProvById(req, res) {
             state_provider,
             observation_provider,
             name_contact,
-            creation_date_provider
+            creation_date_provider,
+            reason_anulate
         });
     } catch (error) {
         console.error('Error al obtener el proveedor:', error);
@@ -192,7 +194,8 @@ async function updateProv(req, res) {
 
 async function updateState(req, res) {
     const { id } = req.params;
-
+    const { reason_anulate } = req.body; // Cambia a la clave correcta que estás enviando desde el frontend
+    console.log("id", id, "reason_anulate", reason_anulate);
     try {
         const provider = await Providers.findByPk(id);
 
@@ -206,14 +209,40 @@ async function updateState(req, res) {
             provider.state_provider = 'Activo';
         }
 
-        await provider.save();
+        provider.reason_anulate = reason_anulate;
 
+        await provider.save();
+        console.log("estado", provider.reason_anulate)
         res.json(provider);
     } catch (error) {
         res.status(500).json({ error: 'Error al actualizar el estado del proveedor.' });
         console.log(error.message);
     }
 }
+
+
+async function checkCedulaAvailability(req, res) {
+    const { cedula } = req.query;
+    try {
+      const existingCedula = await Providers.findOne({ where: { nit_cedula: cedula } });
+      res.json(!existingCedula);
+    } catch (error) {
+        console.log(cedula)
+        console.error('Error al verificar la cédula:', error);
+        res.status(500).json({ error: 'Error al verificar la cédula.', details: error.message });
+      }
+  }
+
+  async function checkEmailAvailability(req, res) {
+    const { email } = req.query;
+    try {
+      const existingEmail = await Providers.findOne({ where: { email } });
+      res.json(!existingEmail);
+    } catch (error) {
+      console.error('Error al verificar el correo:', error);
+      res.status(500).json({ error: 'Error al verificar el correo.' });
+    }
+  }
 
 // Exportar las funciones del módulo
 
@@ -223,4 +252,6 @@ module.exports = {
     createProv,
     updateProv,
     updateState,
+    checkCedulaAvailability,
+    checkEmailAvailability
 };

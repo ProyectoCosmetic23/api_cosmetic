@@ -15,7 +15,7 @@ router.put('/users/:id',validarJWT, usersController.updateUser);
 router.put('/users/state/:id', usersController.updateUserState);
 router.post('/users/login' , usersController.loginUser);
 router.post('/users/recover', usersController.forgotPassword);
-router.post('/users-password', usersController.changePassword);
+router.post('/change-password/:token', usersController.changePassword);
 //Ruta para buscar el empleado y obtener su correo
 router.get('/Users/employeeByCard/:id_card_employee', usersController.employeeByCard);
 

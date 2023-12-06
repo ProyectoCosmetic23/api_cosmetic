@@ -2,9 +2,12 @@
 const { Op } = require("sequelize");
 const Orders = require("../../models/orders");
 const Order_Detail = require("../../models/order_detail");
-const Sales = require("../../models/sales");
-const Sale_Detail = require("../../models/sale_detail");
 const Products = require("../../models/products");
+const Payments = require("../../models/payments");
+const {
+  updateComissionsFromSales,
+} = require("../Comissions/comissionController");
+const { response } = require("express");
 
 // -------------- INICIO: Función para para obtener último N°Pedido -------------- //
 
@@ -33,7 +36,9 @@ async function getLastInvoiceNumber() {
 // Obtener todos los pedidos
 const getAllOrders = async (req, res) => {
   try {
-    const orders = await Orders.findAll();
+    const orders = await Orders.findAll({
+      order: [["order_number", "DESC"]],
+    });
     res.json(orders);
   } catch (error) {
     console.error("Error al obtener Pedidos:", error);
@@ -50,6 +55,7 @@ const getAllProcessingOrders = async (req, res) => {
           [Op.in]: ["En proceso", "Por entregar"],
         },
       },
+      order: [["order_number", "DESC"]],
     });
     res.json(orders);
   } catch (error) {
@@ -65,6 +71,7 @@ const getAllDeliveredOrders = async (req, res) => {
       where: {
         delivery_state: "Entregado",
       },
+      order: [["order_number", "DESC"]],
     });
     res.json(orders);
   } catch (error) {
@@ -73,13 +80,14 @@ const getAllDeliveredOrders = async (req, res) => {
   }
 };
 
-// Obtener todos los pedidos entregados
+// Obtener todos los pedidos anulados
 const getAllAnulatedOrders = async (req, res) => {
   try {
     const orders = await Orders.findAll({
       where: {
         order_state: "Anulado",
       },
+      order: [["order_number", "DESC"]],
     });
     res.json(orders);
   } catch (error) {
@@ -88,13 +96,14 @@ const getAllAnulatedOrders = async (req, res) => {
   }
 };
 
-// Obtener todos los pedidos entregados
+// Obtener todos los pedidos no pagados
 const getAllUnpaidOrders = async (req, res) => {
   try {
     const orders = await Orders.findAll({
       where: {
         payment_state: "Por pagar",
       },
+      order: [["order_number", "DESC"]],
     });
     res.json(orders);
   } catch (error) {
@@ -103,13 +112,31 @@ const getAllUnpaidOrders = async (req, res) => {
   }
 };
 
-// Obtener todos los pedidos entregados
+// Obtener todos los pedidos pagados
 const getAllPaidOrders = async (req, res) => {
   try {
     const orders = await Orders.findAll({
       where: {
         payment_state: "Pagado",
       },
+      order: [["order_number", "DESC"]],
+    });
+    res.json(orders);
+  } catch (error) {
+    console.error("Error al obtener Pedidos:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+// Obtener todas las ventas pagadas y entregadas
+const getAllSales = async (req, res) => {
+  try {
+    const orders = await Orders.findAll({
+      where: {
+        payment_state: "Pagado",
+        delivery_state: "Entregado",
+      },
+      order: [["order_number", "DESC"]],
     });
     res.json(orders);
   } catch (error) {
@@ -148,10 +175,23 @@ async function createOrder(req, res) {
     payment_type,
     total_order,
     products,
+    directSale,
   } = req.body;
   const order_state = "Activo";
-  const delivery_state = "En proceso";
-  const payment_state = "Por pagar";
+  let delivery_state;
+  let payment_state;
+  
+  if (payment_type == "Contado") {
+    payment_state = "Pagado"
+  } else {
+    payment_state = "Por pagar"
+  }
+  
+  if (directSale == false) {
+    delivery_state = "En proceso";
+  } else {
+    delivery_state = "Entregado";
+  }
 
   try {
     // Obtener el último número de factura
@@ -177,7 +217,29 @@ async function createOrder(req, res) {
     // Actualizar las cantidades de los productos
     await updateProductQuantities(products);
 
-    res.status(201).json({ newOrder, order_detail });
+    // Actualizar las comisiones
+    await updateComissionsFromSales(new Date(order_date));
+
+    let newPay;
+
+    if (payment_type == "Contado") {
+      try {
+        newPay = await Payments.create({
+          id_order: newOrder.id_order,
+          id_client: id_client,
+          total_payment: total_order,
+          total_remaining: 0,
+        });
+      } catch (error) {
+        console.log(error);
+        handleError(res, error, "Error al crear el pedido." + error);
+      }
+    }
+    if (payment_type == 'Contado') {
+      res.status(201).json({ newOrder, order_detail, newPay });
+    } else {
+      res.status(201).json({ newOrder, order_detail });
+    }
   } catch (error) {
     handleError(res, error, "Error al crear el pedido." + error);
   }
@@ -278,6 +340,8 @@ function handleError(res, error, errorMessage) {
 // Función para anular pedidos por ID
 async function anulateOrderById(req, res) {
   const { id } = req.params;
+  const { observation } = req.body;
+  console.log(observation);
   var order_state = "Anulado";
   try {
     const order = await Orders.findByPk(id);
@@ -286,6 +350,9 @@ async function anulateOrderById(req, res) {
     }
     await order.update({
       order_state: order_state,
+      delivery_state: order_state,
+      payment_state: order_state,
+      observation_return: observation,
     });
     res.json(order);
   } catch (error) {
@@ -313,18 +380,16 @@ async function updateDeliveryStatusById(req, res) {
     }
 
     if (order.delivery_state === "En proceso") {
-      await updateOrderDeliveryStatus(order, "Por entregar");
-    } else if (order.delivery_state === "Por entregar") {
-      const newSaleData = createSaleDataFromOrder(order);
-      const { newSale, saleDetailList } = await createSale(newSaleData, order);
+      const updatedOrder = await updateOrderDeliveryStatus(
+        order,
+        "Por entregar"
+      );
 
+      res.json({ updatedOrder });
+    } else if (order.delivery_state === "Por entregar") {
       const updatedOrder = await updateOrderDeliveryStatus(order, "Entregado");
 
-      if (updatedOrdernull || updatedOrder === undefined) {
-        res.json({ newSale, saleDetailList });
-      } else {
-        res.json({ newSale, saleDetailList, updatedOrder });
-      }
+      res.json({ updatedOrder });
     }
   } catch (error) {
     res.json("Error al actualizar el pedido." + error);
@@ -343,59 +408,6 @@ async function updateOrderDeliveryStatus(order, newDeliveryStatus) {
   }
 }
 
-// Función para crear datos de venta a partir de un pedido
-function createSaleDataFromOrder(order) {
-  const delivery_date = new Date();
-  return {
-    id_order: order.id_order,
-    id_client: order.id_client,
-    id_employee: order.id_employee,
-    invoice_number: order.order_number,
-    order_date: order.order_date,
-    delivery_date: delivery_date,
-    payment_state: order.payment_state,
-    sale_state: "Activo",
-    payment_type: order.payment_type,
-    total_sale: order.total_order,
-  };
-}
-
-// Función para crear una nueva venta
-async function createSale(saleData, order) {
-  const newSale = await Sales.create(saleData);
-  const saleDetailList = await createSaleDetails(newSale, order);
-
-  return { newSale, saleDetailList };
-}
-
-// Función para crear los detalles de una venta
-async function createSaleDetails(sale, order) {
-  const orderDetail = await Order_Detail.findAll({
-    where: { id_order: order.id_order },
-  });
-
-  const saleDetailList = [];
-
-  console.log(orderDetail);
-
-  for (const product of orderDetail) {
-    const product_id = product.id_product;
-    const quantity = product.product_quantity;
-    const product_price = product.product_price;
-
-    const newSaleDetail = await Sale_Detail.create({
-      id_sale: sale.id_sale,
-      id_product: product_id,
-      quantity: quantity,
-      product_price: product_price,
-    });
-
-    saleDetailList.push(newSaleDetail);
-  }
-
-  return saleDetailList;
-}
-
 // Función para manejar errores y enviar una respuesta de error
 function handleError(res, error, errorMessage) {
   console.error(error);
@@ -412,6 +424,7 @@ module.exports = {
   getAllAnulatedOrders,
   getAllUnpaidOrders,
   getAllPaidOrders,
+  getAllSales,
   getOrderById,
   createOrder,
   anulateOrderById,
