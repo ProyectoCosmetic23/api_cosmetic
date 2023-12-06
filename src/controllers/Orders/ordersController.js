@@ -180,13 +180,13 @@ async function createOrder(req, res) {
   const order_state = "Activo";
   let delivery_state;
   let payment_state;
-  
+
   if (payment_type == "Contado") {
-    payment_state = "Pagado"
+    payment_state = "Pagado";
   } else {
-    payment_state = "Por pagar"
+    payment_state = "Por pagar";
   }
-  
+
   if (directSale == false) {
     delivery_state = "En proceso";
   } else {
@@ -235,7 +235,7 @@ async function createOrder(req, res) {
         handleError(res, error, "Error al crear el pedido." + error);
       }
     }
-    if (payment_type == 'Contado') {
+    if (payment_type == "Contado") {
       res.status(201).json({ newOrder, order_detail, newPay });
     } else {
       res.status(201).json({ newOrder, order_detail });
@@ -344,16 +344,37 @@ async function anulateOrderById(req, res) {
   console.log("msg anular: ", data);
   var order_state = "Anulado";
   try {
-    const order = await Orders.findByPk(id);
+    const order = await Orders.findByPk(id, { include: Products });
     if (!order) {
       return res.status(404).json({ error: "Pedido no encontrado." });
     }
+
+    // Actualizar el estado del pedido
     await order.update({
       order_state: order_state,
       delivery_state: order_state,
       payment_state: order_state,
-      observation_return: data.observation, // Corregido aquí
+      observation_return: data.observation,
     });
+
+    // Sumar las cantidades de los productos al anular el pedido
+    for (const product of order.products) {
+      const { id_product, product_quantity } = product;
+
+      // Obtener el producto de la base de datos
+      const existingProduct = await Products.findByPk(id_product);
+
+      // Verificar si el producto existe
+      if (existingProduct) {
+        // Actualizar la cantidad del producto sumando la cantidad del pedido
+        await Products.update(
+          { quantity: existingProduct.quantity + product_quantity },
+          { where: { id_product: id_product } }
+        );
+      } else {
+        throw new Error(`Producto no encontrado con ID ${id_product}`);
+      }
+    }
     res.json(order);
   } catch (error) {
     res.status(500).json({ error: "Error al anular el pedido." });
