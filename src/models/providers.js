@@ -52,7 +52,10 @@ const Providers = sequelize.define('providers', {
     type: DataTypes.DATE,
     allowNull: false,
     defaultValue: new NOW()
-  }
+  }, reason_anulate: {  // Nuevo campo para la razón del cambio de estado
+    type: DataTypes.STRING(100),  // Ajusta el tipo y longitud según tus necesidades
+    allowNull: true
+},
 }, {
   sequelize,
   tableName: 'providers',

@@ -109,9 +109,8 @@ async function createCustomer(req, res) {
 async function checkCedulaAvailability(req, res) {
   const { cedula } = req.query;
   try {
-    const existingCedula = await Client.findOne({
-      where: { nit_or_id_client: cedula },
-    });
+    const existingCedula = await Client.findOne({where: { nit_or_id_client: cedula }});
+    res.json(!existingCedula);
   } catch (error) {
     console.error("Error al verificar la cédula:", error);
     res.status(500).json({ error: "Error al verificar la cédula." });
