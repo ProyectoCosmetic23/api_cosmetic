@@ -98,6 +98,7 @@ async function createRole(req, res) {
       name_role: name_role,
       state_role: state_role,
       modules_role: modules_string,
+      observation_status: ""
     });
     res.status(201).json({ nuevo_rol });
   } catch (error) {
