@@ -264,7 +264,54 @@ async function getProductByIdOrder(req, res) {
     } catch (error) {
       res.status(500).json({ error: "Error al obtener el producto." });
     }
+    
 }
+
+async function retireProduct(req, res) {
+  const { id } = req.params;
+  const { return_quantity, return_reason, return_value, checkboxChecked } = req.body;
+
+  try {
+    const product = await Product.findByPk(id);
+
+    if (!product) {
+      return res.status(404).json({ error: 'Producto no encontrado' });
+    }
+
+    if (checkboxChecked) {
+      // Hacer algo si el checkbox está marcado (devolver el producto)
+      await DefectiveProducts.create({
+        id_product: product.id_product,
+        return_reason,
+        return_date: new Date(),
+        return_quantity,
+        return_value,
+      });
+
+      product.quantity -= return_quantity;
+      // Actualizar otros detalles según tus necesidades
+
+      await product.save();
+
+      res.json({ msg: 'Producto dado de baja exitosamente' });
+    } else {
+      // Hacer algo si el checkbox no está marcado (devolver el producto al stock)
+      product.quantity += return_quantity; // Incrementar la cantidad 
+      await product.save();
+
+      res.json({ msg: 'Producto devuelto al stock exitosamente' });
+    }
+  } catch (error) {
+    console.error('Error al manejar la devolución del producto:', error);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+}
+
+
+
+
+
+
 
 
 // Exportar las funciones del módulo
@@ -275,4 +322,5 @@ module.exports = {
   createNewSaleAndCancelOldSale,
   getOrderById,
   getProductByIdOrder,
+  retireProduct
 };

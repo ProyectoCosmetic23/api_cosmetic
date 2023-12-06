@@ -18,7 +18,7 @@ async function employeeByCard(req, res) {
       }
 
       // Retorna el correo del empleado si se encuentra
-      res.json({ email: employee.email, id_employee: employee.id_employee }); 
+      res.json({ email: employee.email, id_employee: employee.id_employee, name_employee: employee.name_employee}); 
     } else {
       return res.status(400).json({ message: 'Falta el ID de la cédula en la solicitud.' });
     }
@@ -67,30 +67,22 @@ async function createUser(req, res) {
   const { id_role, id_employee, username, email, password, observation_user } =
     req.body;
 
-  // // Validar la existencia de los campos requeridos
-  // if (!id_role || !id_employee || !username || !email || !password) {
-  //   return res
-  //     .status(400)
-  //     .json({ error: "Todos los campos son obligatorios." });
-  // }
+  // Validar la existencia de los campos requeridos
+  if (!id_role || !id_employee || !username || !email || !password) {
+    return res
+      .status(400)
+      .json({ error: "Todos los campos son obligatorios." });
+  }
 
   // // Validar la longitud de la contraseña
   // if (password.length <= 6) {
-  //   return res
-  //     .status(400)
-  //     .json({ error: "La contraseña debe tener al menos 7 caracteres." });
+  //   return res.status(400).json({ error: "La contraseña debe tener al menos 7 caracteres." });
   // }
 
   // // Validar que la contraseña contenga al menos una mayúscula, un número y un carácter especial
-  // const passwordRegex =
-  //   /^(?=.[A-Z])(?=.\d)(?=.[@$!%?&])[A-Za-z\d@$!%*?&]+$/;
+  // const passwordRegex =/^(?=.[A-Z])(?=.\d)(?=.[@$!%?&])[A-Za-z\d@$!%*?&]+$/;
   // if (!passwordRegex.test(password)) {
-  //   return res
-  //     .status(400)
-  //     .json({
-  //       error:
-  //         "La contraseña debe contener al menos una mayúscula, un número y un carácter especial.",
-  //     });
+  //   return res.status(400).json({error:"La contraseña debe contener al menos una mayúscula, un número y un carácter especial.",});
   // }
 
   // // Validar el formato del correo electrónico
@@ -107,6 +99,7 @@ async function createUser(req, res) {
     // if (existingEmail) {
     //   return res.status(400).json({ error: "El correo ya está en uso." });
     // }
+    
 
     const saltRounds = 10;
     const salt = bcrypt.genSaltSync(saltRounds);
@@ -135,11 +128,21 @@ async function createUser(req, res) {
 async function checkEmailAvailability(req, res) {
   const { email } = req.query;
   try {
-    const existingEmail = await Users.findOne({ where: { email } });
+    const existingEmail = await Users.findOne({ where: { email:email } });
     res.json(!existingEmail);
   } catch (error) {
     console.error("Error al verificar el correo:", error);
     res.status(500).json({ error: "Error al verificar el correo." });
+  }
+}
+async function checkEmployeeAvailability(req, res) {
+  const {id_employee} = req.query;
+  try {
+    const existingEmployee = await Users.findOne({where: { id_employee: id_employee }});
+    res.json(!existingEmployee);
+  } catch (error) {
+    console.error("Error al verificar la existencia del usuario:", error);
+    res.status(500).json({ error: "Error al verificar la existencia del usuario." });
   }
 }
 
@@ -155,21 +158,21 @@ async function updateUser(req, res) {
       return res.status(404).json({ error: "Usuario no encontrado." });
     }
 
-    // Validar el formato del correo electrónico
-    const emailRegex = /^[A-Za-z0-9._%-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$/;
-    if (email && !emailRegex.test(email)) {
-      return res
-        .status(400)
-        .json({ error: "El correo electrónico no es válido." });
-    }
+    // // Validar el formato del correo electrónico
+    // const emailRegex = /^[A-Za-z0-9._%-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$/;
+    // if (email && !emailRegex.test(email)) {
+    //   return res
+    //     .status(400)
+    //     .json({ error: "El correo electrónico no es válido." });
+    // }
 
-    // Validar si el correo ya está en uso por otro usuario
-    const existingUser = await Users.findOne({ where: { email } });
-    if (existingUser && existingUser.id !== id) {
-      return res
-        .status(400)
-        .json({ error: "El correo ya está en uso por otro usuario." });
-    }
+    // // Validar si el correo ya está en uso por otro usuario
+    // const existingUser = await Users.findOne({ where: { email } });
+    // if (existingUser && existingUser.id !== id) {
+    //   return res
+    //     .status(400)
+    //     .json({ error: "El correo ya está en uso por otro usuario." });
+    // }
 
     await user.update({
       id_role,
@@ -386,5 +389,6 @@ module.exports = {
   forgotPassword,
   changePassword,
   checkEmailAvailability,
-  employeeByCard
+  employeeByCard,
+  checkEmployeeAvailability
 };

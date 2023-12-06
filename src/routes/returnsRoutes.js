@@ -13,4 +13,7 @@ router.get('/returns/:id', returnsController.getOrderById )
 //Obtener detalle de pedido
 router.get('/returns/productByIdOrder/:id', returnsController.getProductByIdOrder)
 
+//devolver producto
+router.put('/returns/retire/:id', returnsController.retireProduct);
+
 module.exports = router;
