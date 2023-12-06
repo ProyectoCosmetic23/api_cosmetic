@@ -340,8 +340,8 @@ function handleError(res, error, errorMessage) {
 // Función para anular pedidos por ID
 async function anulateOrderById(req, res) {
   const { id } = req.params;
-  const { observation } = req.body;
-  console.log("msg anular: ", observation.observation);
+  const data = req.body;
+  console.log("msg anular: ", data.observation);
   var order_state = "Anulado";
   try {
     const order = await Orders.findByPk(id);
