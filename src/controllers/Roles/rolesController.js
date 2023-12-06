@@ -47,12 +47,14 @@ async function getRoleById(req, res) {
     var name_role = role.name_role;
     var state_role = role.state_role;
     var modules_string = role.modules_role;
+    var observation_status = role.observation_status;
     var modules_array = modules_string.split(", ");
     res.json({
       id_role: id_role,
       name_role: name_role,
       state_role: state_role,
       modules_role: modules_array,
+      observation_status: observation_status
     });
   } catch (error) {
     res.status(500).json({ error: "Error al obtener el rol." + error });
