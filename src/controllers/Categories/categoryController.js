@@ -108,10 +108,10 @@ const categoryPut = async (req, res, next) => {
       throw new Error("La observación no puede tener más de 100 caracteres");
     }
     
-    const categoryExisting = await Category.findOne({ where: { name_category } });
-    if (categoryExisting && categoryExisting.id !== id) {
-      throw new Error("Ya existe una categoría con ese nombre");
-    }
+    // const categoryExisting = await Category.findOne({ where: { name_category } });
+    // if (categoryExisting && categoryExisting.id !== id) {
+    //   throw new Error("Ya existe una categoría con ese nombre");
+    // }
 
     if (id) {
       // Buscar la categoría por su ID
