@@ -79,6 +79,8 @@ async function createUser(req, res) {
   //   return res.status(400).json({ error: "La contraseña debe tener al menos 7 caracteres." });
   // }
 
+
+
   // // Validar que la contraseña contenga al menos una mayúscula, un número y un carácter especial
   // const passwordRegex =/^(?=.[A-Z])(?=.\d)(?=.[@$!%?&])[A-Za-z\d@$!%*?&]+$/;
   // if (!passwordRegex.test(password)) {

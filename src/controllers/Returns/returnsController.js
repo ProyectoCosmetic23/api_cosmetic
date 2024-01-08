@@ -307,7 +307,47 @@ async function retireProduct(req, res) {
   }
 }
 
+// Función para anular pedidos por ID en devolucion
+async function anulateOrderByIdR(req, res) {
+  const { id } = req.params;
+  var order_state = "Anulado";
+  try {
+    const order = await Orders.findByPk(id, { include: Products });
+    if (!order) {
+      return res.status(404).json({ error: "Pedido no encontrado." });
+    }
 
+    // Actualizar el estado del pedido
+    await order.update({
+      order_state: order_state,
+      delivery_state: order_state,
+      payment_state: order_state,
+      observation_return: order_state,
+    });
+
+    // Sumar las cantidades de los productos al anular el pedido
+    for (const product of order.products) {
+      const { id_product, product_quantity } = product;
+
+      // Obtener el producto de la base de datos
+      const existingProduct = await Products.findByPk(id_product);
+
+      // Verificar si el producto existe
+      if (existingProduct) {
+        // Actualizar la cantidad del producto sumando la cantidad del pedido
+        await Products.update(
+          { quantity: existingProduct.quantity + product_quantity },
+          { where: { id_product: id_product } }
+        );
+      } else {
+        throw new Error(`Producto no encontrado con ID ${id_product}`);
+      }
+    }
+    res.json(order);
+  } catch (error) {
+    res.status(500).json({ error: "Error al anular el pedido." });
+  }
+}
 
 
 
@@ -322,5 +362,6 @@ module.exports = {
   createNewSaleAndCancelOldSale,
   getOrderById,
   getProductByIdOrder,
-  retireProduct
+  retireProduct,
+  anulateOrderByIdR
 };

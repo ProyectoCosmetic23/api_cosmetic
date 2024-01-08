@@ -44,8 +44,13 @@ const Orders = sequelize.define('orders', {
   total_order: {
     type: DataTypes.DECIMAL,
     allowNull: true
-  }
-}, {
+  },
+  observation_return: {
+    type: DataTypes.STRING(500),
+    allowNull: true,
+  },
+},
+ {
   sequelize,
   tableName: 'orders',
   schema: 'public',
