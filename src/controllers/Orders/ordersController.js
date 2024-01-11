@@ -420,9 +420,19 @@ async function updateDeliveryStatusById(req, res) {
 // Función para actualizar el estado de entrega del pedido
 async function updateOrderDeliveryStatus(order, newDeliveryStatus) {
   try {
-    const updatedOrder = await order.update({
-      delivery_state: newDeliveryStatus,
-    });
+    let updatedOrder;
+
+    if (newDeliveryStatus === "Entregado") {
+      updatedOrder = await order.update({
+        delivery_state: newDeliveryStatus,
+        delivery_date: new Date(), // Agrega la fecha actual
+      });
+    } else {
+      updatedOrder = await order.update({
+        delivery_state: newDeliveryStatus,
+      });
+    }
+
     return updatedOrder;
   } catch (error) {
     throw new Error("Error al actualizar el estado del pedido: " + error);

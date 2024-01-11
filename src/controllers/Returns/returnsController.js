@@ -4,6 +4,7 @@ const Defective_Products = require("../../models/defective_products");
 const Orders = require("../../models/orders");
 const Order_Detail = require("../../models/order_detail");
 
+
 // Obtener un pedido por ID
 async function getOrderById(req, res) {
   const { id } = req.params;
@@ -228,23 +229,6 @@ const createNewSaleAndCancelOldSale = async (req, res) => {
     return res.status(500).json({ error: "Error al crear la venta." });
   }
 };
-
-// async function getProductByIdOrder(req, res) {
-//   const { id } = req.params;
-
-//   try {
-//     const products = await Order_Detail.where({ id_order: id });
-//     console.log("products");
-//     console.log(products);
-//     if (!products) {
-//       return res.status(404).json({ error: "Producto no encontrado." });
-//     }
-//     res.json(products);
-//   } catch (error) {
-//     res.status(500).json({ error: "Error al obtener el producto." });
-//   }
-// }
-
 
 async function getProductByIdOrder(req, res) {
     const { id } = req.params;

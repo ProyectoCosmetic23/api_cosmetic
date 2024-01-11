@@ -27,6 +27,10 @@ const Orders = sequelize.define(
       type: DataTypes.DATE,
       allowNull: false,
     },
+    delivery_date: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
     payment_type: {
       type: DataTypes.STRING(100),
       allowNull: false,
