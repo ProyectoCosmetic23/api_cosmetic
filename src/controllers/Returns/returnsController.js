@@ -25,7 +25,7 @@ async function getOrderById(req, res) {
 // Función para obtener el último número de factura de Sales
 async function getLastInvoiceNumber() {
   try {
-    const lastSale = await Sales.findOne({
+    const lastSale = await Orders.findOne({
       order: [["invoice_number", "DESC"]],
     });
 

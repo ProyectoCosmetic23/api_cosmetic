@@ -18,6 +18,8 @@ router.get('/paid_orders', validarJWT, ordersController.getAllPaidOrders);
 
 router.get('/completed_orders', validarJWT, ordersController.getAllSales);
 
+router.get('/returned_orders', validarJWT, ordersController.getAllReturnOrders);
+
 router.get('/orders/:id', validarJWT, ordersController.getOrderById);
 
 router.post('/orders', validarJWT, ordersController.createOrder);
