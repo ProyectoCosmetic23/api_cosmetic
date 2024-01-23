@@ -9,14 +9,6 @@ const Returns = sequelize.define('returns', {
     allowNull: false,
     primaryKey: true
   },
-  id_sale: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    references: {
-      model: 'sales',
-      key: 'id_sale'
-    }
-  },
   id_product: {
     type: DataTypes.INTEGER,
     allowNull: false,
