@@ -97,10 +97,10 @@ const processReturn = async (req, res) => {
         id_order,
         id_product,
         return_date,
-        return_quantity,
-        return_value,
-        return_reason,
-        return_type,
+        return_quantity: product_quantity,
+        return_value: selling_price,
+        return_reason: returnReason,
+        return_type: retire,
       });
 
       const registeredReturn = await registerReturn();
@@ -112,7 +112,7 @@ const processReturn = async (req, res) => {
         return res.status(404).json({ error: "Producto no encontrado." });
       }
 
-      const newQuantity = returnedProduct.quantity + return_quantity;
+      const newQuantity = returnedProduct.quantity + product_quantity;
       await Products.update(
         { quantity: newQuantity },
         { where: { id_product } }
