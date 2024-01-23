@@ -408,7 +408,7 @@ async function anulateOrderById(req, res) {
     }
     res.json(order);
   } catch (error) {
-    res.status(500).json({ error: "Error al anular el pedido." });
+    res.status(500).json({ error: "Error al anular el pedido." + error });
   }
 }
 
