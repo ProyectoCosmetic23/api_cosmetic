@@ -215,17 +215,17 @@ async function createOrder(req, res) {
     const newInvoiceNumber = lastInvoiceNumber + 1;
 
     // Crear una nueva orden
-    const newOrder = await createNewOrder(
-      id_client,
-      id_employee,
-      newInvoiceNumber,
-      order_date,
-      payment_type,
-      order_state,
-      delivery_state,
-      payment_state,
-      total_order
-    );
+      const newOrder = await createNewOrder(
+        id_client,
+        id_employee,
+        newInvoiceNumber,
+        order_date,
+        payment_type,
+        order_state,
+        delivery_state,
+        payment_state,
+        total_order
+      );
 
     // Crear el detalle de la orden
     const order_detail = await createOrderDetail(newOrder.id_order, products);
@@ -303,17 +303,32 @@ async function createNewOrder(
   total_order
 ) {
   try {
-    return await Orders.create({
-      id_client: id_client,
-      id_employee: id_employee,
-      order_number: order_number,
-      order_date: order_date,
-      payment_type: payment_type,
-      order_state: order_state,
-      delivery_state: delivery_state,
-      payment_state: payment_state,
-      total_order: total_order,
-    });
+    if (delivery_state == "En Proceso") {
+      return await Orders.create({
+        id_client: id_client,
+        id_employee: id_employee,
+        order_number: order_number,
+        order_date: order_date,
+        payment_type: payment_type,
+        order_state: order_state,
+        delivery_state: delivery_state,
+        payment_state: payment_state,
+        total_order: total_order,
+      });
+    } else if (delivery_state == "Entregado") {
+      return await Orders.create({
+        id_client: id_client,
+        id_employee: id_employee,
+        order_number: order_number,
+        order_date: order_date,
+        payment_type: payment_type,
+        order_state: order_state,
+        delivery_state: delivery_state,
+        delivery_date: order_date,
+        payment_state: payment_state,
+        total_order: total_order,
+      });
+    }
   } catch (error) {
     throw new Error("Error al crear la nueva orden: " + error.message);
   }

@@ -39,6 +39,11 @@ const Orders = sequelize.define(
       type: DataTypes.STRING(15),
       allowNull: true,
     },
+    return_state: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+    },
     delivery_state: {
       type: DataTypes.STRING(15),
       allowNull: true,

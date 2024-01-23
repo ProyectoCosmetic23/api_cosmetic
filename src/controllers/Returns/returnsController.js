@@ -4,7 +4,6 @@ const Defective_Products = require("../../models/defective_products");
 const Orders = require("../../models/orders");
 const Order_Detail = require("../../models/order_detail");
 
-
 // Obtener un pedido por ID
 async function getOrderById(req, res) {
   const { id } = req.params;
@@ -40,94 +39,94 @@ async function getLastInvoiceNumber() {
   }
 }
 
-// Obtener todas las devoluciones
-const getAllReturns = async (req, res) => {
-  try {
-    const returns = await Returns.findAll();
-    if (returns.length === 0) {
-      return res
-        .status(404)
-        .json({ message: "No hay devoluciones registradas" });
-    }
-    res.json(returns);
-  } catch (error) {
-    console.error("Error al obtener Devoluciones:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-};
-
-// Obtener una devolución por ID
-async function getReturnById(req, res) {
-  const { id } = req.params;
-  try {
-    const returnData = await Returns.findByPk(id);
-    if (!returnData) {
-      return res.status(404).json({ error: "Devolución no encontrada." });
-    }
-    res.json({ returnData });
-  } catch (error) {
-    res.status(500).json({ error: "Error al obtener la devolución." });
-  }
-}
-
 // Función para procesar la devolución de productos
 const processReturn = async (req, res) => {
+  // Validación de datos de entrada
   const {
     id_order,
-    id_returned_product,
+    id_product,
     return_quantity,
     return_product_value,
     return_reason,
-    damaged_product,
+    return_type,
   } = req.body;
+
+  if (
+    !id_order ||
+    !id_product ||
+    !return_quantity ||
+    !return_product_value ||
+    !return_reason ||
+    !return_type
+  ) {
+    return res
+      .status(400)
+      .json({ error: "Faltan datos obligatorios en la solicitud." });
+  }
 
   const return_date = new Date();
   const return_value = return_quantity * return_product_value;
 
-  try {
-    async function register_return() {
-      const returnData = {
-        id_sale: id_sale,
-        id_product: id_returned_product,
-        return_date: return_date,
-        return_quantity: return_quantity,
-        return_value: return_value,
-        return_reason: return_reason,
-      };
+  // Función para registrar la devolución en la base de datos
+  async function registerReturn() {
+    const returnData = {
+      id_order,
+      id_product,
+      return_date,
+      return_quantity,
+      return_value,
+      return_reason,
+      return_type,
+    };
 
-      const newReturn = await Returns.create(returnData);
-      return newReturn;
+    const newReturn = await Returns.create(returnData);
+    if (!newReturn) {
+      return res
+        .status(500)
+        .json({ error: "Error al registrar la devolución." });
     }
 
-    if (damaged_product) {
-      const defective_product = await Defective_Products.create({
-        id_product: id_returned_product,
-        return_reason: return_reason,
-        return_date: return_date,
-        return_quantity: return_quantity,
-        return_value: return_value,
+    return newReturn;
+  }
+
+  try {
+    if (return_type == "Dado de Baja") {
+      // Procesar devolución para productos defectuosos
+      const defectiveProduct = await Defective_Products.create({
+        id_order,
+        id_product,
+        return_date,
+        return_quantity,
+        return_value,
+        return_reason,
+        return_type,
       });
-      const registeredReturn = await register_return();
-      res.json({ defective_product, registeredReturn });
-    } else {
-      const returned_product = await Products.findByPk(id_returned_product);
-      if (!returned_product) {
+
+      const registeredReturn = await registerReturn();
+      res.json({ defectiveProduct, registeredReturn });
+    } else if (return_type == "Devuelto al Inventario") {
+      // Procesar devolución al inventario
+      const returnedProduct = await Products.findByPk(id_product);
+      if (!returnedProduct) {
         return res.status(404).json({ error: "Producto no encontrado." });
       }
-      const newQuantity = returned_product.quantity + return_quantity;
+
+      const newQuantity = returnedProduct.quantity + return_quantity;
       await Products.update(
         { quantity: newQuantity },
-        { where: { id_product: id_returned_product } }
+        { where: { id_product } }
       );
-      const registeredReturn = await register_return();
+
+      const registeredReturn = await registerReturn();
       res.json({
         "El stock del producto fue actualizado con éxito": registeredReturn,
       });
     }
-  } catch (err) {
-    // Manejar errores
-    console.error(err);
-    return res.status(500).json({ error: "Ocurrió un error inesperado." });
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ error: "Ocurrió un error inesperado." + error });
   }
 };
 
@@ -231,30 +230,26 @@ const createNewSaleAndCancelOldSale = async (req, res) => {
 };
 
 async function getProductByIdOrder(req, res) {
-    const { id } = req.params;
-  
-    try {
-      const products = await Order_Detail.findByPk(id);
-      console.log("products");
-      console.log(products);
-      if (!products) {
-        return res.status(404).json({ error: "Producto no encontrado." });
-      }
+  const { id } = req.params;
 
-      const nombreProduc = await Products.findByPk(products.id_product);
-      
-      
-      res.json([nombreProduc]);
-    } catch (error) {
-      res.status(500).json({ error: "Error al obtener el producto." });
+  try {
+    const products = await Order_Detail.findByPk(id);
+    console.log("products");
+    console.log(products);
+    if (!products) {
+      return res.status(404).json({ error: "Producto no encontrado." });
     }
-}
 
+    const nombreProduc = await Products.findByPk(products.id_product);
+
+    res.json([nombreProduc]);
+  } catch (error) {
+    res.status(500).json({ error: "Error al obtener el producto." });
+  }
+}
 
 // Exportar las funciones del módulo
 module.exports = {
-  getAllReturns,
-  getReturnById,
   processReturn,
   createNewSaleAndCancelOldSale,
   getOrderById,
