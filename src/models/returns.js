@@ -32,6 +32,10 @@ const Returns = sequelize.define('returns', {
   return_reason: {
     type: DataTypes.STRING(250),
     allowNull: false
+  },
+  return_type: {
+    type: DataTypes.STRING(250),
+    allowNull: false
   }
 }, {
   sequelize,
