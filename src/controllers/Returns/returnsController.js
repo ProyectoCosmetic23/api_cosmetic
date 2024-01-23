@@ -45,19 +45,21 @@ const processReturn = async (req, res) => {
   const {
     id_order,
     id_product,
-    return_quantity,
-    return_product_value,
-    return_reason,
-    return_type,
+    product_quantity,
+    retire,
+    returnReason,
+    selling_price,
+    subtotal,
   } = req.body;
 
   if (
     !id_order ||
     !id_product ||
-    !return_quantity ||
-    !return_product_value ||
-    !return_reason ||
-    !return_type
+    !product_quantity ||
+    !selling_price ||
+    !returnReason ||
+    !retire ||
+    !subtotal
   ) {
     return res
       .status(400)
@@ -65,7 +67,6 @@ const processReturn = async (req, res) => {
   }
 
   const return_date = new Date();
-  const return_value = return_quantity * return_product_value;
 
   // Función para registrar la devolución en la base de datos
   async function registerReturn() {
@@ -73,10 +74,10 @@ const processReturn = async (req, res) => {
       id_order,
       id_product,
       return_date,
-      return_quantity,
-      return_value,
-      return_reason,
-      return_type,
+      return_quantity: product_quantity,
+      return_value: selling_price,
+      return_reason: returnReason,
+      return_type: retire,
     };
 
     const newReturn = await Returns.create(returnData);
@@ -90,7 +91,7 @@ const processReturn = async (req, res) => {
   }
 
   try {
-    if (return_type == "Dado de Baja") {
+    if (retire == "Dado de Baja") {
       // Procesar devolución para productos defectuosos
       const defectiveProduct = await Defective_Products.create({
         id_order,
@@ -104,7 +105,7 @@ const processReturn = async (req, res) => {
 
       const registeredReturn = await registerReturn();
       res.json({ defectiveProduct, registeredReturn });
-    } else if (return_type == "Devuelto al Inventario") {
+    } else if (retire == "Devuelto al Inventario") {
       // Procesar devolución al inventario
       const returnedProduct = await Products.findByPk(id_product);
       if (!returnedProduct) {
