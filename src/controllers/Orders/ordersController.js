@@ -371,7 +371,7 @@ function handleError(res, error, errorMessage) {
 // Función para anular pedidos por ID
 async function anulateOrderById(req, res) {
   const { id } = req.params;
-  const data = req.body;
+  const { data } = req.body;
   console.log("msg anular: ", data);
   var order_state = "Anulado";
   try {
