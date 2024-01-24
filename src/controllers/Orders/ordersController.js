@@ -391,7 +391,7 @@ async function anulateOrderById(req, res) {
 
     const products = await Order_Detail.find({
       where: {
-        id_order: id_order,
+        id_order: id,
       },
     });
 
