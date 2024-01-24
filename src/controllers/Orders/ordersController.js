@@ -407,7 +407,7 @@ async function anulateOrderById(req, res) {
       const existingProduct = await Products.findByPk(id_product);
 
       // Verificar si el producto existe
-      if (existingProduct) {
+      if (existingProduct && anulationType == false) {
         // Actualizar la cantidad del producto sumando la cantidad del pedido
         await Products.update(
           { quantity: existingProduct.quantity + product_quantity },
