@@ -389,7 +389,7 @@ async function anulateOrderById(req, res) {
       observation_return: observation,
     });
 
-    const products = await Order_Details.find({
+    const products = await Order_Detail.find({
       where: {
         id_order: id_order,
       },
