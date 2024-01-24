@@ -215,17 +215,17 @@ async function createOrder(req, res) {
     const newInvoiceNumber = lastInvoiceNumber + 1;
 
     // Crear una nueva orden
-      const newOrder = await createNewOrder(
-        id_client,
-        id_employee,
-        newInvoiceNumber,
-        order_date,
-        payment_type,
-        order_state,
-        delivery_state,
-        payment_state,
-        total_order
-      );
+    const newOrder = await createNewOrder(
+      id_client,
+      id_employee,
+      newInvoiceNumber,
+      order_date,
+      payment_type,
+      order_state,
+      delivery_state,
+      payment_state,
+      total_order
+    );
 
     // Crear el detalle de la orden
     const order_detail = await createOrderDetail(newOrder.id_order, products);
@@ -371,11 +371,12 @@ function handleError(res, error, errorMessage) {
 // Función para anular pedidos por ID
 async function anulateOrderById(req, res) {
   const { id } = req.params;
-  const { data } = req.body;
-  console.log("msg anular: ", data);
+  console.log(req.body);
+  const { observation } = req.body;
+  console.log("msg anular: ", observation);
   var order_state = "Anulado";
   try {
-    const order = await Orders.findByPk(id, { include: Products });
+    const order = await Orders.findByPk(id);
     if (!order) {
       return res.status(404).json({ error: "Pedido no encontrado." });
     }
@@ -385,11 +386,17 @@ async function anulateOrderById(req, res) {
       order_state: order_state,
       delivery_state: order_state,
       payment_state: order_state,
-      observation_return: data.observation,
+      observation_return: observation,
+    });
+
+    const products = await Order_Details.find({
+      where: {
+        id_order: id_order,
+      },
     });
 
     // Sumar las cantidades de los productos al anular el pedido
-    for (const product of order.products) {
+    for (const product of products) {
       const { id_product, product_quantity } = product;
 
       // Obtener el producto de la base de datos
