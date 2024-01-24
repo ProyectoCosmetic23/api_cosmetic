@@ -21,21 +21,16 @@ async function getOrderById(req, res) {
   }
 }
 
-// Función para obtener el último número de factura de Sales
-async function getLastInvoiceNumber() {
+// Obtener un pedido por ID
+async function getReturnById(req, res) {
+  const { id } = req.params;
   try {
-    const lastSale = await Orders.findOne({
-      order: [["invoice_number", "DESC"]],
+    const return_detail = await Returns.findAll({
+      where: { id_order: id },
     });
-
-    if (lastSale) {
-      return lastSale.invoice_number;
-    } else {
-      return 0; // Si no hay ventas registradas, empieza desde 1.
-    }
-  } catch (err) {
-    console.error(err);
-    throw err;
+    res.json({ return_detail });
+  } catch (error) {
+    res.status(500).json({ error: "Error al obtener el pedido." });
   }
 }
 
@@ -131,128 +126,11 @@ const processReturn = async (req, res) => {
   }
 };
 
-// Función para crear una nueva venta y anular la venta existente
-const createNewSaleAndCancelOldSale = async (req, res) => {
-  const {
-    id_sale,
-    id_order,
-    id_client,
-    id_employee,
-    order_date,
-    payment_state,
-    payment_type,
-    products,
-    observation_return,
-  } = req.body;
 
-  const delivery_date = new Date();
-  const sale_state = "Activo";
-
-  try {
-    const sales = await Sales.findByPk(id_sale);
-
-    if (!sales) {
-      return res.status(404).json({ error: "Venta no encontrada." });
-    }
-
-    const lastInvoiceNumber = await getLastInvoiceNumber();
-
-    if (isNaN(lastInvoiceNumber)) {
-      return res
-        .status(500)
-        .json({ error: "No se pudo obtener el número de factura." });
-    }
-
-    const newInvoiceNumber = lastInvoiceNumber + 1;
-
-    const new_sale = await Sales.create({
-      id_order,
-      id_client,
-      id_employee,
-      invoice_number: newInvoiceNumber,
-      order_date,
-      delivery_date,
-      sale_state,
-      payment_state,
-      payment_type,
-      total_sale: 0,
-    });
-
-    var sale_detail = [];
-    var total_sale = 0;
-
-    for (var product of products) {
-      if (isNaN(product.product_price) || isNaN(product.quantity)) {
-        return res.status(400).json({
-          error: "Los productos deben tener precios y cantidades válidos.",
-        });
-      }
-
-      console.log(product);
-
-      const subtotal = product.product_price * product.quantity;
-      total_sale += subtotal;
-      const id_sale_detail = new_sale.id_sale;
-      const id_product = product.id_product;
-      const product_quantity = product.quantity;
-      const product_price = product.product_price;
-
-      const sale_detail_prod = await Sale_Detail.create({
-        id_sale: id_sale_detail,
-        id_product: id_product,
-        quantity: product_quantity,
-        product_price: product_price,
-      });
-
-      console.log(sale_detail_prod);
-
-      sale_detail.push(sale_detail_prod);
-    }
-
-    const new_state = "Anulada";
-    const [updatedRows] = await Sales.update(
-      { sale_state: new_state, observation_return: observation_return },
-      { where: { id_sale } }
-    );
-
-    if (updatedRows === 0) {
-      return res.status(500).json({ error: "Error al anular la venta." });
-    }
-
-    res.json({
-      newSale: new_sale,
-      saleDetail: sale_detail,
-      totalSale: total_sale,
-    });
-  } catch (err) {
-    console.error("Error al crear la venta:", err);
-    return res.status(500).json({ error: "Error al crear la venta." });
-  }
-};
-
-async function getProductByIdOrder(req, res) {
-  const { id } = req.params;
-
-  try {
-    const products = await Order_Detail.findByPk(id);
-    console.log("products");
-    console.log(products);
-    if (!products) {
-      return res.status(404).json({ error: "Producto no encontrado." });
-    }
-
-    const nombreProduc = await Products.findByPk(products.id_product);
-
-    res.json([nombreProduc]);
-  } catch (error) {
-    res.status(500).json({ error: "Error al obtener el producto." });
-  }
-}
 
 // Exportar las funciones del módulo
 module.exports = {
   processReturn,
-  createNewSaleAndCancelOldSale,
+  getReturnById,
   getOrderById,
-  getProductByIdOrder,
 };

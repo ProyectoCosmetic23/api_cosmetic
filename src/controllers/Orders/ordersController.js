@@ -86,6 +86,7 @@ const getAllAnulatedOrders = async (req, res) => {
     const orders = await Orders.findAll({
       where: {
         order_state: "Anulado",
+        return_state: false,
       },
       order: [["order_number", "DESC"]],
     });
@@ -374,6 +375,8 @@ async function anulateOrderById(req, res) {
   console.log(req.body);
   const { observation, anulationType } = req.body;
   console.log("msg anular: ", observation);
+  console.log("estado de return: ", anulationType);
+
   var order_state = "Anulado";
   try {
     const order = await Orders.findByPk(id);
