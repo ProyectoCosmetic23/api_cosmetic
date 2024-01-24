@@ -372,7 +372,7 @@ function handleError(res, error, errorMessage) {
 async function anulateOrderById(req, res) {
   const { id } = req.params;
   console.log(req.body);
-  const { observation } = req.body;
+  const { observation, anulationType } = req.body;
   console.log("msg anular: ", observation);
   var order_state = "Anulado";
   try {
@@ -387,6 +387,7 @@ async function anulateOrderById(req, res) {
       delivery_state: order_state,
       payment_state: order_state,
       observation_return: observation,
+      return_state: anulationType
     });
 
     const products = await Order_Detail.findAll({
