@@ -193,6 +193,7 @@ async function createOrder(req, res) {
     total_order,
     products,
     directSale,
+    isReturn,
   } = req.body;
   const order_state = "Activo";
   let delivery_state;
@@ -232,7 +233,7 @@ async function createOrder(req, res) {
     const order_detail = await createOrderDetail(newOrder.id_order, products);
 
     // Actualizar las cantidades de los productos
-    await updateProductQuantities(products);
+    await updateProductQuantities(products, isReturn);
 
     // Actualizar las comisiones
     await updateComissionsFromSales(new Date(order_date));
@@ -263,31 +264,33 @@ async function createOrder(req, res) {
 }
 
 // Función para actualizar las cantidades de los productos
-async function updateProductQuantities(products) {
-  try {
-    for (const product of products) {
-      const { id_product, product_quantity } = product;
+async function updateProductQuantities(products, isReturn) {
+  if (isReturn) {
+    try {
+      for (const product of products) {
+        const { id_product, product_quantity } = product;
 
-      // Obtener el producto de la base de datos
-      const existingProduct = await Products.findByPk(id_product);
+        // Obtener el producto de la base de datos
+        const existingProduct = await Products.findByPk(id_product);
 
-      // Verificar si el producto existe y la cantidad es suficiente
-      if (existingProduct && existingProduct.quantity >= product_quantity) {
-        // Actualizar la cantidad del producto
-        await Products.update(
-          { quantity: existingProduct.quantity - product_quantity },
-          { where: { id_product: id_product } }
-        );
-      } else {
-        throw new Error(
-          `Producto no encontrado o cantidad insuficiente para el producto con ID ${id_product}`
-        );
+        // Verificar si el producto existe y la cantidad es suficiente
+        if (existingProduct && existingProduct.quantity >= product_quantity) {
+          // Actualizar la cantidad del producto
+          await Products.update(
+            { quantity: existingProduct.quantity - product_quantity },
+            { where: { id_product: id_product } }
+          );
+        } else {
+          throw new Error(
+            `Producto no encontrado o cantidad insuficiente para el producto con ID ${id_product}`
+          );
+        }
       }
+    } catch (error) {
+      throw new Error(
+        "Error al actualizar las cantidades de los productos: " + error.message
+      );
     }
-  } catch (error) {
-    throw new Error(
-      "Error al actualizar las cantidades de los productos: " + error.message
-    );
   }
 }
 
@@ -390,7 +393,7 @@ async function anulateOrderById(req, res) {
       delivery_state: order_state,
       payment_state: order_state,
       observation_return: observation,
-      return_state: anulationType
+      return_state: anulationType,
     });
 
     const products = await Order_Detail.findAll({
