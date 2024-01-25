@@ -382,7 +382,7 @@ async function anulateOrderById(req, res) {
 
   var order_state = "Anulado";
   try {
-    const order = await Orders.findByPk(id);
+    const order = await Orders.findByPk(id, { include: Products });
     if (!order) {
       return res.status(404).json({ error: "Pedido no encontrado." });
     }
