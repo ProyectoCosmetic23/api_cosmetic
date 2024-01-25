@@ -7,15 +7,9 @@ const { validarJWT } = require('../middlewares/validar-jwt');
 router.post('/processReturn', returnsController.processReturn);
 
 //Obterner un pedido
-router.get('/returns_detail/:id', returnsController.getReturnById )
+router.get('/returns_detail/:id', returnsController.getReturnById );
 
 //Obterner un pedido
-router.get('/returns/:id', returnsController.getOrderById )
-
-//devolver producto
-router.put('/returns/retire/:id', returnsController.retireProduct);
-
-//anular pedido
-router.put('/returns/anulate/:id', validarJWT, returnsController.anulateOrderByIdR);
+router.get('/returns/:id', returnsController.getOrderById );
 
 module.exports = router;
