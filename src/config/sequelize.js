@@ -7,7 +7,6 @@ const { Sequelize } = require('sequelize');
 // });
 
 // module.exports = sequelize;
-
 const sequelize = new Sequelize('cosmetic_dbo2', 'adminuser', 'xjvJfCUjd908qLvSebuc4tmYqkCHFsO1', {
   host: 'dpg-cn19prf109ks73cedbt0-a.oregon-postgres.render.com',
   dialect: 'postgres',
