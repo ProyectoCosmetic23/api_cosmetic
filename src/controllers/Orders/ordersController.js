@@ -2,9 +2,12 @@
 const { Op } = require("sequelize");
 const Orders = require("../../models/orders");
 const Order_Detail = require("../../models/order_detail");
-const Sales = require("../../models/sales");
-const Sale_Detail = require("../../models/sale_detail");
 const Products = require("../../models/products");
+const Payments = require("../../models/payments");
+const {
+  updateComissionsFromSales,
+} = require("../Comissions/comissionController");
+const { response } = require("express");
 
 // -------------- INICIO: Función para para obtener último N°Pedido -------------- //
 
@@ -33,7 +36,9 @@ async function getLastInvoiceNumber() {
 // Obtener todos los pedidos
 const getAllOrders = async (req, res) => {
   try {
-    const orders = await Orders.findAll();
+    const orders = await Orders.findAll({
+      order: [["order_number", "DESC"]],
+    });
     res.json(orders);
   } catch (error) {
     console.error("Error al obtener Pedidos:", error);
@@ -50,6 +55,7 @@ const getAllProcessingOrders = async (req, res) => {
           [Op.in]: ["En proceso", "Por entregar"],
         },
       },
+      order: [["order_number", "DESC"]],
     });
     res.json(orders);
   } catch (error) {
@@ -65,6 +71,7 @@ const getAllDeliveredOrders = async (req, res) => {
       where: {
         delivery_state: "Entregado",
       },
+      order: [["order_number", "DESC"]],
     });
     res.json(orders);
   } catch (error) {
@@ -73,13 +80,15 @@ const getAllDeliveredOrders = async (req, res) => {
   }
 };
 
-// Obtener todos los pedidos entregados
+// Obtener todos los pedidos anulados
 const getAllAnulatedOrders = async (req, res) => {
   try {
     const orders = await Orders.findAll({
       where: {
         order_state: "Anulado",
+        return_state: false,
       },
+      order: [["order_number", "DESC"]],
     });
     res.json(orders);
   } catch (error) {
@@ -88,13 +97,14 @@ const getAllAnulatedOrders = async (req, res) => {
   }
 };
 
-// Obtener todos los pedidos entregados
+// Obtener todos los pedidos no pagados
 const getAllUnpaidOrders = async (req, res) => {
   try {
     const orders = await Orders.findAll({
       where: {
         payment_state: "Por pagar",
       },
+      order: [["order_number", "DESC"]],
     });
     res.json(orders);
   } catch (error) {
@@ -103,13 +113,47 @@ const getAllUnpaidOrders = async (req, res) => {
   }
 };
 
-// Obtener todos los pedidos entregados
+// Obtener todos los pedidos pagados
 const getAllPaidOrders = async (req, res) => {
   try {
     const orders = await Orders.findAll({
       where: {
         payment_state: "Pagado",
       },
+      order: [["order_number", "DESC"]],
+    });
+    res.json(orders);
+  } catch (error) {
+    console.error("Error al obtener Pedidos:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+// Obtener todas las ventas pagadas y entregadas
+const getAllSales = async (req, res) => {
+  try {
+    const orders = await Orders.findAll({
+      where: {
+        payment_state: "Pagado",
+        delivery_state: "Entregado",
+      },
+      order: [["order_number", "DESC"]],
+    });
+    res.json(orders);
+  } catch (error) {
+    console.error("Error al obtener Pedidos:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+// Obtener todos los pedidos que tienen devoluciones asociadas
+const getAllReturnOrders = async (req, res) => {
+  try {
+    const orders = await Orders.findAll({
+      where: {
+        return_state: true,
+      },
+      order: [["order_number", "DESC"]],
     });
     res.json(orders);
   } catch (error) {
@@ -148,10 +192,24 @@ async function createOrder(req, res) {
     payment_type,
     total_order,
     products,
+    directSale,
+    isReturn,
   } = req.body;
   const order_state = "Activo";
-  const delivery_state = "En proceso";
-  const payment_state = "Por pagar";
+  let delivery_state;
+  let payment_state;
+
+  if (payment_type == "Contado") {
+    payment_state = "Pagado";
+  } else {
+    payment_state = "Por pagar";
+  }
+
+  if (directSale == false) {
+    delivery_state = "En proceso";
+  } else {
+    delivery_state = "Entregado";
+  }
 
   try {
     // Obtener el último número de factura
@@ -175,40 +233,64 @@ async function createOrder(req, res) {
     const order_detail = await createOrderDetail(newOrder.id_order, products);
 
     // Actualizar las cantidades de los productos
-    await updateProductQuantities(products);
+    await updateProductQuantities(products, isReturn);
 
-    res.status(201).json({ newOrder, order_detail });
+    // Actualizar las comisiones
+    await updateComissionsFromSales(new Date(order_date));
+
+    let newPay;
+
+    if (payment_type == "Contado") {
+      try {
+        newPay = await Payments.create({
+          id_order: newOrder.id_order,
+          id_client: id_client,
+          total_payment: total_order,
+          total_remaining: 0,
+        });
+      } catch (error) {
+        console.log(error);
+        handleError(res, error, "Error al crear el pedido." + error);
+      }
+    }
+    if (payment_type == "Contado") {
+      res.status(201).json({ newOrder, order_detail, newPay });
+    } else {
+      res.status(201).json({ newOrder, order_detail });
+    }
   } catch (error) {
     handleError(res, error, "Error al crear el pedido." + error);
   }
 }
 
 // Función para actualizar las cantidades de los productos
-async function updateProductQuantities(products) {
-  try {
-    for (const product of products) {
-      const { id_product, product_quantity } = product;
+async function updateProductQuantities(products, isReturn) {
+  if (isReturn) {
+    try {
+      for (const product of products) {
+        const { id_product, product_quantity } = product;
 
-      // Obtener el producto de la base de datos
-      const existingProduct = await Products.findByPk(id_product);
+        // Obtener el producto de la base de datos
+        const existingProduct = await Products.findByPk(id_product);
 
-      // Verificar si el producto existe y la cantidad es suficiente
-      if (existingProduct && existingProduct.quantity >= product_quantity) {
-        // Actualizar la cantidad del producto
-        await Products.update(
-          { quantity: existingProduct.quantity - product_quantity },
-          { where: { id_product: id_product } }
-        );
-      } else {
-        throw new Error(
-          `Producto no encontrado o cantidad insuficiente para el producto con ID ${id_product}`
-        );
+        // Verificar si el producto existe y la cantidad es suficiente
+        if (existingProduct && existingProduct.quantity >= product_quantity) {
+          // Actualizar la cantidad del producto
+          await Products.update(
+            { quantity: existingProduct.quantity - product_quantity },
+            { where: { id_product: id_product } }
+          );
+        } else {
+          throw new Error(
+            `Producto no encontrado o cantidad insuficiente para el producto con ID ${id_product}`
+          );
+        }
       }
+    } catch (error) {
+      throw new Error(
+        "Error al actualizar las cantidades de los productos: " + error.message
+      );
     }
-  } catch (error) {
-    throw new Error(
-      "Error al actualizar las cantidades de los productos: " + error.message
-    );
   }
 }
 
@@ -225,17 +307,32 @@ async function createNewOrder(
   total_order
 ) {
   try {
-    return await Orders.create({
-      id_client: id_client,
-      id_employee: id_employee,
-      order_number: order_number,
-      order_date: order_date,
-      payment_type: payment_type,
-      order_state: order_state,
-      delivery_state: delivery_state,
-      payment_state: payment_state,
-      total_order: total_order,
-    });
+    if (delivery_state == "En Proceso") {
+      return await Orders.create({
+        id_client: id_client,
+        id_employee: id_employee,
+        order_number: order_number,
+        order_date: order_date,
+        payment_type: payment_type,
+        order_state: order_state,
+        delivery_state: delivery_state,
+        payment_state: payment_state,
+        total_order: total_order,
+      });
+    } else if (delivery_state == "Entregado") {
+      return await Orders.create({
+        id_client: id_client,
+        id_employee: id_employee,
+        order_number: order_number,
+        order_date: order_date,
+        payment_type: payment_type,
+        order_state: order_state,
+        delivery_state: delivery_state,
+        delivery_date: order_date,
+        payment_state: payment_state,
+        total_order: total_order,
+      });
+    }
   } catch (error) {
     throw new Error("Error al crear la nueva orden: " + error.message);
   }
@@ -278,20 +375,54 @@ function handleError(res, error, errorMessage) {
 // Función para anular pedidos por ID
 async function anulateOrderById(req, res) {
   const { id } = req.params;
-  const { observation } = req.body;
+  console.log(req.body);
+  const { observation, anulationType } = req.body;
+  console.log("msg anular: ", observation);
+  console.log("estado de return: ", anulationType);
+
   var order_state = "Anulado";
   try {
-    const order = await Orders.findByPk(id);
+    const order = await Orders.findByPk(id, { include: Products });
     if (!order) {
       return res.status(404).json({ error: "Pedido no encontrado." });
     }
+
+    // Actualizar el estado del pedido
     await order.update({
       order_state: order_state,
-      observation_return: observation
+      delivery_state: order_state,
+      payment_state: order_state,
+      observation_return: observation,
+      return_state: anulationType,
     });
+
+    const products = await Order_Detail.findAll({
+      where: {
+        id_order: id,
+      },
+    });
+
+    // Sumar las cantidades de los productos al anular el pedido
+    for (const product of products) {
+      const { id_product, product_quantity } = product;
+
+      // Obtener el producto de la base de datos
+      const existingProduct = await Products.findByPk(id_product);
+
+      // Verificar si el producto existe
+      if (existingProduct && anulationType == false) {
+        // Actualizar la cantidad del producto sumando la cantidad del pedido
+        await Products.update(
+          { quantity: existingProduct.quantity + product_quantity },
+          { where: { id_product: id_product } }
+        );
+      } else {
+        throw new Error(`Producto no encontrado con ID ${id_product}`);
+      }
+    }
     res.json(order);
   } catch (error) {
-    res.status(500).json({ error: "Error al anular el pedido." });
+    res.status(500).json({ error: "Error al anular el pedido." + error });
   }
 }
 
@@ -315,18 +446,16 @@ async function updateDeliveryStatusById(req, res) {
     }
 
     if (order.delivery_state === "En proceso") {
-      await updateOrderDeliveryStatus(order, "Por entregar");
-    } else if (order.delivery_state === "Por entregar") {
-      const newSaleData = createSaleDataFromOrder(order);
-      const { newSale, saleDetailList } = await createSale(newSaleData, order);
+      const updatedOrder = await updateOrderDeliveryStatus(
+        order,
+        "Por entregar"
+      );
 
+      res.json({ updatedOrder });
+    } else if (order.delivery_state === "Por entregar") {
       const updatedOrder = await updateOrderDeliveryStatus(order, "Entregado");
 
-      if (updatedOrdernull || updatedOrder === undefined) {
-        res.json({ newSale, saleDetailList });
-      } else {
-        res.json({ newSale, saleDetailList, updatedOrder });
-      }
+      res.json({ updatedOrder });
     }
   } catch (error) {
     res.json("Error al actualizar el pedido." + error);
@@ -336,66 +465,23 @@ async function updateDeliveryStatusById(req, res) {
 // Función para actualizar el estado de entrega del pedido
 async function updateOrderDeliveryStatus(order, newDeliveryStatus) {
   try {
-    const updatedOrder = await order.update({
-      delivery_state: newDeliveryStatus,
-    });
+    let updatedOrder;
+
+    if (newDeliveryStatus === "Entregado") {
+      updatedOrder = await order.update({
+        delivery_state: newDeliveryStatus,
+        delivery_date: new Date(), // Agrega la fecha actual
+      });
+    } else {
+      updatedOrder = await order.update({
+        delivery_state: newDeliveryStatus,
+      });
+    }
+
     return updatedOrder;
   } catch (error) {
     throw new Error("Error al actualizar el estado del pedido: " + error);
   }
-}
-
-// Función para crear datos de venta a partir de un pedido
-function createSaleDataFromOrder(order) {
-  const delivery_date = new Date();
-  return {
-    id_order: order.id_order,
-    id_client: order.id_client,
-    id_employee: order.id_employee,
-    invoice_number: order.order_number,
-    order_date: order.order_date,
-    delivery_date: delivery_date,
-    payment_state: order.payment_state,
-    sale_state: "Activo",
-    payment_type: order.payment_type,
-    total_sale: order.total_order,
-  };
-}
-
-// Función para crear una nueva venta
-async function createSale(saleData, order) {
-  const newSale = await Sales.create(saleData);
-  const saleDetailList = await createSaleDetails(newSale, order);
-
-  return { newSale, saleDetailList };
-}
-
-// Función para crear los detalles de una venta
-async function createSaleDetails(sale, order) {
-  const orderDetail = await Order_Detail.findAll({
-    where: { id_order: order.id_order },
-  });
-
-  const saleDetailList = [];
-
-  console.log(orderDetail);
-
-  for (const product of orderDetail) {
-    const product_id = product.id_product;
-    const quantity = product.product_quantity;
-    const product_price = product.product_price;
-
-    const newSaleDetail = await Sale_Detail.create({
-      id_sale: sale.id_sale,
-      id_product: product_id,
-      quantity: quantity,
-      product_price: product_price,
-    });
-
-    saleDetailList.push(newSaleDetail);
-  }
-
-  return saleDetailList;
 }
 
 // Función para manejar errores y enviar una respuesta de error
@@ -414,6 +500,8 @@ module.exports = {
   getAllAnulatedOrders,
   getAllUnpaidOrders,
   getAllPaidOrders,
+  getAllSales,
+  getAllReturnOrders,
   getOrderById,
   createOrder,
   anulateOrderById,

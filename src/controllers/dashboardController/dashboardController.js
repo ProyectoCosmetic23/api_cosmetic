@@ -7,8 +7,12 @@ const { ReportCountedSales, ReportCreditSales, ReportEmployesSales } = require('
 const getReportEmployees = async (req, res, next) => {
     try {
         let { report_is_yearly, year_data, month_data } = req.query;
+
+        // Asegúrate de que report_is_yearly sea un booleano
+        report_is_yearly = report_is_yearly === 'true';
+
         const result = await sequelize.query(
-            'SELECT * FROM get_report_employees(:report_is_yearly, :year_data, :month_data)',
+            'SELECT * FROM get_report_employees_with_commission(:report_is_yearly, :year_data, :month_data)',
             {
                 replacements: {
                     report_is_yearly,
@@ -19,9 +23,10 @@ const getReportEmployees = async (req, res, next) => {
                 model: ReportEmployesSales,
             }
         );
+
         res.json(result);
     } catch (error) {
-        console.error('Error al recuperar las categorías:', error);
+        console.error('Error al recuperar los empleados:', error);
         next(error);
     }
 };
