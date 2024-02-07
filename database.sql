@@ -139,31 +139,6 @@ CREATE TABLE order_detail (
 	product_price NUMERIC NOT NULL
 );
 
-/* Create the sales table */
-CREATE TABLE sales (
-	id_sale INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-	id_order INT NOT NULL,
-	id_client INT NOT NULL,
-	id_employee INT NOT NULL,
-	invoice_number INT NOT NULL,
-	order_date TIMESTAMP NOT NULL,
-	delivery_date TIMESTAMP,
-	sale_state CHARACTER VARYING(15),
-	payment_state CHARACTER VARYING(15),
-	payment_type VARCHAR (100) NOT NULL,
-	total_sale NUMERIC NOT NULL,
-	observation_return VARCHAR (250) NULL
-);
-
-/* Create the sale detail table */
-CREATE TABLE sale_detail (
-	id_sale_detail INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-	id_sale INT NOT NULL,
-	id_product INT NOT NULL,
-	quantity INT NOT NULL,
-	product_price NUMERIC
-);
-
 /* Create the commissions table */
 CREATE TABLE commissions (
 	id_commission INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -183,7 +158,7 @@ CREATE TABLE commission_detail (
 /* Create the payments table */
 CREATE TABLE payments (
 	id_payment INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-	id_sale INT NULL,
+	id_order INT NULL,
 	id_order INT NULL,
 	id_client INT NOT NULL,
 	payment_date DATE NOT NULL DEFAULT CURRENT_DATE,
@@ -194,7 +169,7 @@ CREATE TABLE payments (
 /* Create the returns table */
 CREATE TABLE returns (
 	id_return  INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-	id_sale INT NOT NULL,
+	id_order INT NOT NULL,
 	id_product  INT NOT NULL,
 	return_date TIMESTAMP NOT NULL,
 	return_quantity INT NOT NULL,
@@ -205,7 +180,7 @@ CREATE TABLE returns (
 /* Foreign Keys for the 'returns' Table */
 ALTER TABLE returns
 ADD CONSTRAINT fk_returnsSale
-FOREIGN KEY (id_sale) REFERENCES sales(id_sale);
+FOREIGN KEY (id_order) REFERENCES sales(id_order);
 
 ALTER TABLE returns
 ADD CONSTRAINT fk_returnsProduct
@@ -241,8 +216,8 @@ REFERENCES products(id_product);
 /* Foreign Keys for the 'payments' Table */
 ALTER TABLE payments
 ADD CONSTRAINT fk_paymentsSale
-FOREIGN KEY (id_sale) 
-REFERENCES sales(id_sale);
+FOREIGN KEY (id_order) 
+REFERENCES sales(id_order);
 
 ALTER TABLE payments
 ADD CONSTRAINT fk_paymentsOrder
@@ -398,7 +373,7 @@ VALUES (1, 1, 1, 5001, current_timestamp, 'Activa', 'Por pagar', 'Contado', 420.
 >>>>>>> b3d05fee0041b74606ac5a54be4086694ad19f7b:database.sql
 
 -- Insert into the 'sale_detail' Table
-INSERT INTO sale_detail (id_sale, id_product, quantity, product_price)
+INSERT INTO sale_detail (id_order, id_product, quantity, product_price)
 VALUES (1, 1, 15, 14.00),
        (2, 2, 20, 18.00),
        (3, 3, 12, 12.00);
@@ -414,13 +389,13 @@ VALUES(1, 42.00, 1, 1500),
 >>>>>>> b3d05fee0041b74606ac5a54be4086694ad19f7b:database.sql
 
 -- Insert into the 'payments' Table
-INSERT INTO payments (id_sale, id_order,id_client, payment_date, total_payment, total_remaining)
+INSERT INTO payments (id_order, id_order,id_client, payment_date, total_payment, total_remaining)
 VALUES (1,null, 1, current_timestamp, 420.00, 0.00),
        (null,1, 2, current_timestamp, 1500, 0.00),
        (3,null, 3, current_timestamp, 360.00, 0.00);
 
 -- Insert into the 'returns' Table
-INSERT INTO returns (id_sale, id_product, return_date, return_quantity, return_value, return_reason)
+INSERT INTO returns (id_order, id_product, return_date, return_quantity, return_value, return_reason)
 VALUES (1, 1, current_timestamp, 5, 70.00, 'Defecto de fábrica'),
        (2, 2, current_timestamp, 4, 72.00, 'Defecto de fábrica'),
        (3, 3, current_timestamp, 6, 72.00, 'Defecto de fábrica');

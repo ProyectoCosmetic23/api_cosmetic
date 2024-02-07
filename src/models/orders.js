@@ -27,6 +27,10 @@ const Orders = sequelize.define(
       type: DataTypes.DATE,
       allowNull: false,
     },
+    delivery_date: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
     payment_type: {
       type: DataTypes.STRING(100),
       allowNull: false,
@@ -34,6 +38,11 @@ const Orders = sequelize.define(
     order_state: {
       type: DataTypes.STRING(15),
       allowNull: true,
+    },
+    return_state: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
     },
     delivery_state: {
       type: DataTypes.STRING(15),

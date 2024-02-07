@@ -47,12 +47,14 @@ async function getRoleById(req, res) {
     var name_role = role.name_role;
     var state_role = role.state_role;
     var modules_string = role.modules_role;
+    var observation_status = role.observation_status;
     var modules_array = modules_string.split(", ");
     res.json({
       id_role: id_role,
       name_role: name_role,
       state_role: state_role,
       modules_role: modules_array,
+      observation_status: observation_status
     });
   } catch (error) {
     res.status(500).json({ error: "Error al obtener el rol." + error });
@@ -90,7 +92,7 @@ async function validateRoleName(req, res) {
 
 // Crear un rol
 async function createRole(req, res) {
-  const { name_role, modules_role } = req.body;
+  const { name_role, modules_role, observation_status } = req.body;
   state_role = "Activo";
   modules_string = modules_role.join(", ");
   try {
@@ -98,6 +100,7 @@ async function createRole(req, res) {
       name_role: name_role,
       state_role: state_role,
       modules_role: modules_string,
+      observation_status: observation_status
     });
     res.status(201).json({ nuevo_rol });
   } catch (error) {
@@ -127,6 +130,7 @@ async function updateRole(req, res) {
 // Cambiar el estado de un rol
 async function updateRoleStatus(req, res) {
   const { id } = req.params;
+  const data = req.body;
   try {
     const role = await Roles.findByPk(id);
     var state_role = "";
@@ -142,6 +146,7 @@ async function updateRoleStatus(req, res) {
 
     await role.update({
       state_role: state_role,
+      observation_status: data.observation
     });
     res.json(role);
   } catch (error) {

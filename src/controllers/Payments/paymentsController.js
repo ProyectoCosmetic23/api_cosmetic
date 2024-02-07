@@ -51,11 +51,9 @@ async function createPay(req, res) {
       }
       //Verificar que solo se admitan números positivos
       if (total_payment <= 0) {
-        return res
-          .status(400)
-          .json({
-            error: "El pago solo acepta números positivos mayores a 0.",
-          });
+        return res.status(400).json({
+          error: "El pago solo acepta números positivos mayores a 0.",
+        });
       }
 
       // Verificar si la venta ya está pagada
@@ -73,22 +71,18 @@ async function createPay(req, res) {
       if (lastPay) {
         // Verificar que el total_pago no sea mayor que el total_restante del último pago
         if (total_payment > lastPay.total_remaining) {
-          return res
-            .status(400)
-            .json({
-              error:
-                "El total del pago no puede ser mayor que el total_restante del último pago.",
-            });
+          return res.status(400).json({
+            error:
+              "El total del pago no puede ser mayor que el total_restante del último pago.",
+          });
         }
       }
 
       //ver que el total pagado no exeda el total de la venta
       if (total_payment > sale.total_sale) {
-        return res
-          .status(400)
-          .json({
-            error: "El total del pago no puede ser mayor al total de la venta",
-          });
+        return res.status(400).json({
+          error: "El total del pago no puede ser mayor al total de la venta",
+        });
       }
       // Consulta todos los pagos relacionados con la venta
       const relatedPay = await Payments.findAll({
@@ -107,12 +101,10 @@ async function createPay(req, res) {
       // Calcula el total restante restando el total pagado del total de la venta
       const payRest = sale.total_sale - totalPay;
       if (payRest < 0) {
-        return res
-          .status(400)
-          .json({
-            error:
-              "El total del pago no puede ser mayor al total restante del último pago",
-          });
+        return res.status(400).json({
+          error:
+            "El total del pago no puede ser mayor al total restante del último pago",
+        });
       }
       // console.log(lastPay)
       // if (lastPay != null) {
@@ -143,11 +135,9 @@ async function createPay(req, res) {
       }
       //Verificar que solo se admitan números positivos
       if (total_payment <= 0) {
-        return res
-          .status(400)
-          .json({
-            error: "El pago solo acepta números positivos mayores a 0.",
-          });
+        return res.status(400).json({
+          error: "El pago solo acepta números positivos mayores a 0.",
+        });
       }
 
       // Verificar si la venta ya está pagada
@@ -165,22 +155,18 @@ async function createPay(req, res) {
       if (lastPay) {
         // Verificar que el total_pago no sea mayor que el total_restante del último pago
         if (total_payment > lastPay.total_remaining) {
-          return res
-            .status(400)
-            .json({
-              error:
-                "El total del pago no puede ser mayor que el total_restante del último pago.",
-            });
+          return res.status(400).json({
+            error:
+              "El total del pago no puede ser mayor que el total_restante del último pago.",
+          });
         }
       }
 
       //ver que el total pagado no exeda el total de la venta
       if (total_payment > order.total_order) {
-        return res
-          .status(400)
-          .json({
-            error: "El total del pago no puede ser mayor al total de la venta",
-          });
+        return res.status(400).json({
+          error: "El total del pago no puede ser mayor al total de la venta",
+        });
       }
       // Consulta todos los pagos relacionados con la venta
       const relatedPay = await Payments.findAll({
@@ -199,12 +185,10 @@ async function createPay(req, res) {
       // Calcula el total restante restando el total pagado del total de la venta
       const payRest = order.total_order - totalPay;
       if (payRest < 0) {
-        return res
-          .status(400)
-          .json({
-            error:
-              "El total del pago no puede ser mayor al total restante del último pago",
-          });
+        return res.status(400).json({
+          error:
+            "El total del pago no puede ser mayor al total restante del último pago",
+        });
       }
 
       // Actualiza el estado de la venta
@@ -298,11 +282,9 @@ async function getPayClienSale(req, res) {
     });
 
     if (payClienSale.length === 0) {
-      return res
-        .status(404)
-        .json({
-          message: "No hay el cliente no ha realizado pagos para esta venta",
-        });
+      return res.status(404).json({
+        message: "No hay el cliente no ha realizado pagos para esta venta",
+      });
     }
     res.json(payClienSale);
   } catch (error) {
@@ -322,11 +304,9 @@ async function getPayClienOrder(req, res) {
     });
 
     if (payClienOrder.length === 0) {
-      return res
-        .status(404)
-        .json({
-          message: "No hay el cliente no ha realizado pagos para esta venta",
-        });
+      return res.status(404).json({
+        message: "No hay el cliente no ha realizado pagos para esta venta",
+      });
     }
     res.json(payClienOrder);
   } catch (error) {

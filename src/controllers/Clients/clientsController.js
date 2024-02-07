@@ -107,7 +107,7 @@ async function createCustomer(req, res) {
 }
 
 async function checkCedulaAvailability(req, res) {
-  const { cedula } = req.query;
+  const {cedula} = req.query;
   try {
     const existingCedula = await Client.findOne({where: { nit_or_id_client: cedula }});
     res.json(!existingCedula);
@@ -117,10 +117,11 @@ async function checkCedulaAvailability(req, res) {
   }
 }
 
+
 async function checkEmailAvailability(req, res) {
   const { email_client } = req.query;
   try {
-    const existingEmail = await Client.findOne({ where: { email_client } });
+    const existingEmail = await Client.findOne({ where: { email_client: email_client } });
     res.json(!existingEmail);
   } catch (error) {
     console.error("Error al verificar el correo:", error);
