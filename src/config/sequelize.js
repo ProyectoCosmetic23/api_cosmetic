@@ -1,6 +1,8 @@
 const { Sequelize } = require('sequelize');
 
-const sequelize = new Sequelize('postgres://adminuser:xjvJfCUjd908qLvSebuc4tmYqkCHFsO1@dpg-cn19prf109ks73cedbt0-a.oregon-postgres.render.com/cosmetic_dbo2', {
+
+const sequelize = new Sequelize('cosmetic_dbo2', 'adminuser', 'xjvJfCUjd908qLvSebuc4tmYqkCHFsO1', {
+  host: 'dpg-cn19prf109ks73cedbt0-a.oregon-postgres.render.com',
   dialect: 'postgres',
   dialectOptions: {
     ssl: {
@@ -10,6 +12,7 @@ const sequelize = new Sequelize('postgres://adminuser:xjvJfCUjd908qLvSebuc4tmYqk
 });
 
 module.exports = sequelize;
+
 
 // const sequelize = new Sequelize('cosmetic_db', 'postgres', 'cosmetic1234', {
 //   host: 'localhost',
