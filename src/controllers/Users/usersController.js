@@ -206,9 +206,9 @@ async function loginUser(req, res) {
     const role = await user.getRole();
 
     // Verifica si el rol está inactivo
-    if (role && role.state_role === "Inactivo") {
-      return res.status(401).json({ error: "El rol está inactivo." });
-    }
+    //if (role && role.state_role === "Inactivo") {
+     // return res.status(401).json({ error: "El rol está inactivo." });
+   // }
 
     // Verifica si el usuario está inactivo
     if (user.state_user === "Inactivo") {
