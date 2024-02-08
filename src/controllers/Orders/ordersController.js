@@ -229,7 +229,7 @@ async function createOrder(req, res) {
       total_order
     );
 
-    
+    // Acceder al id_order desde newOrder
     const id_order = newOrder.id_order;
 
     // Crear el detalle de la orden
@@ -246,7 +246,7 @@ async function createOrder(req, res) {
     if (payment_type == "Contado") {
       try {
         newPay = await Payments.create({
-          id_order: id_order,
+          id_order: id_order, // Aquí debería ser id_order en lugar de id_order
           id_client: id_client,
           total_payment: total_order,
           total_remaining: 0,
@@ -297,7 +297,6 @@ async function updateProductQuantities(products, isReturn) {
   }
 }
 
-// Función auxiliar para crear un nuevo pedido
 async function createNewOrder(
   id_client,
   id_employee,
@@ -310,8 +309,9 @@ async function createNewOrder(
   total_order
 ) {
   try {
+    let newOrder;
     if (delivery_state == "En Proceso") {
-      return await Orders.create({
+      newOrder = await Orders.create({
         id_client: id_client,
         id_employee: id_employee,
         order_number: order_number,
@@ -323,7 +323,7 @@ async function createNewOrder(
         total_order: total_order,
       });
     } else if (delivery_state == "Entregado") {
-      return await Orders.create({
+      newOrder = await Orders.create({
         id_client: id_client,
         id_employee: id_employee,
         order_number: order_number,
@@ -336,6 +336,7 @@ async function createNewOrder(
         total_order: total_order,
       });
     }
+    return newOrder; // Devuelve el objeto del pedido creado
   } catch (error) {
     throw new Error("Error al crear la nueva orden: " + error.message);
   }
