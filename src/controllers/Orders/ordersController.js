@@ -229,8 +229,11 @@ async function createOrder(req, res) {
       total_order
     );
 
+    
+    const id_order = newOrder.id_order;
+
     // Crear el detalle de la orden
-    const order_detail = await createOrderDetail(newOrder.id_order, products);
+    const order_detail = await createOrderDetail(id_order, products);
 
     // Actualizar las cantidades de los productos
     await updateProductQuantities(products, isReturn);
@@ -243,7 +246,7 @@ async function createOrder(req, res) {
     if (payment_type == "Contado") {
       try {
         newPay = await Payments.create({
-          id_order: newOrder.id_order,
+          id_order: id_order,
           id_client: id_client,
           total_payment: total_order,
           total_remaining: 0,
