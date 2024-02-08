@@ -199,24 +199,19 @@ async function loginUser(req, res) {
     console.log("Usuario encontrado:", user);
 
     if (!user) {
-      return res
-        .status(401)
-        .json({ error: "Correo o Contraseña incorrectas." });
+      return res.status(401).json({ error: "Correo o Contraseña incorrectas." });
     }
 
-    if (user.state_user === "inactivo") {
-      return res
-        .status(400)
-        .json({ error: "Credenciales incorrectas: El usuario está inactivo." });
+    // Verifica si el usuario está inactivo
+    if (user.state_user === "Inactivo") {
+      return res.status(401).json({ error: "El usuario está inactivo." });
     }
 
     // Compara la contraseña proporcionada con la contraseña almacenada en la base de datos
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (!isPasswordValid) {
-      return res
-        .status(401)
-        .json({ loginError: "Correo o Contraseña incorrectas." });
+      return res.status(401).json({ loginError: "Correo o Contraseña incorrectas." });
     }
 
     const token = await generarJWT(user.id);
@@ -230,6 +225,7 @@ async function loginUser(req, res) {
     res.status(500).json({ error: "Error interno al iniciar sesión.", error });
   }
 }
+
 
 //Metodo para actualizar el estado
 async function updateUserState(req, res) {
