@@ -375,54 +375,56 @@ function handleError(res, error, errorMessage) {
 // Función para anular pedidos por ID
 async function anulateOrderById(req, res) {
   const { id } = req.params;
-  console.log(req.body);
   const { observation, anulationType } = req.body;
-  console.log("msg anular: ", observation);
-  console.log("estado de return: ", anulationType);
-
-  var order_state = "Anulado";
+  const order_state = "Anulado"; // Estado deseado para el pedido anulado
+  
   try {
+    // Buscar el pedido por su ID
     const order = await Orders.findByPk(id, { include: Products });
     if (!order) {
       return res.status(404).json({ error: "Pedido no encontrado." });
     }
 
-    // Actualizar el estado del pedido
+    // Actualizar el estado del pedido y la observación de anulación
     await order.update({
-      order_state: order_state,
+      order_state,
       delivery_state: order_state,
       payment_state: order_state,
       observation_return: observation,
       return_state: anulationType,
     });
 
-    const products = await Order_Detail.findAll({
-      where: {
-        id_order: id,
-      },
-    });
+    // Verificar si es una anulación parcial
+    if (anulationType === false) {
+      // Buscar los productos asociados al pedido
+      const products = await Order_Detail.findAll({
+        where: { id_order: id },
+      });
 
-    // Sumar las cantidades de los productos al anular el pedido
-    for (const product of products) {
-      const { id_product, product_quantity } = product;
+      // Sumar las cantidades de los productos al anular el pedido
+      for (const product of products) {
+        const { id_product, product_quantity } = product;
 
-      // Obtener el producto de la base de datos
-      const existingProduct = await Products.findByPk(id_product);
+        // Obtener el producto de la base de datos
+        const existingProduct = await Products.findByPk(id_product);
 
-      // Verificar si el producto existe
-      if (existingProduct && anulationType == false) {
-        // Actualizar la cantidad del producto sumando la cantidad del pedido
-        await Products.update(
-          { quantity: existingProduct.quantity + product_quantity },
-          { where: { id_product: id_product } }
-        );
-      } else {
-        throw new Error(`Producto no encontrado con ID ${id_product}`);
+        // Verificar si el producto existe
+        if (existingProduct) {
+          // Actualizar la cantidad del producto sumando la cantidad del pedido
+          await Products.update(
+            { quantity: existingProduct.quantity + product_quantity },
+            { where: { id_product: id_product } }
+          );
+        } else {
+          throw new Error(`Producto no encontrado con ID ${id_product}`);
+        }
       }
     }
+    // Enviar la respuesta con el pedido actualizado
     res.json(order);
   } catch (error) {
-    res.status(500).json({ error: "Error al anular el pedido." + error });
+    // Manejar errores y enviar una respuesta de error adecuada
+    res.status(500).json({ error: "Error al anular el pedido: " + error.message });
   }
 }
 
