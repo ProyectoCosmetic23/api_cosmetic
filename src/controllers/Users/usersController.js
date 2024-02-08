@@ -202,7 +202,7 @@ async function loginUser(req, res) {
       return res.status(401).json({ error: "Correo o Contraseña incorrectas." });
     }
 
-    // Busca el rol asociado al usuario
+    // Busca un rol en la tabla de Roles asociado al usuario
     const role = await user.getRole();
 
     // Verifica si el rol está inactivo
@@ -233,6 +233,7 @@ async function loginUser(req, res) {
     res.status(500).json({ error: "Error interno al iniciar sesión.", error });
   }
 }
+
 
 
 
