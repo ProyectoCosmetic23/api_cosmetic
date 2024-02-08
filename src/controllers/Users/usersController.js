@@ -202,14 +202,13 @@ async function loginUser(req, res) {
       return res.status(401).json({ error: "Correo o Contraseña incorrectas." });
     }
 
-    // Busca el rol del usuario en la tabla de Roles
-    const userRole = await user.getRole(); // Suponiendo que existe una relación entre Users y Roles y que el método se llama getRole()
+    // Busca un rol en la tabla de Roles y verifica si está inactivo
+    const role = await Roles.findOne({ where: { state_role: "Inactivo" } });
 
-    // Verifica si el rol del usuario está inactivo
-    if (userRole && userRole.state_role === "Inactivo") {
-      return res.status(401).json({ error: "El rol del usuario está inactivo." });
+    // Verifica si el rol está inactivo
+    if (role) {
+      return res.status(401).json({ error: "El rol está inactivo." });
     }
-
 
     // Verifica si el usuario está inactivo
     if (user.state_user === "Inactivo") {
