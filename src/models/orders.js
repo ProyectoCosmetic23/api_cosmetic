@@ -5,11 +5,10 @@ const Orders = sequelize.define(
   "orders",
   {
     id_order: {
-      autoIncrement: true,
-      autoIncrementIdentity: true,
       type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true,
+      autoIncrement: true,
     },
     id_client: {
       type: DataTypes.INTEGER,
@@ -53,7 +52,7 @@ const Orders = sequelize.define(
       allowNull: true,
     },
     total_order: {
-      type: DataTypes.DECIMAL,
+      type: DataTypes.DECIMAL(10, 2),
       allowNull: true,
     },
     observation_return: {
@@ -63,6 +62,7 @@ const Orders = sequelize.define(
   },
   {
     sequelize,
+    modelName: "Orders",
     tableName: "orders",
     schema: "public",
     timestamps: false,
