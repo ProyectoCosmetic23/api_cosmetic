@@ -204,7 +204,7 @@ async function loginUser(req, res) {
         .json({ error: "Correo o Contraseña incorrectas." });
     }
 
-    if (user.state_user === "inactivo") {
+    if (user.state_user === "Inactivo") {
       return res
         .status(400)
         .json({ error: "Credenciales incorrectas: El usuario está inactivo." });
@@ -230,6 +230,9 @@ async function loginUser(req, res) {
     res.status(500).json({ error: "Error interno al iniciar sesión.", error });
   }
 }
+
+
+
 
 //Metodo para actualizar el estado
 async function updateUserState(req, res) {
