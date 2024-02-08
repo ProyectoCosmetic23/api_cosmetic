@@ -367,7 +367,7 @@ async function forgotPassword(req, res) {
 async function changePassword(req, res) {
   const { token} = req.params;
   const { newPassword } = req.body;
-  console.log("Token recibido en la solicitud:", token);
+  // console.log("Token recibido en la solicitud:", token);
 
   try {
     // Extrae el token sin el prefijo "token="

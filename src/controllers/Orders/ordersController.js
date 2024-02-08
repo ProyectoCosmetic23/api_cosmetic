@@ -215,19 +215,28 @@ async function createOrder(req, res) {
     // Obtener el último número de factura
     const lastInvoiceNumber = await getLastInvoiceNumber();
     const newInvoiceNumber = lastInvoiceNumber + 1;
+    var newOrder;
+    try {
+      // Crear una nueva orden
 
-    // Crear una nueva orden
-    const newOrder = await createNewOrder(
-      id_client,
-      id_employee,
-      newInvoiceNumber,
-      order_date,
-      payment_type,
-      order_state,
-      delivery_state,
-      payment_state,
-      total_order
-    );
+      newOrder = await createNewOrder(
+        id_client,
+        id_employee,
+        newInvoiceNumber,
+        order_date,
+        payment_type,
+        order_state,
+        delivery_state,
+        payment_state,
+        total_order
+      );
+
+      // Continuar con el resto del código si la creación de la orden fue exitosa
+    } catch (error) {
+      // Manejar cualquier error que ocurra al crear la orden
+      console.error("Error al crear una nueva orden:", error);
+      // Aquí puedes mostrar el error al usuario, enviar una respuesta HTTP adecuada o manejarlo de otra manera según tus necesidades
+    }
 
     // Crear el detalle de la orden
     const order_detail = await createOrderDetail(newOrder.id_order, products);
@@ -249,23 +258,27 @@ async function createOrder(req, res) {
           total_remaining: 0,
         });
       } catch (error) {
+        // Manejar el error si ocurre al crear el pago
         console.log(error);
         handleError(res, error, "Error al crear el pedido." + error);
       }
     }
+
+    // Enviar la respuesta con los datos del nuevo pedido y el detalle
     if (payment_type == "Contado") {
       res.status(201).json({ newOrder, order_detail, newPay });
     } else {
       res.status(201).json({ newOrder, order_detail });
     }
   } catch (error) {
+    // Manejar el error principal
     handleError(res, error, "Error al crear el pedido." + error);
   }
 }
 
 // Función para actualizar las cantidades de los productos
 async function updateProductQuantities(products, isReturn) {
-  if (isReturn) {
+  if (isReturn == false) {
     try {
       for (const product of products) {
         const { id_product, product_quantity } = product;
@@ -294,7 +307,6 @@ async function updateProductQuantities(products, isReturn) {
   }
 }
 
-// Función auxiliar para crear un nuevo pedido
 async function createNewOrder(
   id_client,
   id_employee,
@@ -307,8 +319,9 @@ async function createNewOrder(
   total_order
 ) {
   try {
-    if (delivery_state == "En Proceso") {
-      return await Orders.create({
+    let newOrder;
+    if (delivery_state == "En proceso") {
+      return (newOrder = await Orders.create({
         id_client: id_client,
         id_employee: id_employee,
         order_number: order_number,
@@ -318,9 +331,9 @@ async function createNewOrder(
         delivery_state: delivery_state,
         payment_state: payment_state,
         total_order: total_order,
-      });
+      }));
     } else if (delivery_state == "Entregado") {
-      return await Orders.create({
+      return (newOrder = await Orders.create({
         id_client: id_client,
         id_employee: id_employee,
         order_number: order_number,
@@ -331,7 +344,7 @@ async function createNewOrder(
         delivery_date: order_date,
         payment_state: payment_state,
         total_order: total_order,
-      });
+      }));
     }
   } catch (error) {
     throw new Error("Error al crear la nueva orden: " + error.message);
@@ -375,56 +388,56 @@ function handleError(res, error, errorMessage) {
 // Función para anular pedidos por ID
 async function anulateOrderById(req, res) {
   const { id } = req.params;
+  console.log(req.body);
   const { observation, anulationType } = req.body;
-  const order_state = "Anulado"; // Estado deseado para el pedido anulado
-  
+  console.log("msg anular: ", observation);
+  console.log("estado de return: ", anulationType);
+
+  var order_state = "Anulado";
   try {
-    // Buscar el pedido por su ID
-    const order = await Orders.findByPk(id, { include: Products });
+    const order = await Orders.findByPk(id);
     if (!order) {
       return res.status(404).json({ error: "Pedido no encontrado." });
     }
 
-    // Actualizar el estado del pedido y la observación de anulación
+    // Actualizar el estado del pedido
     await order.update({
-      order_state,
+      order_state: order_state,
       delivery_state: order_state,
       payment_state: order_state,
       observation_return: observation,
       return_state: anulationType,
     });
 
-    // Verificar si es una anulación parcial
-    if (anulationType === false) {
-      // Buscar los productos asociados al pedido
-      const products = await Order_Detail.findAll({
-        where: { id_order: id },
-      });
+    const products = await Order_Detail.findAll({
+      where: {
+        id_order: id,
+      },
+    });
 
-      // Sumar las cantidades de los productos al anular el pedido
-      for (const product of products) {
-        const { id_product, product_quantity } = product;
+    // Sumar las cantidades de los productos al anular el pedido
+    for (const product of products) {
+      const { id_product, product_quantity } = product;
 
-        // Obtener el producto de la base de datos
-        const existingProduct = await Products.findByPk(id_product);
+      // Obtener el producto de la base de datos
+      const existingProduct = await Products.findByPk(id_product);
 
-        // Verificar si el producto existe
-        if (existingProduct) {
+      // Verificar si el producto existe
+      if (existingProduct) {
+        if (anulationType == false) {
           // Actualizar la cantidad del producto sumando la cantidad del pedido
           await Products.update(
             { quantity: existingProduct.quantity + product_quantity },
             { where: { id_product: id_product } }
           );
-        } else {
-          throw new Error(`Producto no encontrado con ID ${id_product}`);
         }
+      } else {
+        throw new Error(`Producto no encontrado con ID ${id_product}`);
       }
     }
-    // Enviar la respuesta con el pedido actualizado
     res.json(order);
   } catch (error) {
-    // Manejar errores y enviar una respuesta de error adecuada
-    res.status(500).json({ error: "Error al anular el pedido: " + error.message });
+    res.status(500).json({ error: "Error al anular el pedido." + error });
   }
 }
 

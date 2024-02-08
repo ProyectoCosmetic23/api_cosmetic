@@ -101,22 +101,28 @@ const processReturn = async (req, res) => {
       const registeredReturn = await registerReturn();
       res.json({ defectiveProduct, registeredReturn });
     } else if (retire == "Devuelto al Inventario") {
-      // Procesar devolución al inventario
-      const returnedProduct = await Products.findByPk(id_product);
-      if (!returnedProduct) {
-        return res.status(404).json({ error: "Producto no encontrado." });
+      try {
+        // Procesar devolución al inventario
+        const returnedProduct = await Products.findByPk(id_product);
+        if (!returnedProduct) {
+          return res.status(404).json({ error: "Producto no encontrado." });
+        }
+
+        const newQuantity = returnedProduct.quantity + product_quantity;
+        await Products.update(
+          { quantity: newQuantity },
+          { where: { id_product } }
+        );
+
+        const registeredReturn = await registerReturn();
+        res.json({
+          "El stock del producto fue actualizado con éxito": registeredReturn,
+        });
+      } catch (error) {
+        res
+          .status(500)
+          .json({ error: "Error al procesar la devolución: " + error.message });
       }
-
-      const newQuantity = returnedProduct.quantity + product_quantity;
-      await Products.update(
-        { quantity: newQuantity },
-        { where: { id_product } }
-      );
-
-      const registeredReturn = await registerReturn();
-      res.json({
-        "El stock del producto fue actualizado con éxito": registeredReturn,
-      });
     }
   } catch (error) {
     console.error(error);
