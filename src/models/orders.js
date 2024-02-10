@@ -5,11 +5,10 @@ const Orders = sequelize.define(
   "orders",
   {
     id_order: {
-      autoIncrement: true,
-      autoIncrementIdentity: true,
       type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true,
+      autoIncrement: true,
     },
     id_client: {
       type: DataTypes.INTEGER,
@@ -27,6 +26,10 @@ const Orders = sequelize.define(
       type: DataTypes.DATE,
       allowNull: false,
     },
+    delivery_date: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
     payment_type: {
       type: DataTypes.STRING(100),
       allowNull: false,
@@ -34,6 +37,11 @@ const Orders = sequelize.define(
     order_state: {
       type: DataTypes.STRING(15),
       allowNull: true,
+    },
+    return_state: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
     },
     delivery_state: {
       type: DataTypes.STRING(15),
@@ -44,16 +52,17 @@ const Orders = sequelize.define(
       allowNull: true,
     },
     total_order: {
-      type: DataTypes.DECIMAL,
+      type: DataTypes.DECIMAL(10, 2),
       allowNull: true,
     },
     observation_return: {
-      type: DataTypes.STRING(250),
+      type: DataTypes.STRING(500),
       allowNull: true,
     },
   },
   {
     sequelize,
+    modelName: "Orders",
     tableName: "orders",
     schema: "public",
     timestamps: false,

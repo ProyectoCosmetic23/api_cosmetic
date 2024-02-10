@@ -34,7 +34,8 @@ async function getProvById(req, res) {
             state_provider,
             observation_provider,
             name_contact,
-            creation_date_provider
+            creation_date_provider,
+            reason_anulate
         } = provider;
 
         res.json({
@@ -46,7 +47,8 @@ async function getProvById(req, res) {
             state_provider,
             observation_provider,
             name_contact,
-            creation_date_provider
+            creation_date_provider,
+            reason_anulate
         });
     } catch (error) {
         console.error('Error al obtener el proveedor:', error);
@@ -210,7 +212,7 @@ async function updateState(req, res) {
         provider.reason_anulate = reason_anulate;
 
         await provider.save();
-        
+        console.log("estado", provider.reason_anulate)
         res.json(provider);
     } catch (error) {
         res.status(500).json({ error: 'Error al actualizar el estado del proveedor.' });
