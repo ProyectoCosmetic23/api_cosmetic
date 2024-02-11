@@ -243,6 +243,7 @@ async function loginUser(req, res) {
 
 
 
+
 //Metodo para actualizar el estado
 async function updateUserState(req, res) {
   const { id } = req.params;
