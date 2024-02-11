@@ -15,7 +15,7 @@ async function createComs(req, res) {
     // Check if all required fields are provided
     requiredFields.forEach(field => {
         if (!req.body[field]) {
-            return res.status(400).json({ error: `Field "${field}" is required.` });
+            return res.status(400).json({ error: "Todos los campos son requeridos." });
         }
     });
     try {
