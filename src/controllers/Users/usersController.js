@@ -204,13 +204,23 @@ async function loginUser(req, res) {
         .json({ error: "Correo o Contraseña incorrectas." });
     }
 
-    if (user.state_user === "Inactivo") {
+    if (user.state_user !== "Activo") {
       return res
         .status(400)
         .json({ error: "Credenciales incorrectas: El usuario está inactivo." });
     }
 
-    // Compara la contraseña proporcionada con la contraseña almacenada en la base de datos
+    // Obtenemos el rol del usuario
+    const userRole = await Roles.findOne({ where: { id_role: user.id_role } });
+
+    // Verificamos el estado del rol
+    if (!userRole || userRole.state_role !== "Activo") {
+      return res
+        .status(403)
+        .json({ error: "No tienes permisos para iniciar sesión. Contacta al administrador." });
+    }
+
+    // Comparamos la contraseña proporcionada con la contraseña almacenada en la base de datos
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (!isPasswordValid) {
@@ -219,7 +229,7 @@ async function loginUser(req, res) {
         .json({ loginError: "Correo o Contraseña incorrectas." });
     }
 
-    const token = await generarJWT(user.id);
+    const token = await generarJWT(user.id_user);
 
     res.json({
       user,
