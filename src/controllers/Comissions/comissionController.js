@@ -9,7 +9,15 @@ async function createComs(req, res) {
         id_employee,
         id_commission_detail,
     } = req.body;
+    
+    const requiredFields = ['id_employee', 'id_commission_detail'];
 
+    // Check if all required fields are provided
+    requiredFields.forEach(field => {
+        if (!req.body[field]) {
+            return res.status(400).json({ error: `Field "${field}" is required.` });
+        }
+    });
     try {
         if (id_employee === undefined || id_employee === null || id_commission_detail === undefined || id_commission_detail === null) {
             return res.status(400).json({ error: 'Complete los campos obligatorios.' });
