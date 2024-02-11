@@ -223,6 +223,13 @@ async function loginUser(req, res) {
         .json({ error: "No tienes permisos para iniciar sesión. Contacta al administrador." });
     }
 
+    // Verificar si el rol del usuario está inactivo
+    if (userRole.state_role === "Inactivo") {
+      return res
+        .status(400)
+        .json({ error: "Credenciales incorrectas: El rol del usuario está inactivo." });
+    }
+
     // Comparamos la contraseña proporcionada con la contraseña almacenada en la base de datos
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
@@ -240,8 +247,8 @@ async function loginUser(req, res) {
     });
   } catch (error) {
     console.error("Error al iniciar sesión: ", error);
-    res.status(500).json({ error: "Error interno al iniciar sesión.", error });
-  }
+    res.status(500).json({ error: "Error interno al iniciar sesión.", error });
+  }
 }
 
 
