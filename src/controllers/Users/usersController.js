@@ -254,6 +254,7 @@ async function loginUser(req, res) {
 
 
 //Metodo para actualizar el estado
+//Metodo para actualizar el estado
 async function updateUserState(req, res) {
   const { id } = req.params;
 
@@ -267,6 +268,7 @@ async function updateUserState(req, res) {
       if (user) {
         var state_user_new = "";
 
+        // Cambiar el estado del usuario
         if (user.state_user === "Activo") {
           state_user_new = "Inactivo";
         } else if (user.state_user === "Inactivo") {
@@ -278,6 +280,13 @@ async function updateUserState(req, res) {
 
         // Guardar los cambios en la base de datos
         await user.save();
+
+        // Actualizar el estado del empleado correspondiente
+        const employee = await Employee.findOne({ where: { id_employee: user.id_employee } });
+        if (employee) {
+          employee.state_employee = state_user_new === "Activo" ? "Activo" : "Inactivo";
+          await employee.save();
+        }
 
         mensaje = "Cambio de estado realizado con éxito.";
       } else {
