@@ -33,7 +33,8 @@ async function getDetailComsById(req, res) {
 async function createDetaileCom(req, res) {
     const { commission_percentage, month_commission,
     } = req.body;
-
+    console.log(commission_percentage);
+    console.log(month_commission);
     try {
         if (!commission_percentage || !month_commission) {
             return res.status(400).json({ error: 'Todos los campos requeridos deben estar presentes.' });
@@ -62,6 +63,8 @@ async function createDetaileCom(req, res) {
 
         res.status(201).json(nuevoDetaileComision);
     } catch (error) {
+        console.log(commission_percentage);
+    console.log(month_commission);
         res.status(400).json({ error: 'Error al crear la comisión.' });
         console.log(error.message);
     }

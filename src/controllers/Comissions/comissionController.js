@@ -9,8 +9,11 @@ async function createComs(req, res) {
         id_employee,
         id_commission_detail,
     } = req.body;
-
+    
     try {
+        if (id_employee === undefined || id_employee === null || id_commission_detail === undefined || id_commission_detail === null) {
+            return res.status(400).json({ error: 'Complete los campos obligatorios.' });
+        }
         // Obtener el detalle de comisión para el mes correspondiente
         const comissionDetail = await Comission_Detail.findByPk(id_commission_detail);
 
