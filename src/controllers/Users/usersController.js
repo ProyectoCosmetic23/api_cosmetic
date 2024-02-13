@@ -280,34 +280,19 @@ async function updateUserState(req, res) {
         // Guardar los cambios en la base de datos
         await user.save();
 
-        mensaje = "Cambio de estado del usuario realizado con éxito.";
-        console.log("Estado del usuario cambiado:", state_user_new);
-
-        // Verificar si el usuario está asociado a un empleado y cambiar su estado
-        if (user.id_employee) {
-          const employee = await Employee.findOne({ where: { id_employee: user.id_employee } });
-          if (employee) {
-            // Aquí es donde podemos ajustar la lógica para cambiar el estado del empleado
-            // solo si el usuario elige "Ok" en ambos modales
-            if (userSelection === "Ok" && secondModalResult === "Ok") {
-              const employee_state_new = state_user_new === "Activo" ? "Activo" : "Inactivo";
-              employee.state_employee = employee_state_new;
-              await employee.save();
-              mensaje += " Cambio de estado del empleado realizado con éxito.";
-              console.log("Estado del empleado cambiado:", employee_state_new);
-            } else {
-              // Si el usuario elige "No" en el segundo modal, no hacemos cambios en el estado del empleado
-              console.log("El usuario eligió 'No' en el segundo modal. No se cambió el estado del empleado.");
-            }
-          }
+        // Actualizar el estado del empleado correspondiente
+        const employee = await Employee.findOne({ where: { id_employee: user.id_employee } });
+        if (employee) {
+          employee.state_employee = state_user_new === "Activo" ? "Activo" : "Inactivo";
+          await employee.save();
         }
+
+        mensaje = "Cambio de estado realizado con éxito.";
       } else {
         mensaje = "El usuario no fue encontrado.";
-        console.log("El usuario no fue encontrado.");
       }
     } else {
       mensaje = "Falta el ID en la solicitud.";
-      console.log("Falta el ID en la solicitud.");
     }
   } catch (error) {
     console.error("Error al cambiar el estado del usuario:", error);
