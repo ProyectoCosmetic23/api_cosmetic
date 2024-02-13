@@ -8,27 +8,69 @@ const Roles = require ('../../models/roles')
 
 
 //Buscar empleado por cedula y retornar el correo del empleado 
+// async function employeeByCard(req, res) {
+//   const { id_card_employee } = req.params;
+
+//   try {
+//     if (id_card_employee) {
+//       const employee = await Employee.findOne({ where: { id_card_employee } });
+
+//       if (!employee) {
+//         return res.status(404).json({ message: 'Empleado no encontrado.' });
+//       }
+
+//       // Retorna el correo del empleado si se encuentra
+//       res.json({ email: employee.email, id_employee: employee.id_employee, name_employee: employee.name_employee });
+//     } else {
+//       return res.status(400).json({ message: 'Falta el ID de la cédula en la solicitud.' });
+//     }
+//   } catch (error) {
+//     console.error('Error al buscar el empleado por cédula:', error);
+//     res.status(500).json({ error: 'Error al buscar el empleado por cédula.' });
+//   }
+// }
+
+
+//prueba
 async function employeeByCard(req, res) {
   const { id_card_employee } = req.params;
 
   try {
-    if (id_card_employee) {
-      const employee = await Employee.findOne({ where: { id_card_employee } });
-
-      if (!employee) {
-        return res.status(404).json({ message: 'Empleado no encontrado.' });
-      }
-
-      // Retorna el correo del empleado si se encuentra
-      res.json({ email: employee.email, id_employee: employee.id_employee, name_employee: employee.name_employee });
-    } else {
+    if (!id_card_employee) {
       return res.status(400).json({ message: 'Falta el ID de la cédula en la solicitud.' });
     }
+
+    // Buscar empleado por cédula
+    const employee = await Employee.findOne({ where: { id_card_employee } });
+
+    if (!employee) {
+      return res.status(404).json({ message: 'Empleado no encontrado.' });
+    }
+
+    // Verificar si el empleado ya tiene un usuario asociado
+    const existingUser = await Users.findOne({ where: { id_employee: employee.id_employee } });
+
+    if (existingUser) {
+      return res.status(400).json({ message: 'Ya existe un usuario creado para este empleado.' });
+    }
+
+    // Si no hay usuario existente, puedes continuar con la lógica actual
+    res.json({
+      email: employee.email,  
+      id_employee: employee.id_employee,
+      name_employee: employee.name_employee
+    });
+
   } catch (error) {
     console.error('Error al buscar el empleado por cédula:', error);
     res.status(500).json({ error: 'Error al buscar el empleado por cédula.' });
   }
 }
+
+
+
+
+
 
 //Función para traer todos los usuarios
 const getAllUsers = async (req, res) => {

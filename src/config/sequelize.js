@@ -12,6 +12,7 @@ const sequelize = new Sequelize('cosmetic_dbo2', 'adminuser', 'xjvJfCUjd908qLvSe
   },
 });
 
+
 module.exports = sequelize;
 
 
