@@ -4,6 +4,8 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const { generarJWT } = require("../../helpers/generar-jwt.js");
 const Employee = require('../../models/employees');
+const Roles = require ('../../models/roles')
+
 
 //Buscar empleado por cedula y retornar el correo del empleado 
 async function employeeByCard(req, res) {
@@ -191,6 +193,7 @@ async function updateUser(req, res) {
 }
 
 //Metodo para loguearse
+//Metodo para loguearse
 async function loginUser(req, res) {
   const { email, password } = req.body;
   console.log(email, password);
@@ -210,7 +213,24 @@ async function loginUser(req, res) {
         .json({ error: "Credenciales incorrectas: El usuario está inactivo." });
     }
 
-    // Compara la contraseña proporcionada con la contraseña almacenada en la base de datos
+    // Obtenemos el rol del usuario
+    const userRole = await Roles.findOne({ where: { id_role: user.id_role } });
+
+    // Verificamos el estado del rol
+    if (!userRole || userRole.state_role !== "Activo") {
+      return res
+        .status(403)
+        .json({ error: "No tienes permisos para iniciar sesión. Contacta al administrador." });
+    }
+
+    // Verificar si el rol del usuario está inactivo
+    if (userRole.state_role === "Inactivo") {
+      return res
+        .status(400)
+        .json({ error: "Credenciales incorrectas: El rol del usuario está inactivo." });
+    }
+
+    // Comparamos la contraseña proporcionada con la contraseña almacenada en la base de datos
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (!isPasswordValid) {
@@ -219,7 +239,7 @@ async function loginUser(req, res) {
         .json({ loginError: "Correo o Contraseña incorrectas." });
     }
 
-    const token = await generarJWT(user.id);
+    const token = await generarJWT(user.id_user);
 
     res.json({
       user,
@@ -233,7 +253,7 @@ async function loginUser(req, res) {
 
 
 
-
+//Metodo para actualizar el estado
 //Metodo para actualizar el estado
 async function updateUserState(req, res) {
   const { id } = req.params;
@@ -248,6 +268,7 @@ async function updateUserState(req, res) {
       if (user) {
         var state_user_new = "";
 
+        // Cambiar el estado del usuario
         if (user.state_user === "Activo") {
           state_user_new = "Inactivo";
         } else if (user.state_user === "Inactivo") {
@@ -259,6 +280,13 @@ async function updateUserState(req, res) {
 
         // Guardar los cambios en la base de datos
         await user.save();
+
+        // Actualizar el estado del empleado correspondiente
+        const employee = await Employee.findOne({ where: { id_employee: user.id_employee } });
+        if (employee) {
+          employee.state_employee = state_user_new === "Activo" ? "Activo" : "Inactivo";
+          await employee.save();
+        }
 
         mensaje = "Cambio de estado realizado con éxito.";
       } else {

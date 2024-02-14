@@ -1,5 +1,6 @@
 // pedidosController.js
 const Roles = require("../../models/roles");
+const Users = require("../../models/users");
 
 // Obtener todos los roles
 const getAllRoles = async (req, res) => {
@@ -11,15 +12,10 @@ const getAllRoles = async (req, res) => {
     var roles_list = [];
     for (let role of roles) {
       var id_role = role.id_role;
-      console.log(id_role);
       var name_role = role.name_role;
-      console.log(name_role);
       var state_role = role.state_role;
-      console.log(state_role);
       var modules_string = role.modules_role;
-      console.log(modules_string);
       var modules_array = modules_string.split(", ");
-      console.log(modules_array);
       var role_converted = {
         id_role: id_role,
         name_role: name_role,
@@ -54,7 +50,7 @@ async function getRoleById(req, res) {
       name_role: name_role,
       state_role: state_role,
       modules_role: modules_array,
-      observation_status: observation_status
+      observation_status: observation_status,
     });
   } catch (error) {
     res.status(500).json({ error: "Error al obtener el rol." + error });
@@ -100,7 +96,7 @@ async function createRole(req, res) {
       name_role: name_role,
       state_role: state_role,
       modules_role: modules_string,
-      observation_status: observation_status
+      observation_status: observation_status,
     });
     res.status(201).json({ nuevo_rol });
   } catch (error) {
@@ -144,13 +140,30 @@ async function updateRoleStatus(req, res) {
       return res.status(404).json({ error: "Rol no encontrado." });
     }
 
+    // Actualizar el estado del rol
     await role.update({
       state_role: state_role,
-      observation_status: data.observation
+      observation_status: data.observation,
     });
-    res.json(role);
+
+    if (role.state_role == "Inactivo") {
+      // Buscar todos los usuarios que tengan el id_rol que se está inhabilitando
+      const users = await Users.findAll({
+        where: {
+          id_role: id,
+        }
+      });
+  
+      // Cambiar el estado de los usuarios a "Inactivo"
+      for (var user of users) {
+        await user.update({ state_user: "Inactivo" });
+      }
+    }
+
+    // Retornar el rol y los usuarios actualizados
+    res.json({ role });
   } catch (error) {
-    res.status(500).json({ error: "Error al cambiar el estado del rol." });
+    res.status(500).json("Error al cambiar el estado del rol." + error);
   }
 }
 
