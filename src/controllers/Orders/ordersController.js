@@ -435,6 +435,7 @@ async function anulateOrderById(req, res) {
         throw new Error(`Producto no encontrado con ID ${id_product}`);
       }
     }
+    await updateComissionsFromSales(month);
     res.json(order);
   } catch (error) {
     res.status(500).json({ error: "Error al anular el pedido." + error });
