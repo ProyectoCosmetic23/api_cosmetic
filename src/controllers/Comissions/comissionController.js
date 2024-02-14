@@ -217,6 +217,9 @@ const updateComissionsFromSales = async (month) => {
                     order_date: {
                         [Op.gte]: new Date(commission_detail.month_commission),
                     },
+                    order_state: {
+                        [Op.ne]: 'Anulado', // Filtrar órdenes que no estén anuladas
+                    },
                 },
             });
 
