@@ -143,9 +143,18 @@ async function updateProv(req, res) {
         if (!provider) {
             return res.status(404).json({ error: 'Proveedor no encontrado.' });
         }
+
         // Verificar y actualizar solo las propiedades que han cambiado
         if (updatedData.name_provider !== undefined) {
             provider.name_provider = updatedData.name_provider;
+        }
+
+        if (updatedData.nit_cedula !== undefined) {
+            console.log(updatedData.nit_cedula)
+            if (!/^\d{7,10}$/.test(updatedData.nit_cedula)) {
+                return res.status(400).json({ error: 'La cédula debe ser un número positivo y tener entre 7 y 10 dígitos' });
+            }
+            provider.nit_cedula = updatedData.nit_cedula;
         }
 
         if (updatedData.email_provider !== undefined) {
@@ -158,13 +167,7 @@ async function updateProv(req, res) {
         if (updatedData.address_provider !== undefined) {
             provider.address_provider = updatedData.address_provider;
         }
-        
-        if (updatedData.nit_cedula !== undefined) {
-            if (!/^\d{7,10}$/.test(nit_cedula)) {
-                return res.status(400).json({ error: 'La cédula debe ser un número positivo y tener entre 7 y 10 dígitos' });
-            }
-            provider.nit_cedula = updatedData.nit_cedula;
-        }
+
         if (updatedData.phone_provider !== undefined) {
             if (!/^[0-9+ ]+$/.test(updatedData.phone_provider)) {
                 return res.status(400).json({ error: 'El teléfono debe contener solo números, el símbolo + y espacios.' });
@@ -188,9 +191,9 @@ async function updateProv(req, res) {
     } catch (error) {
         if (error.name === 'SequelizeUniqueConstraintError') {
             // Si el error es una violación de restricción de unicidad
-            return res.status(400).json({ error: 'El proveedor con estos datos ya existe.' });
+            return res.status(400).json({ error: error.name });
         } else {
-            res.status(500).json({ error: 'Error al actualizar el proveedor.' });
+            res.status(500).json({ error: error });
             console.log(error.message);
         }
     }
@@ -229,25 +232,25 @@ async function updateState(req, res) {
 async function checkCedulaAvailability(req, res) {
     const { cedula } = req.query;
     try {
-      const existingCedula = await Providers.findOne({ where: { nit_cedula: cedula } });
-      res.json(!existingCedula);
+        const existingCedula = await Providers.findOne({ where: { nit_cedula: cedula } });
+        res.json(!existingCedula);
     } catch (error) {
         console.log(cedula)
         console.error('Error al verificar la cédula:', error);
         res.status(500).json({ error: 'Error al verificar la cédula.', details: error.message });
-      }
-  }
+    }
+}
 
-  async function checkEmailAvailability(req, res) {
+async function checkEmailAvailability(req, res) {
     const { email } = req.query;
     try {
-      const existingEmail = await Providers.findOne({ where: { email } });
-      res.json(!existingEmail);
+        const existingEmail = await Providers.findOne({ where: { email } });
+        res.json(!existingEmail);
     } catch (error) {
-      console.error('Error al verificar el correo:', error);
-      res.status(500).json({ error: 'Error al verificar el correo.' });
+        console.error('Error al verificar el correo:', error);
+        res.status(500).json({ error: 'Error al verificar el correo.' });
     }
-  }
+}
 
 // Exportar las funciones del módulo
 
