@@ -40,7 +40,8 @@ const Clients = sequelize.define(
       type: DataTypes.STRING(15),
       allowNull: true,
       defaultValue: "Activo",
-    }
+    },
+
   },
   {
     sequelize,
