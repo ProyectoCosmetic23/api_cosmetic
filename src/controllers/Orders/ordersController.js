@@ -396,6 +396,7 @@ async function anulateOrderById(req, res) {
   var order_state = "Anulado";
   try {
     const order = await Orders.findByPk(id);
+    const order_date = order.order_date;
     if (!order) {
       return res.status(404).json({ error: "Pedido no encontrado." });
     }
@@ -435,6 +436,7 @@ async function anulateOrderById(req, res) {
         throw new Error(`Producto no encontrado con ID ${id_product}`);
       }
     }
+    await updateComissionsFromSales(order_date);
     res.json(order);
   } catch (error) {
     res.status(500).json({ error: "Error al anular el pedido." + error });

@@ -143,7 +143,6 @@ async function updateProv(req, res) {
         if (!provider) {
             return res.status(404).json({ error: 'Proveedor no encontrado.' });
         }
-
         // Verificar y actualizar solo las propiedades que han cambiado
         if (updatedData.name_provider !== undefined) {
             provider.name_provider = updatedData.name_provider;
@@ -159,7 +158,13 @@ async function updateProv(req, res) {
         if (updatedData.address_provider !== undefined) {
             provider.address_provider = updatedData.address_provider;
         }
-
+        
+        if (updatedData.nit_cedula !== undefined) {
+            if (!/^\d{7,10}$/.test(nit_cedula)) {
+                return res.status(400).json({ error: 'La cédula debe ser un número positivo y tener entre 7 y 10 dígitos' });
+            }
+            provider.nit_cedula = updatedData.nit_cedula;
+        }
         if (updatedData.phone_provider !== undefined) {
             if (!/^[0-9+ ]+$/.test(updatedData.phone_provider)) {
                 return res.status(400).json({ error: 'El teléfono debe contener solo números, el símbolo + y espacios.' });
