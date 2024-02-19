@@ -246,13 +246,22 @@ async function loginUser(req, res) {
     if (!user) {
       return res
         .status(401)
-        .json({ error: "Correo o Contraseña incorrectas." });
+        .json({ error: "Correo no registrado." }); // Mensaje indicando que el correo no está registrado
     }
 
     if (user.state_user === "Inactivo") {
       return res
         .status(400)
         .json({ error: "Credenciales incorrectas: El usuario está inactivo." });
+    }
+
+    // Comparamos la contraseña proporcionada con la contraseña almacenada en la base de datos
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+
+    if (!isPasswordValid) {
+      return res
+        .status(401)
+        .json({ error: "Contraseña incorrecta." });
     }
 
     // Obtenemos el rol del usuario
