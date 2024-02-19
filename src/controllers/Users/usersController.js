@@ -280,17 +280,22 @@ async function loginUser(req, res) {
         .json({ loginError: "Correo o Contraseña incorrectas." });
     }
 
+    // Si llegamos hasta aquí, el inicio de sesión fue exitoso
+    console.log("Inicio de sesión exitoso para el usuario:", user.email);
+
     const token = await generarJWT(user.id_user);
 
     res.json({
       user,
       token,
+      successMessage: "Inicio de sesión exitoso"
     });
   } catch (error) {
     console.error("Error al iniciar sesión: ", error);
     res.status(500).json({ error: "Error interno al iniciar sesión.", error });
   }
 }
+
 
 
 //Metodo para actualizar el estado
