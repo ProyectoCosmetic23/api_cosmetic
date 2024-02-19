@@ -234,60 +234,32 @@ async function updateUser(req, res) {
   }
 }
 
-//Metodo para loguearse
+
 //Metodo para loguearse
 async function loginUser(req, res) {
   const { email, password } = req.body;
-  console.log(email, password);
+
   try {
     const user = await Users.findOne({ where: { email: email } });
-    console.log("Usuario encontrado:", user);
 
     if (!user) {
-      return res
-        .status(401)
-        .json({ error: "Correo no registrado." }); // Mensaje indicando que el correo no está registrado
+      return res.status(401).json({ error: "Correo no registrado." });
     }
 
     if (user.state_user === "Inactivo") {
-      return res
-        .status(400)
-        .json({ error: "Credenciales incorrectas: El usuario está inactivo." });
+      return res.status(400).json({ error: "Credenciales incorrectas: El usuario está inactivo." });
     }
 
-    // Comparamos la contraseña proporcionada con la contraseña almacenada en la base de datos
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (!isPasswordValid) {
-      return res
-        .status(401)
-        .json({ error: "Contraseña incorrecta." });
+      return res.status(401).json({ error: "Contraseña incorrecta." });
     }
 
-    // Obtenemos el rol del usuario
     const userRole = await Roles.findOne({ where: { id_role: user.id_role } });
 
-    // Verificamos el estado del rol
     if (!userRole || userRole.state_role !== "Activo") {
-      return res
-        .status(403)
-        .json({ error: "No tienes permisos para iniciar sesión. Contacta al administrador." });
-    }
-
-    // Verificar si el rol del usuario está inactivo
-    if (userRole.state_role === "Inactivo") {
-      return res
-        .status(400)
-        .json({ error: "Credenciales incorrectas: El rol del usuario está inactivo." });
-    }
-
-    // Comparamos la contraseña proporcionada con la contraseña almacenada en la base de datos
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-
-    if (!isPasswordValid) {
-      return res
-        .status(401)
-        .json({ loginError: "Correo o Contraseña incorrectas." });
+      return res.status(403).json({ error: "No tienes permisos para iniciar sesión. Contacta al administrador." });
     }
 
     const token = await generarJWT(user.id_user);
@@ -298,7 +270,7 @@ async function loginUser(req, res) {
     });
   } catch (error) {
     console.error("Error al iniciar sesión: ", error);
-    res.status(500).json({ error: "Error interno al iniciar sesión.", error });
+    res.status(500).json({ error: "Error interno al iniciar sesión." });
   }
 }
 
