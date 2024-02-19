@@ -245,13 +245,13 @@ async function loginUser(req, res) {
     if (!user) {
       return res
         .status(401)
-        .json({ error: "Correo o Contraseña incorrectas." });
+        .json({ error: "Credenciales incorrecta" });
     }
 
     if (user.state_user === "Inactivo") {
       return res
         .status(400)
-        .json({ error: "Credenciales incorrectas: El usuario está inactivo." });
+        .json({ error: "Credenciales incorrectas: El usuario está Inactivo." });
     }
 
     // Obtenemos el rol del usuario
