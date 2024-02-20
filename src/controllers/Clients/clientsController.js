@@ -208,7 +208,7 @@ const customerDelete = async (req, res) => {
 // Cambiar estado del cliente
 async function CustomerChangeStatus(req, res) {
   const { id } = req.params;
-
+  const {  reasonAnulate } = req.body;
   let mensaje = "";
 
   try {
@@ -217,6 +217,7 @@ async function CustomerChangeStatus(req, res) {
       const client = await Client.findByPk(id);
 
       if (client) {
+        
         var state_client_new = "";
 
         if (client.state_client === "Activo") {
@@ -226,8 +227,12 @@ async function CustomerChangeStatus(req, res) {
         }
 
         // Actualizar el estado del empleado
-        client.state_client = state_client_new;
+       // client.state_client = state_client_new;
 
+        client.update({
+          reason_anulate: reasonAnulate,
+          state_client: state_client_new
+      })
         // Guardar los cambios en la base de datos
         await client.save();
 
