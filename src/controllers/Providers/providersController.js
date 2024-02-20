@@ -80,18 +80,31 @@ async function createProv(req, res) {
             return res.status(400).json({ error: 'La cédula debe ser un número positivo y tener entre 7 y 10 dígitos' });
         }
         // Validación: Nombre debe contener letras, números, espacios y el símbolo "~" para la "ñ"
-        if (!/^[A-Za-z0-9\s~ñÑ]+$/.test(name_contact)) {
-            return res.status(400).json({ error: 'El nombre debe contener letras, números, espacios y el símbolo "~" para la "ñ"' });
+        if (!/^[A-Za-z0-9\sáéíóúÁÉÍÓÚüÜñÑ~]+$/.test(name_contact)) {
+            return res.status(400).json({ error: 'El nombre del contacto debe contener letras, números, espacios y el símbolo "~" para la "ñ"' });
+        } else if (name_contact.length < 3 || name_contact.length > 50) {
+            return res.status(400).json({ error: 'El nombre del contacto debe tener entre 3 y 50 caracteres.' });
         }
 
         // Validación: Correo debe ser válido
         if (!isValidEmail(email_provider)) {
             return res.status(400).json({ error: 'El correo no es válido' });
+        } else if (email_provider.length > 80) {
+            return res.status(400).json({ error: 'El correo electrónico no puede superar los 80 caracteres.' });
+        }
+        if (name_provider.length > 50 || name_provider.length < 5) {
+            return res.status(400).json({ error: 'El nombre del proveedor debe estar entre 5 y 50 caracteres' });
+        }
+        if (observation_provider.length > 100) {
+            return res.status(400).json({ error: 'La observación no puede pasar los 100 caracteres' });
+        }
+        if (address_provider.length > 80 || address_provider.length < 4) {
+            return res.status(400).json({ error: 'La dirección debe tener entre 4 y 80 caracteres' });
         }
 
         // Validación: Teléfono debe ser numérico
-        if (!/^[0-9+ ]+$/.test(phone_provider)) {
-            return res.status(400).json({ error: 'El teléfono debe contener solo números, el símbolo + y espacios.' });
+        if (!/^\d{7,10}$/.test(phone_provider)) {
+            return res.status(400).json({ error: 'El teléfono debe un número entre 7 y 10 dígitos.' });
         }
 
 
@@ -146,6 +159,9 @@ async function updateProv(req, res) {
 
         // Verificar y actualizar solo las propiedades que han cambiado
         if (updatedData.name_provider !== undefined) {
+            if (updatedData.name_provider.length < 5 || updatedData.name_provider.length > 50) {
+                return res.status(400).json({ error: 'El nombre del proveedor debe estar entre 5 y 50 caracteres' });
+            }
             provider.name_provider = updatedData.name_provider;
         }
 
@@ -160,6 +176,8 @@ async function updateProv(req, res) {
         if (updatedData.email_provider !== undefined) {
             if (!isValidEmail(updatedData.email_provider)) {
                 return res.status(400).json({ error: 'El correo no es válido' });
+            } else if (updatedData.email_provider.length > 80) {
+                return res.status(400).json({ error: 'El correo electrónico no puede superar los 80 caracteres.' });
             }
             provider.email_provider = updatedData.email_provider;
         }
@@ -168,18 +186,29 @@ async function updateProv(req, res) {
             provider.address_provider = updatedData.address_provider;
         }
 
+        if (updatedData.address_provider.length > 80 || updatedData.address_provider.length < 4) {
+            return res.status(400).json({ error: 'La dirección debe tener entre 4 y 80 caracteres' });
+        }
+
         if (updatedData.phone_provider !== undefined) {
-            if (!/^[0-9+ ]+$/.test(updatedData.phone_provider)) {
-                return res.status(400).json({ error: 'El teléfono debe contener solo números, el símbolo + y espacios.' });
+            if (!/^\d{7,10}$/.test(updatedData.phone_provider)) {
+                return res.status(400).json({ error: 'El teléfono debe un número entre 7 y 10 dígitos.' });
             }
             provider.phone_provider = updatedData.phone_provider;
         }
+
         if (updatedData.observation_provider !== undefined) {
+            if (updatedData.observation_provider.length > 100) {
+                return res.status(400).json({ error: 'La observación no puede pasar los 100 caracteres' });
+            }
             provider.observation_provider = updatedData.observation_provider;
         }
+
         if (updatedData.name_contact !== undefined) {
-            if (!/^[A-Za-z0-9\s~ñÑ]+$/.test(updatedData.name_contact)) {
-                return res.status(400).json({ error: 'El nombre debe contener letras, números, espacios y el símbolo "~" para la "ñ"' });
+            if (!/^[A-Za-z0-9\sáéíóúÁÉÍÓÚüÜñÑ~]+$/.test(updatedData.name_contact)) {
+                return res.status(400).json({ error: 'El nombre del contacto debe contener letras, números, espacios y el símbolo "~" para la "ñ"' });
+            } else if (updatedData.name_contact.length < 3 || updatedData.name_contact.length > 50) {
+                return res.status(400).json({ error: 'El nombre del contacto debe tener entre 3 y 50 caracteres.' });
             }
             provider.name_contact = updatedData.name_contact;
         }
