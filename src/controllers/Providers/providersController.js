@@ -92,6 +92,13 @@ async function createProv(req, res) {
         } else if (email_provider.length > 80) {
             return res.status(400).json({ error: 'El correo electrónico no puede superar los 80 caracteres.' });
         }
+
+
+        // Validación: Teléfono debe ser numérico
+        if (!/^\d{7,10}$/.test(phone_provider)) {
+            return res.status(400).json({ error: 'El teléfono debe un número entre 7 y 10 dígitos.' });
+        }
+
         if (name_provider.length > 50 || name_provider.length < 5) {
             return res.status(400).json({ error: 'El nombre del proveedor debe estar entre 5 y 50 caracteres' });
         }
@@ -101,13 +108,6 @@ async function createProv(req, res) {
         if (address_provider.length > 80 || address_provider.length < 4) {
             return res.status(400).json({ error: 'La dirección debe tener entre 4 y 80 caracteres' });
         }
-
-        // Validación: Teléfono debe ser numérico
-        if (!/^\d{7,10}$/.test(phone_provider)) {
-            return res.status(400).json({ error: 'El teléfono debe un número entre 7 y 10 dígitos.' });
-        }
-
-
 
         // Validar la unicidad de campos únicos
         const providerExist = await Providers.findOne({
@@ -183,12 +183,13 @@ async function updateProv(req, res) {
         }
 
         if (updatedData.address_provider !== undefined) {
+            if (updatedData.address_provider.length > 80 || updatedData.address_provider.length < 4) {
+                return res.status(400).json({ error: 'La dirección debe tener entre 4 y 80 caracteres' });
+            }    
             provider.address_provider = updatedData.address_provider;
         }
 
-        if (updatedData.address_provider.length > 80 || updatedData.address_provider.length < 4) {
-            return res.status(400).json({ error: 'La dirección debe tener entre 4 y 80 caracteres' });
-        }
+        
 
         if (updatedData.phone_provider !== undefined) {
             if (!/^\d{7,10}$/.test(updatedData.phone_provider)) {
@@ -196,7 +197,6 @@ async function updateProv(req, res) {
             }
             provider.phone_provider = updatedData.phone_provider;
         }
-
         if (updatedData.observation_provider !== undefined) {
             if (updatedData.observation_provider.length > 100) {
                 return res.status(400).json({ error: 'La observación no puede pasar los 100 caracteres' });
