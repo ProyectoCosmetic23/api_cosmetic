@@ -39,14 +39,14 @@ async function getShoppingById(req, res) {
                 { 
                     model: Purchase_Detail, attributes: ['id_product', 'id_category', 'cost_price', 
                 'selling_price', 'vat', 'product_quantity'], 
-                // include: [
-                //     {
-                //         model: Product, attributes: ['id_product', 'name_product'],
-                //         include: [
-                //             { model: Product_Categories, attributes: ['id_category', 'name_category'] }
-                //         ]
-                //     }
-                // ] 
+                include: [
+                    {
+                        model: Product, attributes: ['id_product', 'name_product'],
+                        include: [
+                            { model: Product_Categories, attributes: ['id_category', 'name_category'] }
+                        ]
+                    }
+                ] 
             },
             ]
         })
