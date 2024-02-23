@@ -32,7 +32,7 @@ const PORT = process.env.PORT || 8080;
 const corsOptions = {
   origin: [
     'https://api-cosmetic-qqce.onrender.com',
-    'http://localhost:4200',
+    'http://localhost:4200/sessions/signin',
     'https://cosmetic-proyect-9e0e1.web.app'
   ]
 };

@@ -57,7 +57,7 @@ async function createEmployee(req, res) {
   }
 
   // Validación: Cédula debe ser numérica
-  if (!/^\d{10}$/.test(id_card_employee)) {
+  if (!/^\d{6,10}$/.test(id_card_employee)) {
     return res.status(400).json({ error: 'La cédula debe ser numérica y tener 10 dígitos' });
   }
 
