@@ -286,7 +286,6 @@ async function loginUser(req, res) {
 
 
 
-//Metodo para actualizar el estado
 async function updateUserState(req, res) {
   const { id } = req.params;
 
@@ -313,14 +312,20 @@ async function updateUserState(req, res) {
         // Guardar los cambios en la base de datos
         await user.save();
 
-        // Actualizar el estado del empleado correspondiente
-        const employee = await Employee.findOne({ where: { id_employee: user.id_employee } });
-        if (employee) {
-          employee.state_employee = state_user_new === "Activo" ? "Activo" : "Inactivo";
-          await employee.save();
-        }
-
         mensaje = "Cambio de estado realizado con éxito.";
+
+        // Preguntar si se quiere cambiar el estado del empleado
+        const changeEmployee = req.body.changeEmployee;
+
+        if (changeEmployee) {
+          // Actualizar el estado del empleado correspondiente
+          const employee = await Employee.findOne({ where: { id_employee: user.id_employee } });
+          if (employee) {
+            employee.state_employee = state_user_new === "Activo" ? "Activo" : "Inactivo";
+            await employee.save();
+          }
+          mensaje += " El estado del empleado también se ha actualizado.";
+        }
       } else {
         mensaje = "El usuario no fue encontrado.";
       }
