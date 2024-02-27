@@ -10,7 +10,6 @@ const getAllCustomers = async (req, res) => {
     }
     res.json(clients);
   } catch (error) {
-    console.error("Error al recuperar clientes: ", error);
     res.status(500).json({ error: "Error interno del servidor" });
   }
 };
@@ -59,7 +58,7 @@ async function createCustomer(req, res) {
   }
 
   // Validación: Cédula debe ser numérica
-  if (!/^\d{10}$/.test(nit_or_id_client)) {
+  if (!/^\d{6,10}$/.test(nit_or_id_client)) {
     return res
       .status(400)
       .json({ error: "La cédula debe ser numérica y tener 10 dígitos" });
