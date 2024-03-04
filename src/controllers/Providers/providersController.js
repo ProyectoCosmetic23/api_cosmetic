@@ -218,7 +218,7 @@ async function updateProv(req, res) {
 
         res.json(provider);
     } catch (error) {
-        if (error.name === 'SequelizeUniqueConstraintError') {
+        if (error.name === 'Ya existe un proveedor con estos datos') {
             // Si el error es una violación de restricción de unicidad
             return res.status(400).json({ error: error.name });
         } else {
