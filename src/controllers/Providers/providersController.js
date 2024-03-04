@@ -99,9 +99,12 @@ async function createProv(req, res) {
             return res.status(400).json({ error: 'El teléfono debe un número entre 7 y 10 dígitos.' });
         }
 
-        if (name_provider.length > 50 || name_provider.length < 5) {
-            return res.status(400).json({ error: 'El nombre del proveedor debe estar entre 5 y 50 caracteres' });
+        if (!/^[A-Za-záéíóúÁÉÍÓÚüÜñÑ\s&\-\'0-9.!]+$/.test(name_provider)) {
+            return res.status(400).json({ error: 'El nombre del proveedor debe contener letras, números, espacios y los símbolos: ., \', -, &, y !' });
+        } else if (name_provider.length < 5 || name_provider.length > 50) {
+            return res.status(400).json({ error: 'El nombre del proveedor debe tener entre 5 y 50 caracteres.' });
         }
+
         if (observation_provider.length > 100) {
             return res.status(400).json({ error: 'La observación no puede pasar los 100 caracteres' });
         }
@@ -159,9 +162,12 @@ async function updateProv(req, res) {
 
         // Verificar y actualizar solo las propiedades que han cambiado
         if (updatedData.name_provider !== undefined) {
-            if (updatedData.name_provider.length < 5 || updatedData.name_provider.length > 50) {
-                return res.status(400).json({ error: 'El nombre del proveedor debe estar entre 5 y 50 caracteres' });
+            if (!/^[A-Za-záéíóúÁÉÍÓÚüÜñÑ\s&\-\'0-9.!]+$/.test(updatedData.name_provider)) {
+                return res.status(400).json({ error: 'El nombre del proveedor debe contener letras, números, espacios y los símbolos: ., \', -, &, y !' });
+            } else if (updatedData.name_provider.length < 5 || updatedData.name_provider.length > 50) {
+                return res.status(400).json({ error: 'El nombre del proveedor debe tener entre 5 y 50 caracteres.' });
             }
+            
             provider.name_provider = updatedData.name_provider;
         }
 
@@ -220,7 +226,7 @@ async function updateProv(req, res) {
     } catch (error) {
         if (error.name === 'Ya existe un proveedor con estos datos') {
             // Si el error es una violación de restricción de unicidad
-            return res.status(400).json({ error: error.name });
+            return res.status(400).json({ error: "Ya existe un proveedor con estos datos" });
         } else {
             res.status(500).json({ error: error });
             console.log(error.message);
