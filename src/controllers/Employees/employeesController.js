@@ -125,9 +125,9 @@ async function employeePut(req, res) {
   }
 
   // Validación: El nombre debe contener letras, números, espacios y el símbolo "~" para la "ñ"
-  if (name_employee && !/^[A-Za-z0-9\s~ñÑ]+$/.test(name_employee)) {
-    return res.status(400).json({ error: 'El nombre debe contener letras, números, espacios y el símbolo "~" para la "ñ"' });
-  }
+ // if (name_employee && !/^[A-Za-z0-9\s~ñÑ]+$/.test(name_employee)) {
+   // return res.status(400).json({ error: 'El nombre debe contener letras, números, espacios y el símbolo "~" para la "ñ"' });
+  //}
   
   
 
