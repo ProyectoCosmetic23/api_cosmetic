@@ -8,7 +8,7 @@ const Roles = require ('../../models/roles')
 // const fs = require('fs');
 // const logoData = fs.readFileSync('ApiProyecto/api_cosmetic/logocosmetic.png', 'base64');
 
-//Buscar empleado por cedula y retornar el correo del empleado 
+//Buscar empleado por cedula y retornar el correo del empleado
 // async function employeeByCard(req, res) {
 //   const { id_card_employee } = req.params;
 
@@ -31,47 +31,46 @@ const Roles = require ('../../models/roles')
 //   }
 // }
 
-
 //prueba
 async function employeeByCard(req, res) {
   const { id_card_employee } = req.params;
 
   try {
     if (!id_card_employee) {
-      return res.status(400).json({ message: 'Falta el ID de la cédula en la solicitud.' });
+      return res
+        .status(400)
+        .json({ message: "Falta el ID de la cédula en la solicitud." });
     }
 
     // Buscar empleado por cédula
     const employee = await Employee.findOne({ where: { id_card_employee } });
 
     if (!employee) {
-      return res.status(404).json({ message: 'Empleado no encontrado.' });
+      return res
+        .json({ message: "Empleado no encontrado.", status: 404 });
     }
 
     // Verificar si el empleado ya tiene un usuario asociado
-    const existingUser = await Users.findOne({ where: { id_employee: employee.id_employee } });
+    const existingUser = await Users.findOne({
+      where: { id_employee: employee.id_employee },
+    });
 
     if (existingUser) {
-      return res.status(400).json({ message: 'Ya existe un usuario creado para este empleado.' });
+      return res
+        .json({ message: "Ya existe un usuario creado para este empleado.", status: 403 });
     }
 
     // Si no hay usuario existente, puedes continuar con la lógica actual
     res.json({
-      email: employee.email,  
+      email: employee.email,
       id_employee: employee.id_employee,
-      name_employee: employee.name_employee
+      name_employee: employee.name_employee,
     });
-
   } catch (error) {
-    console.error('Error al buscar el empleado por cédula:', error);
-    res.status(500).json({ error: 'Error al buscar el empleado por cédula.' });
+    console.error("Error al buscar el empleado por cédula:", error);
+    res.status(500).json({ error: "Error al buscar el empleado por cédula." });
   }
 }
-
-
-
-
-
 
 //Función para traer todos los usuarios
 const getAllUsers = async (req, res) => {
@@ -124,8 +123,6 @@ async function createUser(req, res) {
   //   return res.status(400).json({ error: "La contraseña debe tener al menos 7 caracteres." });
   // }
 
-
-
   // // Validar que la contraseña contenga al menos una mayúscula, un número y un carácter especial
   // const passwordRegex =/^(?=.[A-Z])(?=.\d)(?=.[@$!%?&])[A-Za-z\d@$!%*?&]+$/;
   // if (!passwordRegex.test(password)) {
@@ -146,7 +143,6 @@ async function createUser(req, res) {
     // if (existingEmail) {
     //   return res.status(400).json({ error: "El correo ya está en uso." });
     // }
-    
 
     const saltRounds = 10;
     const salt = bcrypt.genSaltSync(saltRounds);
@@ -175,7 +171,7 @@ async function createUser(req, res) {
 async function checkEmailAvailability(req, res) {
   const { email } = req.query;
   try {
-    const existingEmail = await Users.findOne({ where: { email:email } });
+    const existingEmail = await Users.findOne({ where: { email: email } });
     res.json(!existingEmail);
   } catch (error) {
     console.error("Error al verificar el correo:", error);
@@ -183,13 +179,17 @@ async function checkEmailAvailability(req, res) {
   }
 }
 async function checkEmployeeAvailability(req, res) {
-  const {id_employee} = req.query;
+  const { id_employee } = req.query;
   try {
-    const existingEmployee = await Users.findOne({where: { id_employee: id_employee }});
+    const existingEmployee = await Users.findOne({
+      where: { id_employee: id_employee },
+    });
     res.json(!existingEmployee);
   } catch (error) {
     console.error("Error al verificar la existencia del usuario:", error);
-    res.status(500).json({ error: "Error al verificar la existencia del usuario." });
+    res
+      .status(500)
+      .json({ error: "Error al verificar la existencia del usuario." });
   }
 }
 
@@ -284,8 +284,6 @@ async function loginUser(req, res) {
 }
 
 
-
-
 async function updateUserState(req, res) {
   const { id } = req.params;
 
@@ -342,15 +340,13 @@ async function updateUserState(req, res) {
   });
 }
 
-
 //Función para generar token
-const crypto = require('crypto');
+const crypto = require("crypto");
 
 function generateResetToken() {
-  const token = crypto.randomBytes(20).toString('hex');
+  const token = crypto.randomBytes(20).toString("hex");
   return token;
 }
-
 
 const transporter = nodemailer.createTransport({
   service: "gmail",
@@ -418,7 +414,6 @@ async function forgotPassword(req, res) {
     };
     console.log("Token generado:", resetToken);
 
-
     // Enviar correo con el enlace de restablecimiento de contraseña
     await sendEmail(email, mailOptions);
 
@@ -433,25 +428,34 @@ async function forgotPassword(req, res) {
   }
 }
 
-
-
 // Dentro de la función changePassword
 async function changePassword(req, res) {
-  const { token} = req.params;
+  const { token } = req.params;
   const { newPassword } = req.body;
   // console.log("Token recibido en la solicitud:", token);
 
   try {
     // Extrae el token sin el prefijo "token="
-    const incomingToken = token.replace('token=', '');
+    const incomingToken = token.replace("token=", "");
 
     // Utiliza Object.values para obtener un array de tokens y encontrar el correo electrónico correspondiente
     const email = Object.keys(resetTokens).find((key) => {
-      const storedTokenBuffer = resetTokens[key] ? Buffer.from(resetTokens[key].token, 'hex') : null;
-      const incomingTokenBuffer = incomingToken ? Buffer.from(incomingToken, 'hex') : null;
+      const storedTokenBuffer = resetTokens[key]
+        ? Buffer.from(resetTokens[key].token, "hex")
+        : null;
+      const incomingTokenBuffer = incomingToken
+        ? Buffer.from(incomingToken, "hex")
+        : null;
 
-      if (storedTokenBuffer && incomingTokenBuffer && storedTokenBuffer.length === incomingTokenBuffer.length) {
-        const tokensAreEqual = crypto.timingSafeEqual(storedTokenBuffer, incomingTokenBuffer);
+      if (
+        storedTokenBuffer &&
+        incomingTokenBuffer &&
+        storedTokenBuffer.length === incomingTokenBuffer.length
+      ) {
+        const tokensAreEqual = crypto.timingSafeEqual(
+          storedTokenBuffer,
+          incomingTokenBuffer
+        );
 
         if (tokensAreEqual) {
           return resetTokens[key].token === incomingToken;
@@ -469,7 +473,9 @@ async function changePassword(req, res) {
 
     if (!email) {
       console.error("Correo electrónico no encontrado para el token:", token);
-      return res.status(404).json({ error: "Correo electrónico no encontrado para el token." });
+      return res
+        .status(404)
+        .json({ error: "Correo electrónico no encontrado para el token." });
     }
 
     const user = await Users.findOne({ where: { email: email } });
@@ -507,5 +513,5 @@ module.exports = {
   forgotPassword,
   changePassword,
   checkEmailAvailability,
-  employeeByCard
+  employeeByCard,
 };
