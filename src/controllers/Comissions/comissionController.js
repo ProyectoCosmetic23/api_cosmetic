@@ -229,7 +229,7 @@ const updateComissionsFromSales = async (month) => {
                 total_commission: (employeeSales * commission_detail.commission_percentage) / 100,
             });
         }
-        await t.commit();
+        // await t.commit();
         console.log('Comisiones actualizadas correctamente.');
     } catch (error) {
         console.error('Error al actualizar comisiones:', error);
