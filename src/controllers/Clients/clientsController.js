@@ -65,14 +65,14 @@ async function createCustomer(req, res) {
   }
 
   // Validación: Nombre debe contener letras, números, espacios y el símbolo "~" para la "ñ"
-  if (!/^[A-Za-z0-9\s~ñÑ]+$/.test(name_client)) {
-    return res
-      .status(400)
-      .json({
-        error:
-          'El nombre debe contener letras, números, espacios y el símbolo "~" para la "ñ"',
-      });
-  }
+  // if (!/^[A-Za-z0-9\s~ñÑ]+$/.test(name_client)) {
+  //   return res
+  //     .status(400)
+  //     .json({
+  //       error:
+  //         'El nombre debe contener letras, números, espacios y el símbolo "~" para la "ñ"',
+  //     });
+  // }
 
   // validacion correo valido
   if (!isValidEmail(email_client)) {
