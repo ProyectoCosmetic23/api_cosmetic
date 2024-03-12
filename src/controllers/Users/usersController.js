@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const { generarJWT } = require("../../helpers/generar-jwt.js");
 const Employee = require('../../models/employees');
+const EmployeeStatus = require('../Employees/employeesController.js')
 const Roles = require ('../../models/roles')
 // const fs = require('fs');
 // const logoData = fs.readFileSync('ApiProyecto/api_cosmetic/logocosmetic.png', 'base64');
@@ -282,11 +283,9 @@ async function loginUser(req, res) {
     res.status(500).json({ error: "Error interno al iniciar sesión." });
   }
 }
-
-
 async function updateUserState(req, res) {
   const { id } = req.params;
-
+  const { reason_anulate } = req.body; 
   let mensaje = "";
 
   try {
@@ -306,23 +305,26 @@ async function updateUserState(req, res) {
 
         // Actualizar el estado del usuario
         user.state_user = state_user_new;
-
-        // Guardar los cambios en la base de datos
+        user.reason_anulate = reason_anulate;
         await user.save();
 
+ // Preguntar si se quiere cambiar el estado del empleado
+ const changeEmployee = req.body.changeEmployee;
+
+    if (changeEmployee) {
         mensaje = "Cambio de estado realizado con éxito.";
 
         // Preguntar si se quiere cambiar el estado del empleado
         const changeEmployee = req.body.changeEmployee;
 
         if (changeEmployee) {
-          // Actualizar el estado del empleado correspondiente
-          const employee = await Employee.findOne({ where: { id_employee: user.id_employee } });
-          if (employee) {
-            employee.state_employee = state_user_new === "Activo" ? "Activo" : "Inactivo";
-            await employee.save();
+        // Actualizar el estado del empleado correspondiente
+        const employee = await Employee.findOne({ where: { id_employee: user.id_employee } });
+        if (employee) {
+          employee.state_employee = state_user_new === "Activo" ? "Activo" : "Inactivo";
+          await employee.save();
           }
-          mensaje += " El estado del empleado también se ha actualizado.";
+      }          mensaje += " El estado del empleado también se ha actualizado.";
         }
       } else {
         mensaje = "El usuario no fue encontrado.";

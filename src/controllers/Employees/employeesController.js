@@ -62,9 +62,11 @@ async function createEmployee(req, res) {
   }
 
   // Validación: Nombre debe contener letras, números, espacios y el símbolo "~" para la "ñ"
-  if (!/^[A-Za-z0-9\s~ñÑ]+$/.test(name_employee)) {
+  if (!/^[A-Za-z0-9\s~\u00C0-\u00FF]+$/.test(name_employee)) {
     return res.status(400).json({ error: 'El nombre debe contener letras, números, espacios y el símbolo "~" para la "ñ"' });
-  }
+}
+
+
 
   // Validación: Correo debe ser válido
   if (!isValidEmail(email)) {
