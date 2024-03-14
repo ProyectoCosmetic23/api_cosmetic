@@ -127,7 +127,7 @@ async function productsPut(req, res) {
 
 
   // Validación: Nombre debe contener letras, números y espacios
- if (!/^[A-Za-z0-9\sñÑ]+$/.test(name_product)) {
+ if (!/^[A-Za-z0-9\s~\u00C0-\u00FF]+$/.test(name_product)) {
     return res.status(400).json({ error: 'El nombre debe contener letras, números y espacios' });
 }
 
