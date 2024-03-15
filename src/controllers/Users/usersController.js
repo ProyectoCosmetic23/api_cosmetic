@@ -109,7 +109,7 @@ function isValidEmail(email) {
 
 //Función para crear un usuario nuevo
 async function createUser(req, res) {
-  const { id_role, id_employee, username, email, password, observation_user } =
+  const { id_role, id_card_employee, username, email, password, observation_user } =
     req.body;
 
   // Validar la existencia de los campos requeridos
