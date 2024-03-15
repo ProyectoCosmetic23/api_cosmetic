@@ -77,24 +77,55 @@ async function createProv(req, res) {
             return res.status(400).json({ error: 'Todos los campos requeridos deben estar presentes.' });
         }
         if (!/^\d{7,10}$/.test(nit_cedula)) {
-            return res.status(400).json({ error: 'La cédula debe ser un número positivo y tener entre 7 y 10 dígitos' });
+            return res.status(400).json({ error: 'La cédula debe ser un número positivo y tener entre 7 y 10 dígitos sin espacios' });
         }
         // Validación: Nombre debe contener letras, números, espacios y el símbolo "~" para la "ñ"
-        if (!/^[A-Za-z0-9\s~ñÑ]+$/.test(name_contact)) {
-            return res.status(400).json({ error: 'El nombre debe contener letras, números, espacios y el símbolo "~" para la "ñ"' });
+        if (name_contact.startsWith(' ') || name_contact.endsWith(' ')) {
+            return res.status(400).json({ error: 'El nombre del contacto no puede contener espacios al principio o al final.' });
+        }
+        if (!/^[A-Za-z0-9\sáéíóúÁÉÍÓÚüÜñÑ~]+$/.test(name_contact)) {
+            return res.status(400).json({ error: 'El nombre del contacto debe contener letras, números, espacios y el símbolo "~" para la "ñ"' });
+        } else if (name_contact.length < 3 || name_contact.length > 50) {
+            return res.status(400).json({ error: 'El nombre del contacto debe tener entre 3 y 50 caracteres.' });
         }
 
         // Validación: Correo debe ser válido
+        if (email_provider.startsWith(' ') || email_provider.endsWith(' ')) {
+            return res.status(400).json({ error: 'El correo del proveedor no puede contener espacios al principio o al final.' });
+        }
         if (!isValidEmail(email_provider)) {
             return res.status(400).json({ error: 'El correo no es válido' });
+        } else if (email_provider.length > 80) {
+            return res.status(400).json({ error: 'El correo electrónico no puede superar los 80 caracteres.' });
         }
+
 
         // Validación: Teléfono debe ser numérico
-        if (!/^[0-9+ ]+$/.test(phone_provider)) {
-            return res.status(400).json({ error: 'El teléfono debe contener solo números, el símbolo + y espacios.' });
+        if (!/^\d{7,10}$/.test(phone_provider)) {
+            return res.status(400).json({ error: 'El teléfono debe un número entre 7 y 10 dígitos sin espacios.' });
         }
 
+        if (name_provider.startsWith(' ') || name_provider.endsWith(' ')) {
+            return res.status(400).json({ error: 'El nombre del proveedor no puede contener espacios al principio o al final.' });
+        }
+        if (!/^[A-Za-záéíóúÁÉÍÓÚüÜñÑ\s&\-\'0-9.!]+$/.test(name_provider)) {
+            return res.status(400).json({ error: 'El nombre del proveedor debe contener letras, números, espacios y los símbolos: ., \', -, &, y !' });
+        } else if (name_provider.length < 5 || name_provider.length > 50) {
+            return res.status(400).json({ error: 'El nombre del proveedor debe tener entre 5 y 50 caracteres.' });
+        }
 
+        if (observation_provider.startsWith(' ') || observation_provider.endsWith(' ')) {
+            return res.status(400).json({ error: 'La observación no puede contener espacios al principio o al final.' });
+        }
+        if (observation_provider.length > 100) {
+            return res.status(400).json({ error: 'La observación no puede pasar los 100 caracteres' });
+        }
+        if (address_provider.startsWith(' ') || address_provider.endsWith(' ')) {
+            return res.status(400).json({ error: 'La dirección no puede contener espacios al principio o al final.' });
+        }
+        if (address_provider.length > 80 || address_provider.length < 4) {
+            return res.status(400).json({ error: 'La dirección debe tener entre 4 y 80 caracteres' });
+        }
 
         // Validar la unicidad de campos únicos
         const providerExist = await Providers.findOne({
@@ -145,33 +176,77 @@ async function updateProv(req, res) {
         }
 
         // Verificar y actualizar solo las propiedades que han cambiado
+        if (updatedData.name_provider !== undefined && (updatedData.name_provider.startsWith(' ') || updatedData.name_provider.endsWith(' '))) {
+            return res.status(400).json({ error: 'El nombre del proveedor no puede contener espacios al principio o al final.' });
+        }
+        
         if (updatedData.name_provider !== undefined) {
+            if (!/^[A-Za-záéíóúÁÉÍÓÚüÜñÑ\s&\-\'0-9.!]+$/.test(updatedData.name_provider)) {
+                return res.status(400).json({ error: 'El nombre del proveedor debe contener letras, números, espacios y los símbolos: ., \', -, &, y !' });
+            } else if (updatedData.name_provider.length < 5 || updatedData.name_provider.length > 50) {
+                return res.status(400).json({ error: 'El nombre del proveedor debe tener entre 5 y 50 caracteres.' });
+            }
+
             provider.name_provider = updatedData.name_provider;
         }
 
+        if (updatedData.nit_cedula !== undefined) {
+            console.log(updatedData.nit_cedula)
+            if (!/^\d{7,10}$/.test(updatedData.nit_cedula)) {
+                return res.status(400).json({ error: 'La cédula debe ser un número positivo y tener entre 7 y 10 dígitos sin espacios' });
+            }
+            provider.nit_cedula = updatedData.nit_cedula;
+        }
+        if (updatedData.email_provider !== undefined && (updatedData.email_provider.startsWith(' ') || updatedData.email_provider.endsWith(' '))) {
+            return res.status(400).json({ error: 'El correo del proveedor no puede contener espacios al principio o al final.' });
+        }
         if (updatedData.email_provider !== undefined) {
             if (!isValidEmail(updatedData.email_provider)) {
                 return res.status(400).json({ error: 'El correo no es válido' });
+            } else if (updatedData.email_provider.length > 80) {
+                return res.status(400).json({ error: 'El correo electrónico no puede superar los 80 caracteres.' });
             }
             provider.email_provider = updatedData.email_provider;
         }
 
+        if (updatedData.address_provider !== undefined && (updatedData.address_provider.startsWith(' ') || updatedData.address_provider.endsWith(' '))) {
+            return res.status(400).json({ error: 'La dirección del proveedor no puede contener espacios al principio o al final.' });
+        }
         if (updatedData.address_provider !== undefined) {
+            if (updatedData.address_provider.length > 80 || updatedData.address_provider.length < 4) {
+                return res.status(400).json({ error: 'La dirección debe tener entre 4 y 80 caracteres' });
+            }
             provider.address_provider = updatedData.address_provider;
         }
 
+
+
         if (updatedData.phone_provider !== undefined) {
-            if (!/^[0-9+ ]+$/.test(updatedData.phone_provider)) {
-                return res.status(400).json({ error: 'El teléfono debe contener solo números, el símbolo + y espacios.' });
+            if (!/^\d{7,10}$/.test(updatedData.phone_provider)) {
+                return res.status(400).json({ error: 'El teléfono debe un número entre 7 y 10 dígitos sin espacios.' });
             }
             provider.phone_provider = updatedData.phone_provider;
         }
+        
+        if (updatedData.observation_provider !== undefined && (updatedData.observation_provider.startsWith(' ') || updatedData.observation_provider.endsWith(' '))) {
+            return res.status(400).json({ error: 'La observación del proveedor no puede contener espacios al principio o al final.' });
+        }
         if (updatedData.observation_provider !== undefined) {
+            if (updatedData.observation_provider.length > 100) {
+                return res.status(400).json({ error: 'La observación no puede pasar los 100 caracteres' });
+            }
             provider.observation_provider = updatedData.observation_provider;
         }
+
+        
+        if (updatedData.name_contact !== undefined && (updatedData.name_contact.startsWith(' ') || updatedData.name_contact.endsWith(' '))) {
+            return res.status(400).json({ error: 'El nombre del contacto del proveedor no puede contener espacios al principio o al final.' });
+        }
         if (updatedData.name_contact !== undefined) {
-            if (!/^[A-Za-z0-9\s~ñÑ]+$/.test(updatedData.name_contact)) {
-                return res.status(400).json({ error: 'El nombre debe contener letras, números, espacios y el símbolo "~" para la "ñ"' });
+            if (!/^[A-Za-z0-9\sáéíóúÁÉÍÓÚüÜñÑ~]+$/.test(updatedData.name_contact)) {
+                return res.status(400).json({ error: 'El nombre del contacto debe contener letras, números, espacios y el símbolo "~" para la "ñ"' });
+            } else if (updatedData.name_contact.length < 3 || updatedData.name_contact.length > 50) {
+                return res.status(400).json({ error: 'El nombre del contacto debe tener entre 3 y 50 caracteres.' });
             }
             provider.name_contact = updatedData.name_contact;
         }
@@ -181,12 +256,12 @@ async function updateProv(req, res) {
 
         res.json(provider);
     } catch (error) {
-        if (error.name === 'SequelizeUniqueConstraintError') {
+        if (error.name === 'Ya existe un proveedor con estos datos' || error.name === 'SequelizeUniqueConstraintError') {
             // Si el error es una violación de restricción de unicidad
-            return res.status(400).json({ error: 'El proveedor con estos datos ya existe.' });
+            return res.status(400).json({ error: "Ya existe un proveedor con estos datos" });
         } else {
-            res.status(500).json({ error: 'Error al actualizar el proveedor.' });
-            console.log(error.message);
+            res.status(500).json({ error: error });
+            console.log("error: ", error.message);
         }
     }
 }
@@ -224,25 +299,25 @@ async function updateState(req, res) {
 async function checkCedulaAvailability(req, res) {
     const { cedula } = req.query;
     try {
-      const existingCedula = await Providers.findOne({ where: { nit_cedula: cedula } });
-      res.json(!existingCedula);
+        const existingCedula = await Providers.findOne({ where: { nit_cedula: cedula } });
+        res.json(!existingCedula);
     } catch (error) {
         console.log(cedula)
         console.error('Error al verificar la cédula:', error);
         res.status(500).json({ error: 'Error al verificar la cédula.', details: error.message });
-      }
-  }
+    }
+}
 
-  async function checkEmailAvailability(req, res) {
+async function checkEmailAvailability(req, res) {
     const { email } = req.query;
     try {
-      const existingEmail = await Providers.findOne({ where: { email } });
-      res.json(!existingEmail);
+        const existingEmail = await Providers.findOne({ where: { email } });
+        res.json(!existingEmail);
     } catch (error) {
-      console.error('Error al verificar el correo:', error);
-      res.status(500).json({ error: 'Error al verificar el correo.' });
+        console.error('Error al verificar el correo:', error);
+        res.status(500).json({ error: 'Error al verificar el correo.' });
     }
-  }
+}
 
 // Exportar las funciones del módulo
 

@@ -40,6 +40,11 @@ const Clients = sequelize.define(
       type: DataTypes.STRING(15),
       allowNull: true,
       defaultValue: "Activo",
+    },
+    reason_anulate: {
+      type: DataTypes.STRING(100),
+      allowNull: true,
+  
     }
   },
   {

@@ -39,14 +39,14 @@ async function getShoppingById(req, res) {
                 { 
                     model: Purchase_Detail, attributes: ['id_product', 'id_category', 'cost_price', 
                 'selling_price', 'vat', 'product_quantity'], 
-                // include: [
-                //     {
-                //         model: Product, attributes: ['id_product', 'name_product'],
-                //         include: [
-                //             { model: Product_Categories, attributes: ['id_category', 'name_category'] }
-                //         ]
-                //     }
-                // ] 
+                include: [
+                    {
+                        model: Product, attributes: ['id_product', 'name_product'],
+                        include: [
+                            { model: Product_Categories, attributes: ['id_category', 'name_category'] }
+                        ]
+                    }
+                ] 
             },
             ]
         })
@@ -164,53 +164,55 @@ async function createShop(req, res) {
 
 
 
-// Anular una purchase
 async function anulateShopById(req, res) {
     const { id } = req.params;
     const { reasonAnulate } = req.body;
     let menssage = '';
 
     try {
-        // Obtener la purchase por su ID
+        // Obtener la compra por su ID
         const purchase = await Purchase.findByPk(id);
 
         if (!purchase) {
-            return res.status(404).json({ error: 'Purchase no encontrada.' });
+            return res.status(404).json({ error: 'Compra no encontrada.' });
         }
 
-        // Obtener el detalle de purchase asociado a la purchase
+        // Obtener el detalle de compra asociado a la compra
         const detail_purchase = await Detail_purchase.findAll({
             where: { id_purchase: id }
         });
 
-        // Verificar si hay detalles de purchase
+        // Verificar si hay detalles de compra
         if (!detail_purchase || detail_purchase.length === 0) {
-            return res.status(404).json({ menssage: 'Detalles de purchase no encontrados.' });
+            return res.status(404).json({ menssage: 'Detalles de compra no encontrados.' });
         }
 
-        // Calcular la quantity total a anular y actualizar el inventario
+        // Calcular la cantidad total a anular y actualizar el inventario
         let quantityTotalAnulate = 0;
 
         for (const detalle of detail_purchase) {
             quantityTotalAnulate += detalle.product_quantity;
 
-            // Obtener el product asociado a este detalle
-            const productDB = await Product.findByPk(detalle.id_product);
+            // Verificar si la cantidad a anular es mayor que cero
+            if (detalle.product_quantity > 0) {
+                // Obtener el producto asociado a este detalle
+                const productDB = await Product.findByPk(detalle.id_product);
 
-            if (!productDB) {
-                return res.status(404).json({ menssage: 'Product no encontrado.' });
+                if (!productDB) {
+                    return res.status(404).json({ menssage: 'Producto no encontrado.' });
+                }
+
+                // Calcular el nuevo inventario
+                const nuevoInventario = Math.max(productDB.quantity - detalle.product_quantity, 0);
+
+                // Actualizar el producto en la base de datos solo si la cantidad a anular es mayor que cero
+                await productDB.update({
+                    quantity: nuevoInventario,
+                });
             }
-
-            // Actualizar el inventario restando la quantity anulada
-            const nuevoInventario = productDB.quantity - detalle.product_quantity;
-
-            // Actualizar el product en la base de datos
-            await productDB.update({
-                quantity: nuevoInventario,
-            });
         }
 
-        // Actualizar el estado de la purchase
+        // Actualizar el estado de la compra
         await purchase.update({
             reason_anulate: reasonAnulate,
             state_purchase: false,
@@ -222,6 +224,7 @@ async function anulateShopById(req, res) {
         res.status(500).json({ message: 'Error al anular la compra.' });
     }
 };
+
 
 
 

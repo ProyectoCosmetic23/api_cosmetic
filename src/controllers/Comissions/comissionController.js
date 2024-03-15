@@ -9,11 +9,18 @@ async function createComs(req, res) {
         id_employee,
         id_commission_detail,
     } = req.body;
+
+    const requiredFields = ['id_employee', 'id_commission_detail'];
+
+    // Check if all required fields are provided
+    requiredFields.forEach(field => {
+        if (!req.body[field]) {
+            return res.status(400).json({ error: `Field "${field}" is required.` });
+        }
+    });
     
     try {
-        if (id_employee === undefined || id_employee === null || id_commission_detail === undefined || id_commission_detail === null) {
-            return res.status(400).json({ error: 'Complete los campos obligatorios.' });
-        }
+
         // Obtener el detalle de comisión para el mes correspondiente
         const comissionDetail = await Comission_Detail.findByPk(id_commission_detail);
 
@@ -210,6 +217,9 @@ const updateComissionsFromSales = async (month) => {
                     order_date: {
                         [Op.gte]: new Date(commission_detail.month_commission),
                     },
+                    order_state: {
+                        [Op.ne]: 'Anulado', // Filtrar órdenes que no estén anuladas
+                    },
                 },
             });
 
@@ -219,7 +229,7 @@ const updateComissionsFromSales = async (month) => {
                 total_commission: (employeeSales * commission_detail.commission_percentage) / 100,
             });
         }
-        await t.commit();
+        // await t.commit();
         console.log('Comisiones actualizadas correctamente.');
     } catch (error) {
         console.error('Error al actualizar comisiones:', error);

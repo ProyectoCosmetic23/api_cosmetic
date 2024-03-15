@@ -10,7 +10,6 @@ const getAllCustomers = async (req, res) => {
     }
     res.json(clients);
   } catch (error) {
-    console.error("Error al recuperar clientes: ", error);
     res.status(500).json({ error: "Error interno del servidor" });
   }
 };
@@ -59,21 +58,21 @@ async function createCustomer(req, res) {
   }
 
   // Validación: Cédula debe ser numérica
-  if (!/^\d{10}$/.test(nit_or_id_client)) {
+  if (!/^\d{6,10}$/.test(nit_or_id_client)) {
     return res
       .status(400)
       .json({ error: "La cédula debe ser numérica y tener 10 dígitos" });
   }
 
   // Validación: Nombre debe contener letras, números, espacios y el símbolo "~" para la "ñ"
-  if (!/^[A-Za-z0-9\s~ñÑ]+$/.test(name_client)) {
-    return res
-      .status(400)
-      .json({
-        error:
-          'El nombre debe contener letras, números, espacios y el símbolo "~" para la "ñ"',
-      });
-  }
+  // if (!/^[A-Za-z0-9\s~ñÑ]+$/.test(name_client)) {
+  //   return res
+  //     .status(400)
+  //     .json({
+  //       error:
+  //         'El nombre debe contener letras, números, espacios y el símbolo "~" para la "ñ"',
+  //     });
+  // }
 
   // validacion correo valido
   if (!isValidEmail(email_client)) {
@@ -99,7 +98,7 @@ async function createCustomer(req, res) {
 
     res.json(newClient);
   } catch (error) {
-    console.error("Error al crear el cliente:", error);
+    console.error("Error al crear el cliente: ", error);
     res
       .status(500)
       .json({ error: "Error al crear el cliente. Detalles: " + error.message });
@@ -208,7 +207,7 @@ const customerDelete = async (req, res) => {
 // Cambiar estado del cliente
 async function CustomerChangeStatus(req, res) {
   const { id } = req.params;
-
+  const {  reasonAnulate } = req.body;
   let mensaje = "";
 
   try {
@@ -217,6 +216,7 @@ async function CustomerChangeStatus(req, res) {
       const client = await Client.findByPk(id);
 
       if (client) {
+        
         var state_client_new = "";
 
         if (client.state_client === "Activo") {
@@ -226,8 +226,12 @@ async function CustomerChangeStatus(req, res) {
         }
 
         // Actualizar el estado del empleado
-        client.state_client = state_client_new;
+       // client.state_client = state_client_new;
 
+        client.update({
+          reason_anulate: reasonAnulate,
+          state_client: state_client_new
+      })
         // Guardar los cambios en la base de datos
         await client.save();
 

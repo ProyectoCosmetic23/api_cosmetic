@@ -4,10 +4,12 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const { generarJWT } = require("../../helpers/generar-jwt.js");
 const Employee = require('../../models/employees');
+const EmployeeStatus = require('../Employees/employeesController.js')
 const Roles = require ('../../models/roles')
+// const fs = require('fs');
+// const logoData = fs.readFileSync('ApiProyecto/api_cosmetic/logocosmetic.png', 'base64');
 
-
-//Buscar empleado por cedula y retornar el correo del empleado 
+//Buscar empleado por cedula y retornar el correo del empleado
 // async function employeeByCard(req, res) {
 //   const { id_card_employee } = req.params;
 
@@ -30,47 +32,46 @@ const Roles = require ('../../models/roles')
 //   }
 // }
 
-
 //prueba
 async function employeeByCard(req, res) {
   const { id_card_employee } = req.params;
 
   try {
     if (!id_card_employee) {
-      return res.status(400).json({ message: 'Falta el ID de la cédula en la solicitud.' });
+      return res
+        .status(400)
+        .json({ message: "Falta el ID de la cédula en la solicitud." });
     }
 
     // Buscar empleado por cédula
     const employee = await Employee.findOne({ where: { id_card_employee } });
 
     if (!employee) {
-      return res.status(404).json({ message: 'Empleado no encontrado.' });
+      return res
+        .json({ message: "Empleado no encontrado.", status: 404 });
     }
 
     // Verificar si el empleado ya tiene un usuario asociado
-    const existingUser = await Users.findOne({ where: { id_employee: employee.id_employee } });
+    const existingUser = await Users.findOne({
+      where: { id_employee: employee.id_employee },
+    });
 
     if (existingUser) {
-      return res.status(400).json({ message: 'Ya existe un usuario creado para este empleado.' });
+      return res
+        .json({ message: "Ya existe un usuario creado para este empleado.", status: 403 });
     }
 
     // Si no hay usuario existente, puedes continuar con la lógica actual
     res.json({
-      email: employee.email,  
+      email: employee.email,
       id_employee: employee.id_employee,
-      name_employee: employee.name_employee
+      name_employee: employee.name_employee,
     });
-
   } catch (error) {
-    console.error('Error al buscar el empleado por cédula:', error);
-    res.status(500).json({ error: 'Error al buscar el empleado por cédula.' });
+    console.error("Error al buscar el empleado por cédula:", error);
+    res.status(500).json({ error: "Error al buscar el empleado por cédula." });
   }
 }
-
-
-
-
-
 
 //Función para traer todos los usuarios
 const getAllUsers = async (req, res) => {
@@ -108,13 +109,13 @@ function isValidEmail(email) {
 
 //Función para crear un usuario nuevo
 async function createUser(req, res) {
-  const { id_role, id_employee, username, email, password, observation_user } =
+  const { id_role, id_card_employee,id_employee, username, email, password, observation_user } =
     req.body;
 
   // Validar la existencia de los campos requeridos
-  if (!id_role || !id_employee || !username || !email || !password) {
+  if (!id_role || !id_card_employee || !username || !email || !password) {
     return res
-      .status(400)
+     .status(400)
       .json({ error: "Todos los campos son obligatorios." });
   }
 
@@ -122,8 +123,6 @@ async function createUser(req, res) {
   // if (password.length <= 6) {
   //   return res.status(400).json({ error: "La contraseña debe tener al menos 7 caracteres." });
   // }
-
-
 
   // // Validar que la contraseña contenga al menos una mayúscula, un número y un carácter especial
   // const passwordRegex =/^(?=.[A-Z])(?=.\d)(?=.[@$!%?&])[A-Za-z\d@$!%*?&]+$/;
@@ -145,7 +144,6 @@ async function createUser(req, res) {
     // if (existingEmail) {
     //   return res.status(400).json({ error: "El correo ya está en uso." });
     // }
-    
 
     const saltRounds = 10;
     const salt = bcrypt.genSaltSync(saltRounds);
@@ -156,6 +154,7 @@ async function createUser(req, res) {
     const user = await Users.create({
       id_role,
       id_employee,
+      id_card_employee,
       username,
       email,
       password: hash,
@@ -174,7 +173,7 @@ async function createUser(req, res) {
 async function checkEmailAvailability(req, res) {
   const { email } = req.query;
   try {
-    const existingEmail = await Users.findOne({ where: { email:email } });
+    const existingEmail = await Users.findOne({ where: { email: email } });
     res.json(!existingEmail);
   } catch (error) {
     console.error("Error al verificar el correo:", error);
@@ -182,13 +181,17 @@ async function checkEmailAvailability(req, res) {
   }
 }
 async function checkEmployeeAvailability(req, res) {
-  const {id_employee} = req.query;
+  const { id_employee } = req.query;
   try {
-    const existingEmployee = await Users.findOne({where: { id_employee: id_employee }});
+    const existingEmployee = await Users.findOne({
+      where: { id_employee: id_employee },
+    });
     res.json(!existingEmployee);
   } catch (error) {
     console.error("Error al verificar la existencia del usuario:", error);
-    res.status(500).json({ error: "Error al verificar la existencia del usuario." });
+    res
+      .status(500)
+      .json({ error: "Error al verificar la existencia del usuario." });
   }
 }
 
@@ -234,25 +237,20 @@ async function updateUser(req, res) {
   }
 }
 
-//Metodo para loguearse
-//Metodo para loguearse
+
+// Método para loguearse
 async function loginUser(req, res) {
   const { email, password } = req.body;
-  console.log(email, password);
+
   try {
-    const user = await Users.findOne({ where: { email: email } });
-    console.log("Usuario encontrado:", user);
+    const user = await Users.findOne({ where: { email } });
 
     if (!user) {
-      return res
-        .status(401)
-        .json({ error: "Correo o Contraseña incorrectas." });
+      return res.status(404).json({ error: "Correo o Contraseña incorrectas." });
     }
 
     if (user.state_user === "Inactivo") {
-      return res
-        .status(400)
-        .json({ error: "Credenciales incorrectas: El usuario está inactivo." });
+      return res.status(400).json({ error: "El usuario está inactivo." });
     }
 
     // Obtenemos el rol del usuario
@@ -260,25 +258,19 @@ async function loginUser(req, res) {
 
     // Verificamos el estado del rol
     if (!userRole || userRole.state_role !== "Activo") {
-      return res
-        .status(403)
-        .json({ error: "No tienes permisos para iniciar sesión. Contacta al administrador." });
+      return res.status(403).json({ error: "No tienes permisos para iniciar sesión. Contacta al administrador." });
     }
 
     // Verificar si el rol del usuario está inactivo
     if (userRole.state_role === "Inactivo") {
-      return res
-        .status(400)
-        .json({ error: "Credenciales incorrectas: El rol del usuario está inactivo." });
+      return res.status(400).json({ error: "El rol del usuario está inactivo." });
     }
 
     // Comparamos la contraseña proporcionada con la contraseña almacenada en la base de datos
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (!isPasswordValid) {
-      return res
-        .status(401)
-        .json({ loginError: "Correo o Contraseña incorrectas." });
+      return res.status(401).json({ error: "Correo o Contraseña incorrectas." });
     }
 
     const token = await generarJWT(user.id_user);
@@ -289,16 +281,12 @@ async function loginUser(req, res) {
     });
   } catch (error) {
     console.error("Error al iniciar sesión: ", error);
-    res.status(500).json({ error: "Error interno al iniciar sesión.", error });
+    res.status(500).json({ error: "Error interno al iniciar sesión." });
   }
 }
-
-
-
-//Metodo para actualizar el estado
 async function updateUserState(req, res) {
   const { id } = req.params;
-
+  const { reason_anulate } = req.body; 
   let mensaje = "";
 
   try {
@@ -318,18 +306,27 @@ async function updateUserState(req, res) {
 
         // Actualizar el estado del usuario
         user.state_user = state_user_new;
-
-        // Guardar los cambios en la base de datos
+        user.reason_anulate = reason_anulate;
         await user.save();
 
+ // Preguntar si se quiere cambiar el estado del empleado
+ const changeEmployee = req.body.changeEmployee;
+
+    if (changeEmployee) {
+        mensaje = "Cambio de estado realizado con éxito.";
+
+        // Preguntar si se quiere cambiar el estado del empleado
+        const changeEmployee = req.body.changeEmployee;
+
+        if (changeEmployee) {
         // Actualizar el estado del empleado correspondiente
         const employee = await Employee.findOne({ where: { id_employee: user.id_employee } });
         if (employee) {
           employee.state_employee = state_user_new === "Activo" ? "Activo" : "Inactivo";
           await employee.save();
+          }
+      }          mensaje += " El estado del empleado también se ha actualizado.";
         }
-
-        mensaje = "Cambio de estado realizado con éxito.";
       } else {
         mensaje = "El usuario no fue encontrado.";
       }
@@ -346,21 +343,19 @@ async function updateUserState(req, res) {
   });
 }
 
-
 //Función para generar token
-const crypto = require('crypto');
+const crypto = require("crypto");
 
 function generateResetToken() {
-  const token = crypto.randomBytes(20).toString('hex');
+  const token = crypto.randomBytes(20).toString("hex");
   return token;
 }
-
 
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
-    user: "julianctsistemas@gmail.com",
-    pass: "oiaj aojo whzz vete",
+    user: "cosmeticproyecto@gmail.com",
+    pass: "ecbe kjsv pcos qnif",
   },
 });
 
@@ -402,15 +397,19 @@ async function forgotPassword(req, res) {
       return res.status(404).json({ error: "Usuario no encontrado." });
     }
 
+    if (user.state_user === "Inactivo") {
+      return res.status(400).json({ error: "El usuario está inactivo." });
+    }
+
     const resetToken = generateResetToken();
     resetTokens[email] = { token: resetToken };
 
     // Construye el objeto mailOptions con la información necesaria, incluyendo el token en el enlace
     const mailOptions = {
-      from: "julianctsistemas@gmail.com",
+      from: "cosmeticproyecto@gmail.com",
       to: email,
       subject: "Recuperación de Contraseña",
-      text: `Haga clic en el siguiente enlace para restablecer su contraseña: http://localhost:4200/sessions/signup/${resetToken}`,
+      text: `Estimado(a) Usuario,\n\nRecibimos una solicitud para restablecer tu contraseña. Por favor, haz clic en el enlace a continuación para proceder con el restablecimiento a través de correo electrónico.\n\nhttp://localhost:4200/sessions/signup/${resetToken}\n\nSi no has solicitado este cambio, por favor ignora este mensaje.\n\nGracias,\CosmeTIC \n\n`,
 
 
       
@@ -418,38 +417,48 @@ async function forgotPassword(req, res) {
     };
     console.log("Token generado:", resetToken);
 
-
     // Enviar correo con el enlace de restablecimiento de contraseña
     await sendEmail(email, mailOptions);
 
     res.json({
-      message: "Se ha enviado un enlace para restablecer la contraseña por correo electrónico.",
+      message: "Se envia correo de recuperacion"
+   
     });
+    
   } catch (error) {
     console.error("Error al recuperar la contraseña:", error);
     res.status(500).json({ error: "Error al recuperar la contraseña." });
   }
 }
 
-
-
 // Dentro de la función changePassword
 async function changePassword(req, res) {
-  const { token} = req.params;
+  const { token } = req.params;
   const { newPassword } = req.body;
   // console.log("Token recibido en la solicitud:", token);
 
   try {
     // Extrae el token sin el prefijo "token="
-    const incomingToken = token.replace('token=', '');
+    const incomingToken = token.replace("token=", "");
 
     // Utiliza Object.values para obtener un array de tokens y encontrar el correo electrónico correspondiente
     const email = Object.keys(resetTokens).find((key) => {
-      const storedTokenBuffer = resetTokens[key] ? Buffer.from(resetTokens[key].token, 'hex') : null;
-      const incomingTokenBuffer = incomingToken ? Buffer.from(incomingToken, 'hex') : null;
+      const storedTokenBuffer = resetTokens[key]
+        ? Buffer.from(resetTokens[key].token, "hex")
+        : null;
+      const incomingTokenBuffer = incomingToken
+        ? Buffer.from(incomingToken, "hex")
+        : null;
 
-      if (storedTokenBuffer && incomingTokenBuffer && storedTokenBuffer.length === incomingTokenBuffer.length) {
-        const tokensAreEqual = crypto.timingSafeEqual(storedTokenBuffer, incomingTokenBuffer);
+      if (
+        storedTokenBuffer &&
+        incomingTokenBuffer &&
+        storedTokenBuffer.length === incomingTokenBuffer.length
+      ) {
+        const tokensAreEqual = crypto.timingSafeEqual(
+          storedTokenBuffer,
+          incomingTokenBuffer
+        );
 
         if (tokensAreEqual) {
           return resetTokens[key].token === incomingToken;
@@ -467,7 +476,9 @@ async function changePassword(req, res) {
 
     if (!email) {
       console.error("Correo electrónico no encontrado para el token:", token);
-      return res.status(404).json({ error: "Correo electrónico no encontrado para el token." });
+      return res
+        .status(404)
+        .json({ error: "Correo electrónico no encontrado para el token." });
     }
 
     const user = await Users.findOne({ where: { email: email } });
@@ -505,5 +516,5 @@ module.exports = {
   forgotPassword,
   changePassword,
   checkEmailAvailability,
-  employeeByCard
+  employeeByCard,
 };
