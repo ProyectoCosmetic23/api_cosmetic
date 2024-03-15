@@ -57,14 +57,16 @@ async function createEmployee(req, res) {
   }
 
   // Validación: Cédula debe ser numérica
-  if (!/^\d{10}$/.test(id_card_employee)) {
+  if (!/^\d{6,10}$/.test(id_card_employee)) {
     return res.status(400).json({ error: 'La cédula debe ser numérica y tener 10 dígitos' });
   }
 
   // Validación: Nombre debe contener letras, números, espacios y el símbolo "~" para la "ñ"
-  if (!/^[A-Za-z0-9\s~ñÑ]+$/.test(name_employee)) {
+  if (!/^[A-Za-z0-9\s~\u00C0-\u00FF]+$/.test(name_employee)) {
     return res.status(400).json({ error: 'El nombre debe contener letras, números, espacios y el símbolo "~" para la "ñ"' });
-  }
+}
+
+
 
   // Validación: Correo debe ser válido
   if (!isValidEmail(email)) {
@@ -125,9 +127,9 @@ async function employeePut(req, res) {
   }
 
   // Validación: El nombre debe contener letras, números, espacios y el símbolo "~" para la "ñ"
-  if (name_employee && !/^[A-Za-z0-9\s~ñÑ]+$/.test(name_employee)) {
-    return res.status(400).json({ error: 'El nombre debe contener letras, números, espacios y el símbolo "~" para la "ñ"' });
-  }
+ // if (name_employee && !/^[A-Za-z0-9\s~ñÑ]+$/.test(name_employee)) {
+   // return res.status(400).json({ error: 'El nombre debe contener letras, números, espacios y el símbolo "~" para la "ñ"' });
+  //}
   
   
 

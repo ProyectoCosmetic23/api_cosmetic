@@ -1,7 +1,7 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const usersController = require('../controllers/Users/usersController');
-const { validarJWT } = require('../middlewares/validar-jwt');
+const usersController = require("../controllers/Users/usersController");
+const { validarJWT } = require("../middlewares/validar-jwt");
 
 // Rutas de autenticación
 router.get('/ruta-protegida', validarJWT, (req, res) => {
@@ -16,12 +16,14 @@ router.put('/users/state/:id', usersController.updateUserState);
 router.post('/users/login' , usersController.loginUser);
 router.post('/users/recover', usersController.forgotPassword);
 router.post('/change-password/:token', usersController.changePassword);
+
 //Ruta para buscar el empleado y obtener su correo
-router.get('/Users/employeeByCard/:id_card_employee', usersController.employeeByCard);
+router.get(
+  "/Users/employeeByCard/:id_card_employee",
+  usersController.employeeByCard
+);
 
-// //ruta para validar usuario existente
+//ruta para validar usuario existente
 // router.get('/Users-check-empleado', usersController.checkEmployeeAvailability);
-
-
 
 module.exports = router;

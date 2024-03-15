@@ -52,6 +52,10 @@ const Users = sequelize.define('users', {
   observation_user: {
     type: DataTypes.STRING(100),
     allowNull: true
+  },
+  reason_anulate: {
+    type: DataTypes.STRING(100),
+    allowNull: true
   }
 }, {
   sequelize,
