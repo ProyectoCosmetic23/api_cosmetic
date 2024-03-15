@@ -113,11 +113,11 @@ async function createUser(req, res) {
     req.body;
 
   // Validar la existencia de los campos requeridos
-  //if (!id_role || !id_card_employee || !username || !email || !password) {
- //   return res
-  //    .status(400)
-  //    .json({ error: "Todos los campos son obligatorios." });
-  //}
+  if (!id_role || !id_card_employee || !username || !email || !password) {
+    return res
+     .status(400)
+      .json({ error: "Todos los campos son obligatorios." });
+  }
 
   // // Validar la longitud de la contraseña
   // if (password.length <= 6) {
