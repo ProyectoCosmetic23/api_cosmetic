@@ -98,7 +98,7 @@ async function createCustomer(req, res) {
 
     res.json(newClient);
   } catch (error) {
-    console.error("Error al crear el cliente: ", error);
+    console.error("Error al crear el cliente:", error);
     res
       .status(500)
       .json({ error: "Error al crear el cliente. Detalles: " + error.message });

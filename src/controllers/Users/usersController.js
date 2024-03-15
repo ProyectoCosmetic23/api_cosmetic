@@ -3,9 +3,9 @@ const Users = require("../../models/users.js");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const { generarJWT } = require("../../helpers/generar-jwt.js");
-const Employee = require('../../models/employees');
-const EmployeeStatus = require('../Employees/employeesController.js')
-const Roles = require ('../../models/roles')
+const Employee = require("../../models/employees");
+const EmployeeStatus = require("../Employees/employeesController.js");
+const Roles = require("../../models/roles");
 // const fs = require('fs');
 // const logoData = fs.readFileSync('ApiProyecto/api_cosmetic/logocosmetic.png', 'base64');
 
@@ -47,8 +47,7 @@ async function employeeByCard(req, res) {
     const employee = await Employee.findOne({ where: { id_card_employee } });
 
     if (!employee) {
-      return res
-        .json({ message: "Empleado no encontrado.", status: 404 });
+      return res.json({ message: "Empleado no encontrado.", status: 404 });
     }
 
     // Verificar si el empleado ya tiene un usuario asociado
@@ -57,8 +56,10 @@ async function employeeByCard(req, res) {
     });
 
     if (existingUser) {
-      return res
-        .json({ message: "Ya existe un usuario creado para este empleado.", status: 403 });
+      return res.json({
+        message: "Ya existe un usuario creado para este empleado.",
+        status: 403,
+      });
     }
 
     // Si no hay usuario existente, puedes continuar con la lógica actual
@@ -109,13 +110,20 @@ function isValidEmail(email) {
 
 //Función para crear un usuario nuevo
 async function createUser(req, res) {
-  const { id_role, id_card_employee,id_employee, username, email, password, observation_user } =
-    req.body;
+  const {
+    id_role,
+    id_card_employee,
+    id_employee,
+    username,
+    email,
+    password,
+    observation_user,
+  } = req.body;
 
   // Validar la existencia de los campos requeridos
   if (!id_role || !id_card_employee || !username || !email || !password) {
     return res
-     .status(400)
+      .status(400)
       .json({ error: "Todos los campos son obligatorios." });
   }
 
@@ -237,7 +245,6 @@ async function updateUser(req, res) {
   }
 }
 
-
 // Método para loguearse
 async function loginUser(req, res) {
   const { email, password } = req.body;
@@ -246,7 +253,9 @@ async function loginUser(req, res) {
     const user = await Users.findOne({ where: { email } });
 
     if (!user) {
-      return res.status(404).json({ error: "Correo o Contraseña incorrectas." });
+      return res
+        .status(404)
+        .json({ error: "Correo o Contraseña incorrectas." });
     }
 
     if (user.state_user === "Inactivo") {
@@ -258,19 +267,28 @@ async function loginUser(req, res) {
 
     // Verificamos el estado del rol
     if (!userRole || userRole.state_role !== "Activo") {
-      return res.status(403).json({ error: "No tienes permisos para iniciar sesión. Contacta al administrador." });
+      return res
+        .status(403)
+        .json({
+          error:
+            "No tienes permisos para iniciar sesión. Contacta al administrador.",
+        });
     }
 
     // Verificar si el rol del usuario está inactivo
     if (userRole.state_role === "Inactivo") {
-      return res.status(400).json({ error: "El rol del usuario está inactivo." });
+      return res
+        .status(400)
+        .json({ error: "El rol del usuario está inactivo." });
     }
 
     // Comparamos la contraseña proporcionada con la contraseña almacenada en la base de datos
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (!isPasswordValid) {
-      return res.status(401).json({ error: "Correo o Contraseña incorrectas." });
+      return res
+        .status(401)
+        .json({ error: "Correo o Contraseña incorrectas." });
     }
 
     const token = await generarJWT(user.id_user);
@@ -286,7 +304,7 @@ async function loginUser(req, res) {
 }
 async function updateUserState(req, res) {
   const { id } = req.params;
-  const { reason_anulate } = req.body; 
+  const { reason_anulate } = req.body;
   let mensaje = "";
 
   try {
@@ -309,23 +327,30 @@ async function updateUserState(req, res) {
         user.reason_anulate = reason_anulate;
         await user.save();
 
- // Preguntar si se quiere cambiar el estado del empleado
- const changeEmployee = req.body.changeEmployee;
-
-    if (changeEmployee) {
-        mensaje = "Cambio de estado realizado con éxito.";
-
         // Preguntar si se quiere cambiar el estado del empleado
         const changeEmployee = req.body.changeEmployee;
 
+        mensaje = "Cambio de estado realizado con éxito.";
+
         if (changeEmployee) {
-        // Actualizar el estado del empleado correspondiente
-        const employee = await Employee.findOne({ where: { id_employee: user.id_employee } });
-        if (employee) {
-          employee.state_employee = state_user_new === "Activo" ? "Activo" : "Inactivo";
-          await employee.save();
+          
+          mensaje = "Cambio de estado realizado con éxito.";
+
+          // Preguntar si se quiere cambiar el estado del empleado
+          const changeEmployee = req.body.changeEmployee;
+
+          if (changeEmployee) {
+            // Actualizar el estado del empleado correspondiente
+            const employee = await Employee.findOne({
+              where: { id_employee: user.id_employee },
+            });
+            if (employee) {
+              employee.state_employee =
+                state_user_new === "Activo" ? "Activo" : "Inactivo";
+              await employee.save();
+            }
           }
-      }          mensaje += " El estado del empleado también se ha actualizado.";
+          mensaje += " El estado del empleado también se ha actualizado.";
         }
       } else {
         mensaje = "El usuario no fue encontrado.";
@@ -410,10 +435,6 @@ async function forgotPassword(req, res) {
       to: email,
       subject: "Recuperación de Contraseña",
       text: `Estimado(a) Usuario,\n\nRecibimos una solicitud para restablecer tu contraseña. Por favor, haz clic en el enlace a continuación para proceder con el restablecimiento a través de correo electrónico.\n\nhttp://localhost:4200/sessions/signup/${resetToken}\n\nSi no has solicitado este cambio, por favor ignora este mensaje.\n\nGracias,\CosmeTIC \n\n`,
-
-
-      
-
     };
     console.log("Token generado:", resetToken);
 
@@ -421,10 +442,8 @@ async function forgotPassword(req, res) {
     await sendEmail(email, mailOptions);
 
     res.json({
-      message: "Se envia correo de recuperacion"
-   
+      message: "Se envia correo de recuperacion",
     });
-    
   } catch (error) {
     console.error("Error al recuperar la contraseña:", error);
     res.status(500).json({ error: "Error al recuperar la contraseña." });
