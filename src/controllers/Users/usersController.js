@@ -113,7 +113,7 @@ async function createUser(req, res) {
     req.body;
 
   // Validar la existencia de los campos requeridos
-  if (!id_role || !id_employee || !username || !email || !password) {
+  if (!id_role || !id_card_employee || !username || !email || !password) {
     return res
       .status(400)
       .json({ error: "Todos los campos son obligatorios." });
