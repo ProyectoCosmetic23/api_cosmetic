@@ -302,6 +302,7 @@ async function loginUser(req, res) {
     res.status(500).json({ error: "Error interno al iniciar sesión." });
   }
 }
+
 async function updateUserState(req, res) {
   const { id } = req.params;
   const { reason_anulate } = req.body;
