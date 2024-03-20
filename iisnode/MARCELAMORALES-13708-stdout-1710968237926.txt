@@ -1,0 +1,64 @@
+Server is running on port \\.\pipe\07966c36-3326-465b-904b-5e053be5e7f0
+Executing (default): SELECT 1+1 AS result
+Executing (default): SELECT "id_user", "id_role", "id_employee", "creation_date_user", "username", "email", "password", "state_user", "observation_user", "reason_anulate" FROM "public"."users" AS "users" WHERE "users"."email" = 'marcelamorales19980@gmail.com' LIMIT 1;
+Successfully connected to PostgreSQL
+Executing (default): SELECT "id_role", "name_role", "state_role", "modules_role", "observation_status" FROM "public"."roles" AS "roles" WHERE "roles"."id_role" = 1;
+Executing (default): SELECT "id_role", "name_role", "state_role", "modules_role", "observation_status" FROM "public"."roles" AS "roles" WHERE "roles"."id_role" = '1';
+Executing (default): SELECT * FROM get_report_products('false', '2024', '3')
+Executing (default): SELECT * FROM get_report_credit_sales('2024')
+Executing (default): SELECT * FROM get_report_cards('false', '2024', '3')
+Executing (default): SELECT * FROM get_report_counted_sales('2024')
+Executing (default): SELECT * FROM get_report_employees_with_commission(false, '2024', '3')
+Executing (default): SELECT "id_role", "name_role", "state_role", "modules_role", "observation_status" FROM "public"."roles" AS "roles" WHERE "roles"."id_role" = '1';
+Executing (default): SELECT "id_commission", "id_employee", "total_commission", "id_commission_detail", "total_sales" FROM "public"."commissions" AS "commissions";
+Executing (default): SELECT "id_employee", "id_card_employee", "name_employee", "email", "address", "phone", "state_employee", "observation", "creation_date_employee", "reason_anulate" FROM "public"."employees" AS "employees" WHERE "employees"."id_employee" = 7;
+Executing (default): SELECT "id_employee", "id_card_employee", "name_employee", "email", "address", "phone", "state_employee", "observation", "creation_date_employee", "reason_anulate" FROM "public"."employees" AS "employees";
+Executing (default): SELECT "id_commission_detail", "month_commission", "commission_percentage" FROM "public"."commission_detail" AS "commission_detail";
+Executing (default): SELECT "id_employee", "id_card_employee", "name_employee", "email", "address", "phone", "state_employee", "observation", "creation_date_employee", "reason_anulate" FROM "public"."employees" AS "employees";
+Executing (default): SELECT "id_role", "name_role", "state_role", "modules_role", "observation_status" FROM "public"."roles" AS "roles" WHERE "roles"."id_role" = '1';
+Executing (default): SELECT "id_role", "name_role", "state_role", "modules_role", "observation_status" FROM "public"."roles" AS "roles" WHERE "roles"."id_role" = '1';
+Executing (default): SELECT "id_client", "nit_or_id_client", "name_client", "last_name_client", "email_client", "phone_client", "address_client", "state_client", "reason_anulate" FROM "public"."clients" AS "clients";
+Executing (default): SELECT "id_role", "name_role", "state_role", "modules_role", "observation_status" FROM "public"."roles" AS "roles" WHERE "roles"."id_role" = '1';
+Executing (default): SELECT "id_client", "nit_or_id_client", "name_client", "last_name_client", "email_client", "phone_client", "address_client", "state_client", "reason_anulate" FROM "public"."clients" AS "clients";
+Executing (default): SELECT "id_payment", "id_sale", "id_order", "id_client", "payment_date", "total_payment", "total_remaining" FROM "public"."payments" AS "payments";
+Executing (default): SELECT "id_order", "id_client", "id_employee", "order_number", "order_date", "delivery_date", "payment_type", "order_state", "return_state", "delivery_state", "payment_state", "total_order", "observation_return" FROM "public"."orders" AS "orders" WHERE "orders"."delivery_state" IN ('En proceso', 'Por entregar') ORDER BY "orders"."order_number" DESC;
+Executing (default): SELECT "id_client", "nit_or_id_client", "name_client", "last_name_client", "email_client", "phone_client", "address_client", "state_client", "reason_anulate" FROM "public"."clients" AS "clients";
+Executing (default): SELECT "id_role", "name_role", "state_role", "modules_role", "observation_status" FROM "public"."roles" AS "roles" WHERE "roles"."id_role" = '1';
+Executing (default): SELECT "id_employee", "id_card_employee", "name_employee", "email", "address", "phone", "state_employee", "observation", "creation_date_employee", "reason_anulate" FROM "public"."employees" AS "employees";
+Executing (default): SELECT "id_role", "name_role", "state_role", "modules_role", "observation_status" FROM "public"."roles" AS "roles";
+Executing (default): SELECT "id_user", "id_role", "id_employee", "creation_date_user", "username", "email", "password", "state_user", "observation_user", "reason_anulate" FROM "public"."users" AS "users";
+Executing (default): SELECT "id_user", "id_role", "id_employee", "creation_date_user", "username", "email", "password", "state_user", "observation_user", "reason_anulate" FROM "public"."users" AS "users" WHERE "users"."email" = 'marcelamorales19980@gmail.com' LIMIT 1;
+Executing (default): SELECT "id_role", "name_role", "state_role", "modules_role", "observation_status" FROM "public"."roles" AS "roles" WHERE "roles"."id_role" = 1;
+Executing (default): SELECT "id_role", "name_role", "state_role", "modules_role", "observation_status" FROM "public"."roles" AS "roles" WHERE "roles"."id_role" = '1';
+Executing (default): SELECT * FROM get_report_credit_sales('2024')
+Executing (default): SELECT * FROM get_report_products('false', '2024', '3')
+Executing (default): SELECT * FROM get_report_cards('false', '2024', '3')
+Executing (default): SELECT * FROM get_report_counted_sales('2024')
+Executing (default): SELECT * FROM get_report_employees_with_commission(false, '2024', '3')
+Executing (default): SELECT "id_role", "name_role", "state_role", "modules_role", "observation_status" FROM "public"."roles" AS "roles" WHERE "roles"."id_role" = '1';
+Executing (default): SELECT "id_commission", "id_employee", "total_commission", "id_commission_detail", "total_sales" FROM "public"."commissions" AS "commissions";
+Executing (default): SELECT "id_employee", "id_card_employee", "name_employee", "email", "address", "phone", "state_employee", "observation", "creation_date_employee", "reason_anulate" FROM "public"."employees" AS "employees" WHERE "employees"."id_employee" = 7;
+Executing (default): SELECT "id_employee", "id_card_employee", "name_employee", "email", "address", "phone", "state_employee", "observation", "creation_date_employee", "reason_anulate" FROM "public"."employees" AS "employees";
+Executing (default): SELECT "id_commission_detail", "month_commission", "commission_percentage" FROM "public"."commission_detail" AS "commission_detail";
+Executing (default): SELECT "id_role", "name_role", "state_role", "modules_role", "observation_status" FROM "public"."roles" AS "roles" WHERE "roles"."id_role" = '1';
+Executing (default): SELECT "id_employee", "id_card_employee", "name_employee", "email", "address", "phone", "state_employee", "observation", "creation_date_employee", "reason_anulate" FROM "public"."employees" AS "employees";
+Executing (default): SELECT "id_role", "name_role", "state_role", "modules_role", "observation_status" FROM "public"."roles" AS "roles";
+Executing (default): SELECT "id_user", "id_role", "id_employee", "creation_date_user", "username", "email", "password", "state_user", "observation_user", "reason_anulate" FROM "public"."users" AS "users";
+Executing (default): SELECT "id_commission", "id_employee", "total_commission", "id_commission_detail", "total_sales" FROM "public"."commissions" AS "commissions";
+Executing (default): SELECT "id_role", "name_role", "state_role", "modules_role", "observation_status" FROM "public"."roles" AS "roles" WHERE "roles"."id_role" = '1';
+Executing (default): SELECT "id_employee", "id_card_employee", "name_employee", "email", "address", "phone", "state_employee", "observation", "creation_date_employee", "reason_anulate" FROM "public"."employees" AS "employees" WHERE "employees"."id_employee" = 7;
+Executing (default): SELECT "id_employee", "id_card_employee", "name_employee", "email", "address", "phone", "state_employee", "observation", "creation_date_employee", "reason_anulate" FROM "public"."employees" AS "employees";
+Executing (default): SELECT "id_commission_detail", "month_commission", "commission_percentage" FROM "public"."commission_detail" AS "commission_detail";
+Executing (default): SELECT "id_role", "name_role", "state_role", "modules_role", "observation_status" FROM "public"."roles" AS "roles" WHERE "roles"."id_role" = '1';
+Executing (default): SELECT "id_employee", "id_card_employee", "name_employee", "email", "address", "phone", "state_employee", "observation", "creation_date_employee", "reason_anulate" FROM "public"."employees" AS "employees";
+Executing (default): SELECT "id_commission_detail", "month_commission", "commission_percentage" FROM "public"."commission_detail" AS "commission_detail";
+Executing (default): SELECT "id_order", "id_client", "id_employee", "order_number", "order_date", "delivery_date", "payment_type", "order_state", "return_state", "delivery_state", "payment_state", "total_order", "observation_return" FROM "public"."orders" AS "orders" ORDER BY "orders"."order_number" DESC;
+Executing (default): SELECT "id_employee", "id_card_employee", "name_employee", "email", "address", "phone", "state_employee", "observation", "creation_date_employee", "reason_anulate" FROM "public"."employees" AS "employees";
+Executing (default): SELECT "id_commission_detail", "month_commission", "commission_percentage" FROM "public"."commission_detail" AS "commission_detail";
+Executing (default): SELECT "id_order", "id_client", "id_employee", "order_number", "order_date", "delivery_date", "payment_type", "order_state", "return_state", "delivery_state", "payment_state", "total_order", "observation_return" FROM "public"."orders" AS "orders" ORDER BY "orders"."order_number" DESC;
+Executing (default): SELECT "total_order" FROM "public"."orders" AS "orders" WHERE "orders"."id_employee" = '8' AND ("orders"."order_date" >= '2024-03-01 05:00:00.000 +00:00' AND "orders"."order_date" <= '2024-04-01 04:59:59.999 +00:00');
+Executing (default): SELECT "total_order" FROM "public"."orders" AS "orders" WHERE "orders"."id_employee" = '7' AND ("orders"."order_date" >= '2024-03-01 05:00:00.000 +00:00' AND "orders"."order_date" <= '2024-04-01 04:59:59.999 +00:00');
+Executing (default): SELECT "total_order" FROM "public"."orders" AS "orders" WHERE "orders"."id_employee" = '10' AND ("orders"."order_date" >= '2024-03-01 05:00:00.000 +00:00' AND "orders"."order_date" <= '2024-04-01 04:59:59.999 +00:00');
+Executing (default): SELECT "total_order" FROM "public"."orders" AS "orders" WHERE "orders"."id_employee" = '9' AND ("orders"."order_date" >= '2024-03-01 05:00:00.000 +00:00' AND "orders"."order_date" <= '2024-04-01 04:59:59.999 +00:00');
+Executing (default): SELECT "total_order" FROM "public"."orders" AS "orders" WHERE "orders"."id_employee" = '11' AND ("orders"."order_date" >= '2024-03-01 05:00:00.000 +00:00' AND "orders"."order_date" <= '2024-04-01 04:59:59.999 +00:00');
+Executing (default): SELECT "total_order" FROM "public"."orders" AS "orders" WHERE "orders"."id_employee" = '12' AND ("orders"."order_date" >= '2024-03-01 05:00:00.000 +00:00' AND "orders"."order_date" <= '2024-04-01 04:59:59.999 +00:00');
