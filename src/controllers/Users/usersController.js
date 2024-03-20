@@ -435,7 +435,7 @@ async function forgotPassword(req, res) {
       from: "cosmeticproyecto@gmail.com",
       to: email,
       subject: "Recuperación de Contraseña",
-      text: `Estimado(a) Usuario,\n\nRecibimos una solicitud para restablecer tu contraseña. Por favor, haz clic en el enlace a continuación para proceder con el restablecimiento a través de correo electrónico.\n\nhttps://cosmetic-proyect24.web.app//sessions/signup/${resetToken}\n\nSi no has solicitado este cambio, por favor ignora este mensaje.\n\nGracias,\CosmeTIC \n\n`,
+      text: `Estimado(a) Usuario,\n\nRecibimos una solicitud para restablecer tu contraseña. Por favor, haz clic en el enlace a continuación para proceder con el restablecimiento a través de correo electrónico.\n\nhttp://localhost:9095//sessions/signup/${resetToken}\n\nSi no has solicitado este cambio, por favor ignora este mensaje.\n\nGracias,\CosmeTIC \n\n`,
     };
     console.log("Token generado:", resetToken);
 

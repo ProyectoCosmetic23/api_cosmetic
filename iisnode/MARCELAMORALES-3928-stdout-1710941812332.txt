@@ -1,0 +1,8 @@
+Server is running on port \\.\pipe\8fa25952-935b-41fc-92df-bac63c6c353b
+Executing (default): SELECT 1+1 AS result
+Successfully connected to PostgreSQL
+Executing (default): SELECT "id_user", "id_role", "id_employee", "creation_date_user", "username", "email", "password", "state_user", "observation_user", "reason_anulate" FROM "public"."users" AS "users" WHERE "users"."email" = 'marcelamorales19980@gmail.com' LIMIT 1;
+Executing (default): SELECT "id_user", "id_role", "id_employee", "creation_date_user", "username", "email", "password", "state_user", "observation_user", "reason_anulate" FROM "public"."users" AS "users" WHERE "users"."email" = 'marcelamorales19980@gmail.com' LIMIT 1;
+Executing (default): SELECT "id_user", "id_role", "id_employee", "creation_date_user", "username", "email", "password", "state_user", "observation_user", "reason_anulate" FROM "public"."users" AS "users" WHERE "users"."email" = 'marcelamorales19980@gmail.com' LIMIT 1;
+Executing (default): SELECT "id_user", "id_role", "id_employee", "creation_date_user", "username", "email", "password", "state_user", "observation_user", "reason_anulate" FROM "public"."users" AS "users" WHERE "users"."email" = 'marcelamorales19980@gmail.com' LIMIT 1;
+Executing (default): SELECT "id_user", "id_role", "id_employee", "creation_date_user", "username", "email", "password", "state_user", "observation_user", "reason_anulate" FROM "public"."users" AS "users" WHERE "users"."id_user" = 'login';

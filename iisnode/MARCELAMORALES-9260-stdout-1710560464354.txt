@@ -1,0 +1,2 @@
+Server is running on port \\.\pipe\71768b01-2e4b-4cfd-a25b-6ed14b35274e
+Successfully connected to PostgreSQL

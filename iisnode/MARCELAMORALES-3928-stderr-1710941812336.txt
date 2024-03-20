@@ -1,0 +1,290 @@
+(node:3928) [DEP0005] DeprecationWarning: Buffer() is deprecated due to security and usability issues. Please use the Buffer.alloc(), Buffer.allocUnsafe(), or Buffer.from() methods instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+Error al iniciar sesión:  Error
+    at Query.run (C:\sitios\cosmetic\api_cosmetic\node_modules\sequelize\lib\dialects\postgres\query.js:50:25)
+    at C:\sitios\cosmetic\api_cosmetic\node_modules\sequelize\lib\sequelize.js:315:28
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async PostgresQueryInterface.select (C:\sitios\cosmetic\api_cosmetic\node_modules\sequelize\lib\dialects\abstract\query-interface.js:407:12)
+    at async users.findAll (C:\sitios\cosmetic\api_cosmetic\node_modules\sequelize\lib\model.js:1140:21)
+    at async users.findOne (C:\sitios\cosmetic\api_cosmetic\node_modules\sequelize\lib\model.js:1240:12)
+    at async loginUser (C:\sitios\cosmetic\api_cosmetic\src\controllers\Users\usersController.js:253:18) {
+  name: 'SequelizeDatabaseError',
+  parent: error: no existe la columna «reason_anulate»
+      at Parser.parseErrorMessage (C:\sitios\cosmetic\api_cosmetic\node_modules\pg-protocol\dist\parser.js:287:98)
+      at Parser.handlePacket (C:\sitios\cosmetic\api_cosmetic\node_modules\pg-protocol\dist\parser.js:126:29)
+      at Parser.parse (C:\sitios\cosmetic\api_cosmetic\node_modules\pg-protocol\dist\parser.js:39:38)
+      at Socket.<anonymous> (C:\sitios\cosmetic\api_cosmetic\node_modules\pg-protocol\dist\index.js:11:42)
+      at Socket.emit (node:events:515:28)
+      at addChunk (node:internal/streams/readable:545:12)
+      at readableAddChunkPushByteMode (node:internal/streams/readable:495:3)
+      at Readable.push (node:internal/streams/readable:375:5)
+      at TCP.onStreamRead (node:internal/stream_base_commons:190:23) {
+    length: 116,
+    severity: 'ERROR',
+    code: '42703',
+    detail: undefined,
+    hint: undefined,
+    position: '134',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '3718',
+    routine: 'errorMissingColumn',
+    sql: `SELECT "id_user", "id_role", "id_employee", "creation_date_user", "username", "email", "password", "state_user", "observation_user", "reason_anulate" FROM "public"."users" AS "users" WHERE "users"."email" = 'marcelamorales19980@gmail.com' LIMIT 1;`,
+    parameters: undefined
+  },
+  original: error: no existe la columna «reason_anulate»
+      at Parser.parseErrorMessage (C:\sitios\cosmetic\api_cosmetic\node_modules\pg-protocol\dist\parser.js:287:98)
+      at Parser.handlePacket (C:\sitios\cosmetic\api_cosmetic\node_modules\pg-protocol\dist\parser.js:126:29)
+      at Parser.parse (C:\sitios\cosmetic\api_cosmetic\node_modules\pg-protocol\dist\parser.js:39:38)
+      at Socket.<anonymous> (C:\sitios\cosmetic\api_cosmetic\node_modules\pg-protocol\dist\index.js:11:42)
+      at Socket.emit (node:events:515:28)
+      at addChunk (node:internal/streams/readable:545:12)
+      at readableAddChunkPushByteMode (node:internal/streams/readable:495:3)
+      at Readable.push (node:internal/streams/readable:375:5)
+      at TCP.onStreamRead (node:internal/stream_base_commons:190:23) {
+    length: 116,
+    severity: 'ERROR',
+    code: '42703',
+    detail: undefined,
+    hint: undefined,
+    position: '134',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '3718',
+    routine: 'errorMissingColumn',
+    sql: `SELECT "id_user", "id_role", "id_employee", "creation_date_user", "username", "email", "password", "state_user", "observation_user", "reason_anulate" FROM "public"."users" AS "users" WHERE "users"."email" = 'marcelamorales19980@gmail.com' LIMIT 1;`,
+    parameters: undefined
+  },
+  sql: `SELECT "id_user", "id_role", "id_employee", "creation_date_user", "username", "email", "password", "state_user", "observation_user", "reason_anulate" FROM "public"."users" AS "users" WHERE "users"."email" = 'marcelamorales19980@gmail.com' LIMIT 1;`,
+  parameters: {}
+}
+Error al iniciar sesión:  Error
+    at Query.run (C:\sitios\cosmetic\api_cosmetic\node_modules\sequelize\lib\dialects\postgres\query.js:50:25)
+    at C:\sitios\cosmetic\api_cosmetic\node_modules\sequelize\lib\sequelize.js:315:28
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async PostgresQueryInterface.select (C:\sitios\cosmetic\api_cosmetic\node_modules\sequelize\lib\dialects\abstract\query-interface.js:407:12)
+    at async users.findAll (C:\sitios\cosmetic\api_cosmetic\node_modules\sequelize\lib\model.js:1140:21)
+    at async users.findOne (C:\sitios\cosmetic\api_cosmetic\node_modules\sequelize\lib\model.js:1240:12)
+    at async loginUser (C:\sitios\cosmetic\api_cosmetic\src\controllers\Users\usersController.js:253:18) {
+  name: 'SequelizeDatabaseError',
+  parent: error: no existe la columna «reason_anulate»
+      at Parser.parseErrorMessage (C:\sitios\cosmetic\api_cosmetic\node_modules\pg-protocol\dist\parser.js:287:98)
+      at Parser.handlePacket (C:\sitios\cosmetic\api_cosmetic\node_modules\pg-protocol\dist\parser.js:126:29)
+      at Parser.parse (C:\sitios\cosmetic\api_cosmetic\node_modules\pg-protocol\dist\parser.js:39:38)
+      at Socket.<anonymous> (C:\sitios\cosmetic\api_cosmetic\node_modules\pg-protocol\dist\index.js:11:42)
+      at Socket.emit (node:events:515:28)
+      at addChunk (node:internal/streams/readable:545:12)
+      at readableAddChunkPushByteMode (node:internal/streams/readable:495:3)
+      at Readable.push (node:internal/streams/readable:375:5)
+      at TCP.onStreamRead (node:internal/stream_base_commons:190:23) {
+    length: 116,
+    severity: 'ERROR',
+    code: '42703',
+    detail: undefined,
+    hint: undefined,
+    position: '134',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '3718',
+    routine: 'errorMissingColumn',
+    sql: `SELECT "id_user", "id_role", "id_employee", "creation_date_user", "username", "email", "password", "state_user", "observation_user", "reason_anulate" FROM "public"."users" AS "users" WHERE "users"."email" = 'marcelamorales19980@gmail.com' LIMIT 1;`,
+    parameters: undefined
+  },
+  original: error: no existe la columna «reason_anulate»
+      at Parser.parseErrorMessage (C:\sitios\cosmetic\api_cosmetic\node_modules\pg-protocol\dist\parser.js:287:98)
+      at Parser.handlePacket (C:\sitios\cosmetic\api_cosmetic\node_modules\pg-protocol\dist\parser.js:126:29)
+      at Parser.parse (C:\sitios\cosmetic\api_cosmetic\node_modules\pg-protocol\dist\parser.js:39:38)
+      at Socket.<anonymous> (C:\sitios\cosmetic\api_cosmetic\node_modules\pg-protocol\dist\index.js:11:42)
+      at Socket.emit (node:events:515:28)
+      at addChunk (node:internal/streams/readable:545:12)
+      at readableAddChunkPushByteMode (node:internal/streams/readable:495:3)
+      at Readable.push (node:internal/streams/readable:375:5)
+      at TCP.onStreamRead (node:internal/stream_base_commons:190:23) {
+    length: 116,
+    severity: 'ERROR',
+    code: '42703',
+    detail: undefined,
+    hint: undefined,
+    position: '134',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '3718',
+    routine: 'errorMissingColumn',
+    sql: `SELECT "id_user", "id_role", "id_employee", "creation_date_user", "username", "email", "password", "state_user", "observation_user", "reason_anulate" FROM "public"."users" AS "users" WHERE "users"."email" = 'marcelamorales19980@gmail.com' LIMIT 1;`,
+    parameters: undefined
+  },
+  sql: `SELECT "id_user", "id_role", "id_employee", "creation_date_user", "username", "email", "password", "state_user", "observation_user", "reason_anulate" FROM "public"."users" AS "users" WHERE "users"."email" = 'marcelamorales19980@gmail.com' LIMIT 1;`,
+  parameters: {}
+}
+Error al iniciar sesión:  Error
+    at Query.run (C:\sitios\cosmetic\api_cosmetic\node_modules\sequelize\lib\dialects\postgres\query.js:50:25)
+    at C:\sitios\cosmetic\api_cosmetic\node_modules\sequelize\lib\sequelize.js:315:28
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async PostgresQueryInterface.select (C:\sitios\cosmetic\api_cosmetic\node_modules\sequelize\lib\dialects\abstract\query-interface.js:407:12)
+    at async users.findAll (C:\sitios\cosmetic\api_cosmetic\node_modules\sequelize\lib\model.js:1140:21)
+    at async users.findOne (C:\sitios\cosmetic\api_cosmetic\node_modules\sequelize\lib\model.js:1240:12)
+    at async loginUser (C:\sitios\cosmetic\api_cosmetic\src\controllers\Users\usersController.js:253:18) {
+  name: 'SequelizeDatabaseError',
+  parent: error: no existe la columna «reason_anulate»
+      at Parser.parseErrorMessage (C:\sitios\cosmetic\api_cosmetic\node_modules\pg-protocol\dist\parser.js:287:98)
+      at Parser.handlePacket (C:\sitios\cosmetic\api_cosmetic\node_modules\pg-protocol\dist\parser.js:126:29)
+      at Parser.parse (C:\sitios\cosmetic\api_cosmetic\node_modules\pg-protocol\dist\parser.js:39:38)
+      at Socket.<anonymous> (C:\sitios\cosmetic\api_cosmetic\node_modules\pg-protocol\dist\index.js:11:42)
+      at Socket.emit (node:events:515:28)
+      at addChunk (node:internal/streams/readable:545:12)
+      at readableAddChunkPushByteMode (node:internal/streams/readable:495:3)
+      at Readable.push (node:internal/streams/readable:375:5)
+      at TCP.onStreamRead (node:internal/stream_base_commons:190:23) {
+    length: 116,
+    severity: 'ERROR',
+    code: '42703',
+    detail: undefined,
+    hint: undefined,
+    position: '134',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '3718',
+    routine: 'errorMissingColumn',
+    sql: `SELECT "id_user", "id_role", "id_employee", "creation_date_user", "username", "email", "password", "state_user", "observation_user", "reason_anulate" FROM "public"."users" AS "users" WHERE "users"."email" = 'marcelamorales19980@gmail.com' LIMIT 1;`,
+    parameters: undefined
+  },
+  original: error: no existe la columna «reason_anulate»
+      at Parser.parseErrorMessage (C:\sitios\cosmetic\api_cosmetic\node_modules\pg-protocol\dist\parser.js:287:98)
+      at Parser.handlePacket (C:\sitios\cosmetic\api_cosmetic\node_modules\pg-protocol\dist\parser.js:126:29)
+      at Parser.parse (C:\sitios\cosmetic\api_cosmetic\node_modules\pg-protocol\dist\parser.js:39:38)
+      at Socket.<anonymous> (C:\sitios\cosmetic\api_cosmetic\node_modules\pg-protocol\dist\index.js:11:42)
+      at Socket.emit (node:events:515:28)
+      at addChunk (node:internal/streams/readable:545:12)
+      at readableAddChunkPushByteMode (node:internal/streams/readable:495:3)
+      at Readable.push (node:internal/streams/readable:375:5)
+      at TCP.onStreamRead (node:internal/stream_base_commons:190:23) {
+    length: 116,
+    severity: 'ERROR',
+    code: '42703',
+    detail: undefined,
+    hint: undefined,
+    position: '134',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '3718',
+    routine: 'errorMissingColumn',
+    sql: `SELECT "id_user", "id_role", "id_employee", "creation_date_user", "username", "email", "password", "state_user", "observation_user", "reason_anulate" FROM "public"."users" AS "users" WHERE "users"."email" = 'marcelamorales19980@gmail.com' LIMIT 1;`,
+    parameters: undefined
+  },
+  sql: `SELECT "id_user", "id_role", "id_employee", "creation_date_user", "username", "email", "password", "state_user", "observation_user", "reason_anulate" FROM "public"."users" AS "users" WHERE "users"."email" = 'marcelamorales19980@gmail.com' LIMIT 1;`,
+  parameters: {}
+}
+Error al iniciar sesión:  Error
+    at Query.run (C:\sitios\cosmetic\api_cosmetic\node_modules\sequelize\lib\dialects\postgres\query.js:50:25)
+    at C:\sitios\cosmetic\api_cosmetic\node_modules\sequelize\lib\sequelize.js:315:28
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async PostgresQueryInterface.select (C:\sitios\cosmetic\api_cosmetic\node_modules\sequelize\lib\dialects\abstract\query-interface.js:407:12)
+    at async users.findAll (C:\sitios\cosmetic\api_cosmetic\node_modules\sequelize\lib\model.js:1140:21)
+    at async users.findOne (C:\sitios\cosmetic\api_cosmetic\node_modules\sequelize\lib\model.js:1240:12)
+    at async loginUser (C:\sitios\cosmetic\api_cosmetic\src\controllers\Users\usersController.js:253:18) {
+  name: 'SequelizeDatabaseError',
+  parent: error: no existe la columna «reason_anulate»
+      at Parser.parseErrorMessage (C:\sitios\cosmetic\api_cosmetic\node_modules\pg-protocol\dist\parser.js:287:98)
+      at Parser.handlePacket (C:\sitios\cosmetic\api_cosmetic\node_modules\pg-protocol\dist\parser.js:126:29)
+      at Parser.parse (C:\sitios\cosmetic\api_cosmetic\node_modules\pg-protocol\dist\parser.js:39:38)
+      at Socket.<anonymous> (C:\sitios\cosmetic\api_cosmetic\node_modules\pg-protocol\dist\index.js:11:42)
+      at Socket.emit (node:events:515:28)
+      at addChunk (node:internal/streams/readable:545:12)
+      at readableAddChunkPushByteMode (node:internal/streams/readable:495:3)
+      at Readable.push (node:internal/streams/readable:375:5)
+      at TCP.onStreamRead (node:internal/stream_base_commons:190:23) {
+    length: 116,
+    severity: 'ERROR',
+    code: '42703',
+    detail: undefined,
+    hint: undefined,
+    position: '134',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '3718',
+    routine: 'errorMissingColumn',
+    sql: `SELECT "id_user", "id_role", "id_employee", "creation_date_user", "username", "email", "password", "state_user", "observation_user", "reason_anulate" FROM "public"."users" AS "users" WHERE "users"."email" = 'marcelamorales19980@gmail.com' LIMIT 1;`,
+    parameters: undefined
+  },
+  original: error: no existe la columna «reason_anulate»
+      at Parser.parseErrorMessage (C:\sitios\cosmetic\api_cosmetic\node_modules\pg-protocol\dist\parser.js:287:98)
+      at Parser.handlePacket (C:\sitios\cosmetic\api_cosmetic\node_modules\pg-protocol\dist\parser.js:126:29)
+      at Parser.parse (C:\sitios\cosmetic\api_cosmetic\node_modules\pg-protocol\dist\parser.js:39:38)
+      at Socket.<anonymous> (C:\sitios\cosmetic\api_cosmetic\node_modules\pg-protocol\dist\index.js:11:42)
+      at Socket.emit (node:events:515:28)
+      at addChunk (node:internal/streams/readable:545:12)
+      at readableAddChunkPushByteMode (node:internal/streams/readable:495:3)
+      at Readable.push (node:internal/streams/readable:375:5)
+      at TCP.onStreamRead (node:internal/stream_base_commons:190:23) {
+    length: 116,
+    severity: 'ERROR',
+    code: '42703',
+    detail: undefined,
+    hint: undefined,
+    position: '134',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '3718',
+    routine: 'errorMissingColumn',
+    sql: `SELECT "id_user", "id_role", "id_employee", "creation_date_user", "username", "email", "password", "state_user", "observation_user", "reason_anulate" FROM "public"."users" AS "users" WHERE "users"."email" = 'marcelamorales19980@gmail.com' LIMIT 1;`,
+    parameters: undefined
+  },
+  sql: `SELECT "id_user", "id_role", "id_employee", "creation_date_user", "username", "email", "password", "state_user", "observation_user", "reason_anulate" FROM "public"."users" AS "users" WHERE "users"."email" = 'marcelamorales19980@gmail.com' LIMIT 1;`,
+  parameters: {}
+}

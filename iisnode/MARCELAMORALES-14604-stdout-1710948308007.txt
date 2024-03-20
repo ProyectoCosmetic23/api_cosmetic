@@ -1,0 +1,42 @@
+Server is running on port \\.\pipe\6295db9e-3187-4f00-a3c2-0aa06289df85
+Executing (default): SELECT 1+1 AS result
+Executing (default): SELECT "id_user", "id_role", "id_employee", "creation_date_user", "username", "email", "password", "state_user", "observation_user", "reason_anulate" FROM "public"."users" AS "users" WHERE "users"."email" = 'marcelamorales19980@gmail.com' LIMIT 1;
+Successfully connected to PostgreSQL
+Executing (default): SELECT "id_role", "name_role", "state_role", "modules_role", "observation_status" FROM "public"."roles" AS "roles" WHERE "roles"."id_role" = 1;
+Executing (default): SELECT "id_user", "id_role", "id_employee", "creation_date_user", "username", "email", "password", "state_user", "observation_user", "reason_anulate" FROM "public"."users" AS "users" WHERE "users"."email" = 'marcelamorales19980@gmail.com' LIMIT 1;
+Executing (default): SELECT "id_role", "name_role", "state_role", "modules_role", "observation_status" FROM "public"."roles" AS "roles" WHERE "roles"."id_role" = 1;
+Executing (default): SELECT "id_role", "name_role", "state_role", "modules_role", "observation_status" FROM "public"."roles" AS "roles" WHERE "roles"."id_role" = '1';
+Executing (default): SELECT * FROM get_report_products('false', '2024', '3')
+Executing (default): SELECT * FROM get_report_credit_sales('2024')
+Executing (default): SELECT * FROM get_report_cards('false', '2024', '3')
+Executing (default): SELECT * FROM get_report_employees_with_commission(false, '2024', '3')
+Executing (default): SELECT * FROM get_report_counted_sales('2024')
+Executing (default): SELECT "id_role", "name_role", "state_role", "modules_role", "observation_status" FROM "public"."roles" AS "roles" WHERE "roles"."id_role" = '1';
+Executing (default): SELECT "id_product", "id_category", "name_product", "quantity", "max_stock", "min_stock", "cost_price", "selling_price", "profit", "creation_date_product", "state_product", "observation", "reason_anulate" FROM "public"."products" AS "products";
+Executing (default): SELECT "id_category", "name_category", "state_category", "observation_category", "creation_date_category", "reason_anulate" FROM "public"."product_categories" AS "product_categories";
+Executing (default): SELECT "id_category", "name_category", "state_category", "observation_category", "creation_date_category", "reason_anulate" FROM "public"."product_categories" AS "product_categories";
+Executing (default): SELECT "id_role", "name_role", "state_role", "modules_role", "observation_status" FROM "public"."roles" AS "roles" WHERE "roles"."id_role" = '1';
+Executing (default): SELECT "id_product", "id_category", "name_product", "quantity", "max_stock", "min_stock", "cost_price", "selling_price", "profit", "creation_date_product", "state_product", "observation", "reason_anulate" FROM "public"."products" AS "products";
+Executing (default): SELECT "id_role", "name_role", "state_role", "modules_role", "observation_status" FROM "public"."roles" AS "roles";
+Executing (default): SELECT "id_employee", "id_card_employee", "name_employee", "email", "address", "phone", "state_employee", "observation", "creation_date_employee", "reason_anulate" FROM "public"."employees" AS "employees";
+Executing (default): SELECT "id_role", "name_role", "state_role", "modules_role", "observation_status" FROM "public"."roles" AS "roles" WHERE "roles"."id_role" = '1';
+Executing (default): SELECT "id_user", "id_role", "id_employee", "creation_date_user", "username", "email", "password", "state_user", "observation_user", "reason_anulate" FROM "public"."users" AS "users";
+Executing (default): SELECT "id_role", "name_role", "state_role", "modules_role", "observation_status" FROM "public"."roles" AS "roles";
+Executing (default): SELECT "id_role", "name_role", "state_role", "modules_role", "observation_status" FROM "public"."roles" AS "roles" WHERE "roles"."id_role" = '1';
+Executing (default): SELECT "id_role", "name_role", "state_role", "modules_role", "observation_status" FROM "public"."roles" AS "roles" WHERE "roles"."id_role" = '1';
+Executing (default): SELECT "id_client", "nit_or_id_client", "name_client", "last_name_client", "email_client", "phone_client", "address_client", "state_client", "reason_anulate" FROM "public"."clients" AS "clients";
+Executing (default): SELECT "id_role", "name_role", "state_role", "modules_role", "observation_status" FROM "public"."roles" AS "roles" WHERE "roles"."id_role" = '1';
+Executing (default): SELECT "id_employee", "id_card_employee", "name_employee", "email", "address", "phone", "state_employee", "observation", "creation_date_employee", "reason_anulate" FROM "public"."employees" AS "employees";
+Executing (default): SELECT "id_commission", "id_employee", "total_commission", "id_commission_detail", "total_sales" FROM "public"."commissions" AS "commissions";
+Executing (default): SELECT "id_role", "name_role", "state_role", "modules_role", "observation_status" FROM "public"."roles" AS "roles" WHERE "roles"."id_role" = '1';
+Executing (default): SELECT "id_role", "name_role", "state_role", "modules_role", "observation_status" FROM "public"."roles" AS "roles" WHERE "roles"."id_role" = '1';
+Executing (default): SELECT "id_user", "id_role", "id_employee", "creation_date_user", "username", "email", "password", "state_user", "observation_user", "reason_anulate" FROM "public"."users" AS "users" WHERE "users"."email" = 'marcelamorales19980@gmail.com' LIMIT 1;
+Executing (default): SELECT "id_role", "name_role", "state_role", "modules_role", "observation_status" FROM "public"."roles" AS "roles" WHERE "roles"."id_role" = 1;
+Executing (default): SELECT "id_role", "name_role", "state_role", "modules_role", "observation_status" FROM "public"."roles" AS "roles" WHERE "roles"."id_role" = '1';
+Executing (default): SELECT * FROM get_report_products('false', '2024', '3')
+Executing (default): SELECT * FROM get_report_employees_with_commission(false, '2024', '3')
+Executing (default): SELECT * FROM get_report_cards('false', '2024', '3')
+Executing (default): SELECT * FROM get_report_credit_sales('2024')
+Executing (default): SELECT * FROM get_report_counted_sales('2024')
+Executing (default): SELECT "id_role", "name_role", "state_role", "modules_role", "observation_status" FROM "public"."roles" AS "roles" WHERE "roles"."id_role" = '1';
+Executing (default): SELECT "id_commission", "id_employee", "total_commission", "id_commission_detail", "total_sales" FROM "public"."commissions" AS "commissions";

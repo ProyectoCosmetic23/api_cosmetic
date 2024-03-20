@@ -1,0 +1,4 @@
+Server is running on port \\.\pipe\63227fea-430e-4b36-886d-edd524475350
+Successfully connected to PostgreSQL
+2024-03-01
+Comisiones actualizadas correctamente.
